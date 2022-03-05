@@ -1,11 +1,10 @@
-﻿# CMakeList.txt : CMake project for CAD, include source and define
-# project specific logic here.
-#
-cmake_minimum_required(VERSION 3.8)
+﻿cmake_minimum_required(VERSION 3.8)
 
 project("CAD")
 
-# Add source to this project's executable.
-add_executable(CAD "main.cpp" )
+add_executable(main "main.cpp"  "Window.h" "Window.cpp" "Config.h" "Renderer.h" "Renderer.cpp")
 
-# TODO: Add tests and install targets if needed.
+find_package(glfw3 CONFIG REQUIRED)
+find_package(glew CONFIG REQUIRED)
+target_link_libraries(main PRIVATE glfw)
+target_link_libraries(main PRIVATE GLEW::GLEW)

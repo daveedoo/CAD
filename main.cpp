@@ -1,9 +1,21 @@
-﻿// CAD.cpp : Defines the entry point for the application.
-//
-#include <iostream>
+﻿#include "Window.h"
+#include "Renderer.h"
+
+#define SCR_WIDTH 800
+#define SCR_HEIGHT 600
 
 int main()
 {
-	std::cout << "Hello CMake." << std::endl;
+	Window window = Window(SCR_WIDTH, SCR_HEIGHT, "CAD");
+	Renderer renderer = Renderer();
+
+	while (!window.ShouldClose())
+	{
+		renderer.DrawScene();
+
+		window.PollEvents();
+		window.SwapBuffers();
+	}
+
 	return 0;
 }
