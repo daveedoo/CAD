@@ -1,8 +1,9 @@
-#include "Renderer.h"
 #include <gl/glew.h>
 #include <exception>
 
-Renderer::Renderer()
+#include "Renderer.h"
+
+Renderer::Renderer(const Window& window) : window(window)
 {
 	GLenum err = glewInit();
 	if (err != GLEW_OK)

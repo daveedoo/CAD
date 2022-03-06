@@ -7,7 +7,7 @@
 int main()
 {
 	Window window = Window(SCR_WIDTH, SCR_HEIGHT, "CAD");
-	Renderer renderer = Renderer();
+	Renderer renderer = Renderer(window);
 
 	while (!window.ShouldClose())
 	{

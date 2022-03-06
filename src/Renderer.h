@@ -1,10 +1,12 @@
 #pragma once
+#include "Window.h"
 
 class Renderer
 {
 private:
+	const Window& window;
 
 public:
-	Renderer();
+	Renderer(const Window& window);
 	void DrawScene();
 };
