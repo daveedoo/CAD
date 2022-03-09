@@ -7,6 +7,7 @@
 #include "gl/wrappers/VAO.h"
 #include "gl/wrappers/Shader.h"
 #include "gl/wrappers/Program.h"
+#include "Window/Window.h"
 
 Renderer::Renderer(const Window& window) : window(window)
 {
@@ -17,7 +18,7 @@ Renderer::Renderer(const Window& window) : window(window)
 	glClearColor(1.0f, 0.66f, 0.4f, 1.0f);
 }
 
-void Renderer::DrawScene()
+void Renderer::DrawScene(const Camera& camera)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -27,7 +28,7 @@ void Renderer::DrawScene()
 		-1.0f, -1.0f,		1.0f, -1.0f,	1.0f, 1.0f
 	};
 
-	glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 view = camera.GetViewMatrix();
 	float A = 5.0;
 	float B = 10.0;
 	float C = 5.0;
@@ -35,8 +36,8 @@ void Renderer::DrawScene()
 					glm::vec4(0, B, 0, 0),
 					glm::vec4(0, 0, C, 0),
 					glm::vec4(0, 0, 0, -1));
-	//glm::mat4 matrix = glm::transpose(glm::inverse(view)) * D * glm::inverse(view);
-	glm::mat4 matrix = D;
+	glm::mat4 matrix = glm::transpose(glm::inverse(view)) * D * glm::inverse(view);
+	//glm::mat4 matrix = D;
 
 	auto shadersPath = std::filesystem::path(SHADERS_DIR);
 	GL::Shader vertexShader(GL::Shader::ShaderType::VERTEX_SHADER, shadersPath / "vertex.vert");

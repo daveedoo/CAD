@@ -1,5 +1,6 @@
 #pragma once
-#include "Window.h"
+#include "Window/Window.h"
+#include "Window/Camera.h"
 
 class Renderer
 {
@@ -8,5 +9,6 @@ private:
 
 public:
 	Renderer(const Window& window);
-	void DrawScene();
+
+	void DrawScene(const Camera& camera);
 };
