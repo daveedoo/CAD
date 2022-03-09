@@ -1,0 +1,4 @@
+#pragma once
+#define OPENGL_MAJOR 4
+#define OPENGL_MINOR 5
+#define SHADERS_DIR "@PROJECT_SOURCE_DIR@/src/gl/shaders"

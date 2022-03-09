@@ -2,7 +2,7 @@
 #include "Renderer.h"
 
 #define SCR_WIDTH 800
-#define SCR_HEIGHT 600
+#define SCR_HEIGHT 800
 
 int main()
 {

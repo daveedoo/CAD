@@ -1,8 +1,16 @@
 ﻿cmake_minimum_required(VERSION 3.8)
 
-add_executable(main "main.cpp" "Window.h" "Window.cpp" "Config.h" "Renderer.h" "Renderer.cpp")
+#add_subdirectory("gl")
+
+add_executable(${PROJECT_NAME} "main.cpp" "Window.h" "Window.cpp" "../Config.h" "Renderer.h" "Renderer.cpp"
+	"gl/wrappers/VAO.h" "gl/wrappers/VAO.cpp" "gl/wrappers/VBO.h" "gl/wrappers/VBO.cpp"
+	"gl/wrappers/Shader.h" "gl/wrappers/Shader.cpp" "gl/wrappers/Program.h" "gl/wrappers/Program.cpp" )
 
 find_package(glfw3 CONFIG REQUIRED)
 find_package(glew CONFIG REQUIRED)
-target_link_libraries(main PRIVATE glfw)
-target_link_libraries(main PRIVATE GLEW::GLEW)
+find_package(glm CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE glfw)
+target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
+target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
+
+target_include_directories(${PROJECT_NAME} PUBLIC "${PROJECT_BINARY_DIR}")
