@@ -1,6 +1,6 @@
 #pragma once
 #include "Window/Window.h"
-#include "Window/Camera.h"
+#include "Camera.h"
 
 class Renderer
 {

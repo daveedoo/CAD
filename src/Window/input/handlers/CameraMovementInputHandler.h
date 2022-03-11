@@ -1,5 +1,5 @@
 #pragma once
-#include "../../Camera.h"
+#include "../../../Camera.h"
 #include "../events/InputEvent.h"
 #include "../events/MouseMoveEvent.h"
 #include "../events/modded/MouseClickEvent.h"
