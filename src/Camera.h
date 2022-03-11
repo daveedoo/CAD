@@ -9,6 +9,7 @@ private:
 public:
 	Camera(glm::vec3 eye, glm::vec3 center, glm::vec3 up);
 
-	void RotateX(float angleInRad);
 	glm::mat4 GetViewMatrix() const { return this->currentView; }
+	void RotateX(float angleInRad);
+	void RotateY(float angleInRad);
 };
