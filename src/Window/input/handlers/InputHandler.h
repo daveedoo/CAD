@@ -1,5 +1,5 @@
 #pragma once
-#include "InputEvent.h"
+#include "../events/InputEvent.h"
 
 class InputHandler
 {

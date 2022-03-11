@@ -1,6 +1,6 @@
 ﻿#include "Window/Window.h"
 #include "Renderer.h"
-#include "Window/input/CameraMovementInputHandler.h"
+#include "Window/input/handlers/CameraMovementInputHandler.h"
 
 #define SCR_WIDTH 800
 #define SCR_HEIGHT 800

@@ -1,9 +1,11 @@
 #include "Window.h"
 #include "Config.h"
-#include "input/InputEvent.h"
 
 #include <exception>
 #include <glm/glm.hpp>
+#include "input/events/modded/MouseClickEvent.h"
+#include "input/events/MouseMoveEvent.h"
+#include "input/events/modded/KeyEvent.h"
 
 
 Window::Window(int width, int height, std::string title)
@@ -27,14 +29,22 @@ Window::Window(int width, int height, std::string title)
 			fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 		});
 
-	//glfwSetMouseButtonCallback(this->window, [](GLFWwindow* window, int button, int action, int mods)
-	//		{
-	//			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	glfwSetMouseButtonCallback(this->window, [](GLFWwindow* window, int button, int action, int mods)
+		{
+			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
-	//			const InputEvent inputEvent = InputEvent(key, scancode, action, mods);
-	//			for (auto& inputHandler : thisWindow->inputHandlers)
-	//				inputHandler->ProcessInput(inputEvent);
-	//		});
+			const MouseClickEvent inputEvent = MouseClickEvent(button, action, mods);
+			for (auto& inputHandler : thisWindow->inputHandlers)
+				inputHandler->ProcessInput(inputEvent);
+		});
+	glfwSetCursorPosCallback(this->window, [](GLFWwindow* window, double xpos, double ypos)
+		{
+			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+			const MouseMoveEvent inputEvent = MouseMoveEvent(xpos, ypos);
+			for (auto& inputHandler : thisWindow->inputHandlers)
+				inputHandler->ProcessInput(inputEvent);
+		});
 	glfwSetKeyCallback(this->window, [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
 			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));

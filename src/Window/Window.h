@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "input/InputHandler.h"
+#include "input/handlers/InputHandler.h"
 
 class Window
 {
