@@ -3,8 +3,6 @@
 #include "Shader.h"
 #include <glm/glm.hpp>
 #include <functional>
-//#include <unordered_map>
-//#include <optional>
 
 namespace GL
 {
@@ -35,11 +33,12 @@ namespace GL
 		constexpr GLuint GetID() const { return this->ID; };
 
 		void SetMat4(std::string uniformName, glm::mat4 value);
-//		void SetVec4(std::string uniformName, glm::vec4 value);
-//		void SetIVec4(std::string uniformName, glm::ivec4 value);
-//		void SetVec3(std::string uniformName, glm::vec3 value);
+		void SetVec3(std::string uniformName, glm::vec3 value);
 //		void SetIVec3(std::string uniformName, glm::ivec3 value);
-//		void SetInt(std::string uniformName, int value);
+		void SetVec4(std::string uniformName, glm::vec4 value);
+//		void SetIVec4(std::string uniformName, glm::ivec4 value);
+		void SetInt(std::string uniformName, int value);
+		void SetUint(std::string uniformName, unsigned int value);
 //		void SetFloat(std::string uniformName, float value);
 //
 //		void SetVec3Array(std::string uniformName, const std::vector<glm::vec3>& values);

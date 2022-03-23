@@ -7,7 +7,9 @@ public:
 	{
 		KEY,
 		MOUSE_CLICK,
-		MOUSE_MOVE
+		MOUSE_MOVE,
+		MOUSE_SCROLL,
+		RESIZE
 	};
 
 public:

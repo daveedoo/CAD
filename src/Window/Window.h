@@ -4,20 +4,27 @@
 #include <vector>
 #include <memory>
 #include "input/handlers/InputHandler.h"
+#include <functional>
 
 class Window
 {
 private:
+	static unsigned int windowsCounter;
+
 	GLFWwindow* window;
-	std::vector<std::unique_ptr<InputHandler>> inputHandlers;
+	std::function<void(const InputEvent& event)> onEvent = {};
 
 public:
-	Window(int width, int height, std::string title);
+	Window(int width, int height, std::string title, int minWidth = 800, int minHeight = 800);
 	~Window();
 
-	void SubscribeInputHandler(std::unique_ptr<InputHandler> inputHandler);
+	GLFWwindow* GetRawWindow() { return this->window; }
+	void GetFramebufferSize(int& width, int& height) const;
 
-	bool ShouldClose();
+	void MakeContextCurrent();
+	void SetEventHandler(std::function<void(const InputEvent& event)> callback);
+
+	bool ShouldClose() const;
 	void PollEvents();
 	void SwapBuffers();
 };

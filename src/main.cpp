@@ -1,25 +1,20 @@
-﻿#include "Window/Window.h"
-#include "Renderer.h"
+﻿#include <gl/glew.h>
+#include "Config.h"
+#include "Window/Window.h"
+#include "renderer/Renderer.h"
 #include "Window/input/handlers/CameraMovementInputHandler.h"
-
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 800
 
 int main()
 {
 	Window window = Window(SCR_WIDTH, SCR_HEIGHT, "CAD");
 	Renderer renderer = Renderer(window);
 
-	Camera cam = Camera(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	auto cameraMove = std::make_unique<CameraMovementInputHandler>(cam);
-	window.SubscribeInputHandler(std::move(cameraMove));
-
 	while (!window.ShouldClose())
 	{
-		renderer.DrawScene(cam);
+		renderer.Draw();
 
-		window.PollEvents();
 		window.SwapBuffers();
+		window.PollEvents();
 	}
 
 	return 0;

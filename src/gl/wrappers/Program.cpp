@@ -91,26 +91,31 @@ namespace GL
 	{
 		this->ExecuteUniformVariableOperation(uniformName,
 			[&](GLint location)
-			{
-				glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
-			});
+			{ glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)); });
 	}
 
-//	void Program::SetMat4(std::string uniformName, glm::mat4 value)
+	void Program::SetVec3(std::string uniformName, glm::vec3 value)
+	{
+		this->ExecuteUniformVariableOperation(uniformName,
+			[&](GLint location) { glUniform3f(location, value.x, value.y, value.z); }
+		);
+	}
+
+//	void Program::SetIVec3(std::string uniformName, glm::ivec3 value)
 //	{
 //		this->ExecuteUniformVariableOperation(
 //			uniformName,
-//			[&](GLint location) { glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)); }
+//			[&](GLint location) { glUniform3i(location, value.x, value.y, value.z); }
 //		);
 //	}
-//
-//	void Program::SetVec4(std::string uniformName, glm::vec4 value)
-//	{
-//		this->ExecuteUniformVariableOperation(
-//			uniformName,
-//			[&](GLint location) { glUniform4f(location, value.x, value.y, value.z, value.w); }
-//		);
-//	}
+
+	void Program::SetVec4(std::string uniformName, glm::vec4 value)
+	{
+		this->ExecuteUniformVariableOperation(
+			uniformName,
+			[&](GLint location) { glUniform4f(location, value.x, value.y, value.z, value.w); }
+		);
+	}
 //
 //	void Program::SetIVec4(std::string uniformName, glm::ivec4 value)
 //	{
@@ -119,31 +124,29 @@ namespace GL
 //			[&](GLint location) { glUniform4i(location, value.x, value.y, value.z, value.w); }
 //		);
 //	}
-//
-//	void Program::SetVec3(std::string uniformName, glm::vec3 value)
+// 
+//	void Program::SetMat4(std::string uniformName, glm::mat4 value)
 //	{
 //		this->ExecuteUniformVariableOperation(
 //			uniformName,
-//			[&](GLint location) { glUniform3f(location, value.x, value.y, value.z); }
+//			[&](GLint location) { glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value)); }
 //		);
 //	}
-//
-//	void Program::SetIVec3(std::string uniformName, glm::ivec3 value)
-//	{
-//		this->ExecuteUniformVariableOperation(
-//			uniformName,
-//			[&](GLint location) { glUniform3i(location, value.x, value.y, value.z); }
-//		);
-//	}
-//
-//	void Program::SetInt(std::string uniformName, int value)
-//	{
-//		this->ExecuteUniformVariableOperation(
-//			uniformName,
-//			[&](GLint location) { glUniform1i(location, value); }
-//		);
-//	}
-//
+
+	void Program::SetInt(std::string uniformName, int value)
+	{
+		this->ExecuteUniformVariableOperation(uniformName,
+			[&](GLint location) { glUniform1i(location, value); }
+		);
+	}
+
+	void Program::SetUint(std::string uniformName, unsigned int value)
+	{
+		this->ExecuteUniformVariableOperation(uniformName,
+			[&](GLint location) { glUniform1ui(location, value); }
+		);
+	}
+
 //	void Program::SetFloat(std::string uniformName, float value)
 //	{
 //		this->ExecuteUniformVariableOperation(
