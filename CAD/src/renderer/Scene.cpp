@@ -10,10 +10,8 @@
 Scene::Scene() :
 	camera(std::make_unique<Camera>()),
 	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
-	ellipsoid(std::make_unique<Ellipsoid>(1.f, 2.f, 3.f))
-{
-	//this->cameraMovementHandler = std::make_unique<CameraMovementInputHandler>(*this->camera);
-}
+	ellipsoid(std::make_unique<Ellipsoid>(0.01f, 0.2f, 3.f))
+{ }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
 {

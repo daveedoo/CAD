@@ -19,7 +19,7 @@ private:
 	//std::unique_ptr<GUI> gui;
 
 	// adapive shading stuff
-	bool adaptiveShadingOn = true;
+	bool adaptiveShadingOn = false;
 	bool sceneIsMoving = false;
 	int adaptiveLvl = 8;
 	std::unique_ptr<GL::Program> adaptiveShadingProgram;

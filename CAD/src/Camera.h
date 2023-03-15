@@ -4,17 +4,24 @@
 class Camera
 {
 private:
-	glm::mat4 currentView;
+	glm::mat4 view;
+
+	//float roll = 0.f;
+	float pitch = 0.f;
+	float yaw = 270.f;	// defualt camera position is (0, 0, -1)
+	float scale = 1.0;
+
+	void UpdateViewMatrix();
 
 public:
-	Camera() :
-		Camera(glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)) {}
-	Camera(glm::vec3 eye, glm::vec3 center, glm::vec3 up);
+	Camera();
 
-	glm::mat4 GetViewMatrix() const { return this->currentView; }
-	void RotateX(float angleInRad);
-	void RotateY(float angleInRad);
-	//void RotateZ(float angleInRad);
+	glm::mat4 GetViewMatrix() const { return this->view; }
+
+	/// Rotations around Y axis in degrees
+	void RotateYaw(float angle);
+	/// Rotations between the poles in degrees
+	void RotatePitch(float angle);
 	void Scale(float ratio);
 	void Translate(glm::vec3 vector);
 };

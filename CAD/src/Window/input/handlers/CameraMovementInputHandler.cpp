@@ -46,7 +46,8 @@ void CameraMovementInputHandler::HandleMouseClickEvent(const MouseClickEvent& ev
 
 void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& event)
 {
-	static constexpr float MOUSE_ROTATION_SENSITIVITY = 0.01f;
+	static constexpr float MOUSE_ROTATION_SENSITIVITY = 0.3f;
+	static constexpr float MOUSE_TRANSLATION_SENSITIVITY = 0.01f;
 
 	if (rotationOn || translationOn)
 	{
@@ -58,19 +59,19 @@ void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& even
 		
 		if (rotationOn)
 		{
-			//this->camera.RotateX((float)(-mouseOffset.y / 100.0));	// negative Y, because GLFW window origin is left-top
-			this->camera.RotateY((float)(mouseOffset.x * MOUSE_ROTATION_SENSITIVITY));
+			this->camera.RotatePitch(-mouseOffset.y * MOUSE_ROTATION_SENSITIVITY);	// negative Y, because GLFW window origin is left-top
+			this->camera.RotateYaw(mouseOffset.x * MOUSE_ROTATION_SENSITIVITY);
 		}
 		if (translationOn)
 		{
-			this->camera.Translate(glm::vec3(mouseOffset.x / 100.0, -mouseOffset.y / 100.0, 0));
+			this->camera.Translate(glm::vec3(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY, -mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY, 0));
 		}
 	}
 }
 
 void CameraMovementInputHandler::HandleScrollEvent(const MouseScrollEvent& event)
 {
-	static constexpr double MOUSE_SCROLL_SENSITIVITY = 5.0 / 100.0;	// TODO: take it out
+	static constexpr double MOUSE_SCROLL_SENSITIVITY = 0.05;
 
 	if (event.yoffset > 0)
 		this->camera.Scale((float)(1.0 + MOUSE_SCROLL_SENSITIVITY * event.yoffset));
