@@ -47,7 +47,7 @@ void CameraMovementInputHandler::HandleMouseClickEvent(const MouseClickEvent& ev
 void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& event)
 {
 	static constexpr float MOUSE_ROTATION_SENSITIVITY = 0.3f;
-	static constexpr float MOUSE_TRANSLATION_SENSITIVITY = 0.01f;
+	static constexpr float MOUSE_TRANSLATION_SENSITIVITY = 0.005f;
 
 	if (rotationOn || translationOn)
 	{
@@ -64,7 +64,7 @@ void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& even
 		}
 		if (translationOn)
 		{
-			this->camera.Translate(glm::vec3(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY, -mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY, 0));
+			this->camera.Translate(glm::vec3(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY, 0, mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY));
 		}
 	}
 }

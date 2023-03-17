@@ -66,6 +66,9 @@
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -84,9 +87,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gl\wrappers\VBO.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\objects\Ellipsoid\Coefficients.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\objects\Ellipsoid\Ellipsoid.h">
@@ -146,11 +146,16 @@
     <ClInclude Include="src\gl\wrappers\textures\Texture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gl\shaders\ellipsoid.frag" />
     <None Include="src\gl\shaders\ellipsoid.vert" />
     <None Include="src\gl\shaders\texture.vert" />
     <None Include="src\gl\shaders\texture.frag" />
+    <None Include="src\gl\shaders\torus.vert" />
+    <None Include="src\gl\shaders\torus.frag" />
   </ItemGroup>
 </Project>

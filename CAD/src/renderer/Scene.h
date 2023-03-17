@@ -6,17 +6,19 @@
 #include "../gl/wrappers/Program.h"
 #include "../gl/wrappers/VAO.h"
 #include "objects/Ellipsoid/Ellipsoid.h"
-#include "objects/Ellipsoid/Coefficients.h"
+#include "objects/Torus/Torus.h"
 
 class Scene
 {
 private:
-	std::unique_ptr<Camera> camera;
+	static const glm::vec3 bgColor;
 
+	std::unique_ptr<Camera> camera;
 	std::unique_ptr<InputHandler> cameraMovementHandler;
 
 public:
 	std::unique_ptr<Ellipsoid> ellipsoid;
+	std::unique_ptr<Torus> torus;
 	Scene();
 
 	void Update();

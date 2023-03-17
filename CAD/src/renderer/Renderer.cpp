@@ -85,8 +85,6 @@ Renderer::Renderer(Window& window) : window(window)
 	this->adaptiveShadingTexture->Bind(0);
 	this->adaptiveShadingProgram->SetInt("tex", 0);	// TODO: take unit number from FBO?
 
-	//GL::FBO::Unbind();
-
 	float textureQuadData[] =
 	{
 		 1.0f, -1.0f, 1.0f, 0.0f,
@@ -203,16 +201,16 @@ void Renderer::RenderGUI()
 	ImGui::SetNextWindowPos(ImVec2(0, 0));
 	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0.f));
 	ImGui::Begin("Ellipsoid");
-	ImGui::DragFloat("X semi-axis", &this->scene->ellipsoid->R_X, 0.01f, 0.0f, 10.0f, "%.2f");
-	ImGui::DragFloat("Y semi-axis", &this->scene->ellipsoid->R_Y, 0.01f, 0.0f, 10.0f, "%.2f");
-	ImGui::DragFloat("Z semi-axis", &this->scene->ellipsoid->R_Z, 0.01f, 0.0f, 10.0f, "%.2f");
+	ImGui::DragFloat("X semi-axis", &this->scene->ellipsoid->R_X, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::DragFloat("Y semi-axis", &this->scene->ellipsoid->R_Y, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
+	ImGui::DragFloat("Z semi-axis", &this->scene->ellipsoid->R_Z, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
 	ImVec2 nextWndPos = ImGui::GetWindowSize();
 	ImGui::End();
 
 	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
 	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
 	ImGui::Begin("Light");
-	ImGui::DragFloat("Shininess", &this->scene->ellipsoid->shininess, 0.1f, 0.f, 100.f);
+	ImGui::DragFloat("Shininess", &this->scene->ellipsoid->shininess, 0.1f, 0.f, 100.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
 	ImGui::End();
@@ -226,13 +224,32 @@ void Renderer::RenderGUI()
 	}
 	if (!this->adaptiveShadingOn)
 		ImGui::BeginDisabled();
-	if (ImGui::DragInt("Adaptive level", &this->adaptiveLvl, 1.f, 1, glm::min(this->framebufferWidth, this->framebufferHeight)))
+	if (ImGui::DragInt("Adaptive level", &this->adaptiveLvl, 1.f, 1, glm::min(this->framebufferWidth, this->framebufferHeight), "%d", ImGuiSliderFlags_AlwaysClamp))
 	{
 		this->UpdateMaxAdaptiveLvl();
 		this->UpdateSceneFramebufferSize();
 	}
 	if (!this->adaptiveShadingOn)
 		ImGui::EndDisabled();
+	wndSize = ImGui::GetWindowSize();
+	nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
+	ImGui::End();
+
+	static float minorR = 0.1f;
+	static float majorR = 0.5f;
+	static int minorSegments = 8;
+	static int majorSegments = 8;
+	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
+	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
+	ImGui::Begin("Torus");
+	if (ImGui::DragFloat("Minor R", &minorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
+		this->scene->torus->SetMinorR(minorR);
+	if (ImGui::DragFloat("Major R", &majorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
+		this->scene->torus->SetMajorR(majorR);
+	if (ImGui::DragInt("Minor segments", &minorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
+		this->scene->torus->SetMinorSegments(minorSegments);
+	if (ImGui::DragInt("Major segments", &majorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
+		this->scene->torus->SetMajorSegments(majorSegments);
 	ImGui::End();
 
 	ImGui::Render();
