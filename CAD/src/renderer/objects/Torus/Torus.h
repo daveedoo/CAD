@@ -25,6 +25,10 @@ private:
 public:
 	Torus(float minorR, float majorR, unsigned int minorSegments, unsigned int majorSegments);
 
+	float GetMinorR() { return this->minorR; }
+	float GetMajorR() { return this->majorR; }
+	int GetMinorSegments() { return this->minorSegments; }
+	int GetMajorSegments() { return this->majorSegments; }
 	void SetMinorR(float val);
 	void SetMajorR(float val);
 	void SetMinorSegments(int val);

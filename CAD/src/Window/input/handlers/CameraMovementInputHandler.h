@@ -25,4 +25,5 @@ public:
 		camera(camera) {}
 
 	void ProcessInput(const InputEvent& event) override;
+	bool IsCameraMoving() const { return rotationOn || translationOn; }
 };

@@ -10,7 +10,6 @@
 class Renderer
 {
 private:
-	/// This class contains the Window object as it needs it to check the framebuffer size on resize event.
 	Window& window;
 	int framebufferWidth;
 	int framebufferHeight;
@@ -20,7 +19,6 @@ private:
 
 	// adapive shading stuff
 	bool adaptiveShadingOn = false;
-	bool sceneIsMoving = false;
 	int adaptiveLvl = 8;
 	std::unique_ptr<GL::Program> adaptiveShadingProgram;
 	std::unique_ptr<GL::VAO> adaptiveShadingVAO;
@@ -42,5 +40,7 @@ public:
 	void Render();
 
 private:
+	void SetupGUI();
+	void SetupAdaptiveShading();
 	void RenderGUI();
 };

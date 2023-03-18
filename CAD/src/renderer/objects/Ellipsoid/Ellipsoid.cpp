@@ -2,7 +2,7 @@
 #include "../../../Config.h"
 #include <glm/glm.hpp>
 
-Ellipsoid::Ellipsoid(float r_x, float r_y, float r_z) :
+Ellipsoid::Ellipsoid(float r_x, float r_y, float r_z, unsigned int frame_width, unsigned int frame_height) :
 	R_X(r_x), R_Y(r_y), R_Z(r_z)
 {
 	this->shininess = 1.f;
@@ -14,7 +14,7 @@ Ellipsoid::Ellipsoid(float r_x, float r_y, float r_z) :
 	this->program = std::make_unique<GL::Program>(vertexShader, fragmentShader);
 	this->program->SetVec4("color", this->color);
 	this->program->SetFloat("shininess", this->shininess);
-	this->SetFramebufferSize(SCR_WIDTH, SCR_HEIGHT);
+	this->SetFramebufferSize(frame_width, frame_height);
 
 	// VAO
 	GLfloat vertices[]
@@ -37,9 +37,9 @@ void Ellipsoid::Render(const Camera& camera)
 {
 	glm::mat4 view = camera.GetViewMatrix();
 	glm::mat4 D = glm::mat4(
-		glm::vec4(1.0 / (sqrt(this->R_X)), 0, 0, 0),
-		glm::vec4(0, 1.0 / (sqrt(this->R_Y)), 0, 0),
-		glm::vec4(0, 0, 1.0 / (sqrt(this->R_Z)), 0),
+		glm::vec4(1.0 / (this->R_X * this->R_X), 0, 0, 0),
+		glm::vec4(0, 1.0 / (this->R_Y * this->R_Y), 0, 0),
+		glm::vec4(0, 0, 1.0 / (this->R_Z * this->R_Z), 0),
 		glm::vec4(0, 0, 0, -1));
 	glm::mat4 v_inv = glm::inverse(view);
 	glm::mat4 matrix = glm::transpose(v_inv) * D * v_inv;

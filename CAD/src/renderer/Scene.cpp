@@ -9,10 +9,10 @@
 
 const glm::vec3 Scene::bgColor = glm::vec3(0.4f, 0.4f, 0.4f);
 
-Scene::Scene() :
-	camera(std::make_unique<Camera>(90, (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.f)),	// TODO: change
+Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
+	camera(std::make_unique<Camera>(90, static_cast<float>(frame_width) / static_cast<float>(frame_height), 0.1f, 100.f)),
 	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
-	ellipsoid(std::make_unique<Ellipsoid>(0.01f, 0.2f, 3.f)),
+	//ellipsoid(std::make_unique<Ellipsoid>(0.01f, 0.2f, 3.f)),
 	torus(std::make_unique<Torus>(0.1f, 0.5f, 8, 8))
 { }
 
@@ -23,8 +23,8 @@ void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type
 
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 {
-	this->ellipsoid->SetFramebufferSize(width, height);
-	this->camera->SetAspect((float)width / (float)height);
+	//this->ellipsoid->SetFramebufferSize(width, height);
+	this->camera->SetAspect(static_cast<float>(width) / static_cast<float>(height));
 }
 
 void Scene::Update()

@@ -7,7 +7,6 @@ glm::vec3 Torus::GetTorusPoint(float majorAngleRad, float minorAngleRad, float m
 	glm::vec3 minorCirclePt = minorR * glm::vec3(glm::cos(minorAngleRad), glm::sin(minorAngleRad), 0);
 	glm::vec3 majorCirclePt = majorR * glm::vec3(glm::cos(majorAngleRad), 0, glm::sin(majorAngleRad));
 
-	// TODO: write your own rotation matrix
 	return majorCirclePt + glm::rotate(minorCirclePt, majorAngleRad, glm::vec3(0.f, -1.f, 0.f));
 }
 
@@ -74,7 +73,7 @@ void Torus::SetBuffers()
 	this->vao = std::make_unique<GL::VAO>();
 	this->ebo = std::make_unique<GL::EBO>();
 	this->ebo->SetBufferData(indices.data(), GL::EBO::DataType::UINT, 4 * vertsCount);
-	this->vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);
+	this->vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);	// TODO: resize buffer if is already used
 	this->vao->DefineFloatAttribute(*this->vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, 3 * sizeof(GLfloat), 0);
 }
 

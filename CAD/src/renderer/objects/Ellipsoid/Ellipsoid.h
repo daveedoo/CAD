@@ -16,11 +16,13 @@ public:
 	/// <summary>
 	/// Creates a sphere with radius = 1
 	/// </summary>
-	Ellipsoid() : Ellipsoid(1.f, 1.f, 1.f) {}
-	Ellipsoid(float r_x, float r_y, float r_z);
+	Ellipsoid(unsigned int frame_width, unsigned int frame_height) : Ellipsoid(1.f, 1.f, 1.f, frame_width, frame_height) {}
+	/// <param name="Rs">Vector of semi-axes lengths</param>
+	Ellipsoid(glm::vec3 Rs, unsigned int frame_width, unsigned int frame_height) : Ellipsoid(Rs.x, Rs.y, Rs.z, frame_width, frame_height) {}
+	Ellipsoid(float r_x, float r_y, float r_z, unsigned int frame_width, unsigned int frame_height);
 
 	void Render(const Camera& camera);
-	void SetFramebufferSize(unsigned int width, unsigned int height);	// TODO: remove it?
+	void SetFramebufferSize(unsigned int width, unsigned int height);
 
 private:
 	std::unique_ptr<GL::Program> program;
