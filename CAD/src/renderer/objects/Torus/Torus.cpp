@@ -1,35 +1,88 @@
 #include "Torus.h"
 #include <glm/gtx/rotate_vector.hpp>
+#include "../../../Config.h"
 
 glm::vec3 Torus::GetTorusPoint(float majorAngleRad, float minorAngleRad, float majorR, float minorR)
 {
 	glm::vec3 minorCirclePt = minorR * glm::vec3(glm::cos(minorAngleRad), glm::sin(minorAngleRad), 0);
 	glm::vec3 majorCirclePt = majorR * glm::vec3(glm::cos(majorAngleRad), 0, glm::sin(majorAngleRad));
 
-	return majorCirclePt + glm::rotate(minorCirclePt, majorAngleRad, glm::vec3(0.f, 1.f, 0.f));	// TODO: check for signs
+	return majorCirclePt + glm::rotate(minorCirclePt, majorAngleRad, glm::vec3(0.f, -1.f, 0.f));
 }
 
 Torus::Torus(float minorR, float majorR, unsigned int minorSegments, unsigned int majorSegments)
-	: minorR(minorR), majorR(majorR), minorSegments(minorSegments), majorSegments(majorSegments)
+	: minorR(minorR), majorR(majorR), minorSegments(minorSegments), majorSegments(majorSegments),
+	color(1.f, 1.f, 1.f)
 {
-	double minorStep = glm::radians(360.0 / (double)minorSegments);
-	double majorStep = glm::radians(360.0 / (double)majorSegments);
+	// shaders
+	auto shadersPath = std::filesystem::path(SHADERS_DIR);
+	GL::Shader vertexShader(GL::Shader::ShaderType::VERTEX_SHADER, shadersPath / "torus.vert");
+	GL::Shader fragmentShader(GL::Shader::ShaderType::FRAGMENT_SHADER, shadersPath / "torus.frag");
+	this->program = std::make_unique<GL::Program>(vertexShader, fragmentShader);
+	this->program->SetVec3("color", this->color);
 
-	GLfloat* vertices = new GLfloat[3 * minorSegments * majorSegments];	// TODO: change to glm::vec3
-	for (size_t i = 0; i < minorSegments; i++)
+	this->SetBuffers();
+}
+
+void Torus::SetMinorR(float val)
+{
+	this->minorR = val;
+	this->SetBuffers();
+}
+
+void Torus::SetMajorR(float val)
+{
+	this->majorR = val;
+	this->SetBuffers();
+}
+
+void Torus::SetMinorSegments(int val)
+{
+	this->minorSegments = val;
+	this->SetBuffers();
+}
+
+void Torus::SetMajorSegments(int val)
+{
+	this->majorSegments = val;
+	this->SetBuffers();
+}
+
+void Torus::SetBuffers()
+{
+	float minorStep = glm::radians(360.0 / minorSegments);
+	float majorStep = glm::radians(360.0 / majorSegments);
+
+	const unsigned int vertsCount = minorSegments * majorSegments;
+	std::vector<glm::vec3> vertices(vertsCount);
+	std::vector<GLuint> indices(4 * vertsCount);
+	for (size_t i = 0; i < majorSegments; i++)
 	{
-		for (size_t j = 0; j < majorSegments; j++)
+		for (size_t j = 0; j < minorSegments; j++)
 		{
-			glm::vec3 point = Torus::GetTorusPoint(j * majorStep, i * minorStep, this->majorR, this->minorR);
+			vertices[(i * minorSegments + j)] = Torus::GetTorusPoint(i * majorStep, j * minorStep, this->majorR, this->minorR);
 
-			vertices[(i * majorSegments + j) * 3 + 0] = point.x;
-			vertices[(i * majorSegments + j) * 3 + 1] = point.y;
-			vertices[(i * majorSegments + j) * 3 + 2] = point.z;
+			// minor segment line
+			indices[(i * minorSegments + j) * 4 + 0] = i * minorSegments + j;
+			indices[(i * minorSegments + j) * 4 + 1] = i * minorSegments + ((j + 1) % minorSegments);
+			// major segment line
+			indices[(i * minorSegments + j) * 4 + 2] = i * minorSegments + j;
+			indices[(i * minorSegments + j) * 4 + 3] = ((i + 1) % majorSegments) * minorSegments + j;
 		}
 	}
-
-	this->vbo = std::make_unique<GL::VBO>(vertices, sizeof(GLfloat) * minorSegments * majorSegments);
-	delete[] vertices;
-
 	this->vao = std::make_unique<GL::VAO>();
+	this->ebo = std::make_unique<GL::EBO>();
+	this->ebo->SetBufferData(indices.data(), GL::EBO::DataType::UINT, 4 * vertsCount);
+	this->vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);	// TODO: resize buffer if is already used
+	this->vao->DefineFloatAttribute(*this->vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, 3 * sizeof(GLfloat), 0);
+}
+
+void Torus::Render(const Camera& camera)
+{
+	this->vao->Bind();
+	this->program->Use();
+	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
+	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
+
+	glDrawElements(GL_LINES, 4 * minorSegments * majorSegments, static_cast<GLenum>(this->ebo->GetDataType()), (void*)0);
 }

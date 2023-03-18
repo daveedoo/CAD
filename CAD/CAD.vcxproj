@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\gl\wrappers\EBO.cpp" />
@@ -140,7 +141,6 @@
     <ClCompile Include="src\gl\wrappers\VBO.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\objects\Ellipsoid\Ellipsoid.cpp" />
-    <ClCompile Include="src\renderer\GUI.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Scene.cpp" />
     <ClCompile Include="src\renderer\objects\Torus\Torus.cpp" />
@@ -150,6 +150,7 @@
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Config.h" />
@@ -158,9 +159,7 @@
     <ClInclude Include="src\gl\wrappers\Shader.h" />
     <ClInclude Include="src\gl\wrappers\VAO.h" />
     <ClInclude Include="src\gl\wrappers\VBO.h" />
-    <ClInclude Include="src\renderer\objects\Ellipsoid\Coefficients.h" />
     <ClInclude Include="src\renderer\objects\Ellipsoid\Ellipsoid.h" />
-    <ClInclude Include="src\renderer\GUI.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Scene.h" />
     <ClInclude Include="src\renderer\objects\Torus\Torus.h" />
@@ -182,6 +181,8 @@
     <None Include="src\gl\shaders\texture.frag" />
     <None Include="src\gl\shaders\texture.vert" />
     <None Include="src\gl\shaders\ellipsoid.vert" />
+    <None Include="src\gl\shaders\torus.frag" />
+    <None Include="src\gl\shaders\torus.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

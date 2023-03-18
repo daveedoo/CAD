@@ -1,27 +1,29 @@
 #pragma once
 #include <memory>
-#include "../Camera.h"
-#include "../Window/input/events/InputEvent.h"
-#include "../Window/input/handlers/InputHandler.h"
 #include "../gl/wrappers/Program.h"
 #include "../gl/wrappers/VAO.h"
+#include "../Camera.h"
+#include "../Window/input/handlers/CameraMovementInputHandler.h"
 #include "objects/Ellipsoid/Ellipsoid.h"
-#include "objects/Ellipsoid/Coefficients.h"
+#include "objects/Torus/Torus.h"
 
 class Scene
 {
 private:
-	std::unique_ptr<Camera> camera;
+	static const glm::vec3 bgColor;
 
-	std::unique_ptr<InputHandler> cameraMovementHandler;
+	std::unique_ptr<Camera> camera;
+	std::unique_ptr<CameraMovementInputHandler> cameraMovementHandler;
 
 public:
-	std::unique_ptr<Ellipsoid> ellipsoid;
-	Scene();
+	//std::unique_ptr<Ellipsoid> ellipsoid;
+	std::unique_ptr<Torus> torus;
+	Scene(unsigned int frame_width, unsigned int frame_height);
 
 	void Update();
 	void Render();
 
 	void HandleEvent(const InputEvent& inputEvent);
+	bool IsSceneMoving() const { return cameraMovementHandler->IsCameraMoving(); }
 	void SetFramebufferSize(unsigned int width, unsigned int height);
 };
