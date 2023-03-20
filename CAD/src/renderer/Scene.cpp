@@ -7,14 +7,15 @@
 #include "../Window/input/handlers/CameraMovementInputHandler.h"
 #include "../Window/input/events/ResizeEvent.h"
 
-const glm::vec3 Scene::bgColor = glm::vec3(0.4f, 0.4f, 0.4f);
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	camera(std::make_unique<Camera>(90, static_cast<float>(frame_width) / static_cast<float>(frame_height), 0.1f, 100.f)),
 	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
 	//ellipsoid(std::make_unique<Ellipsoid>(0.01f, 0.2f, 3.f)),
 	torus(std::make_unique<Torus>(0.1f, 0.5f, 8, 8))
-{ }
+{
+	this->floor = std::make_unique<Floor>(50, 50);
+}
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
 {
@@ -38,4 +39,5 @@ void Scene::Render()
 
 	//this->ellipsoid->Render(*this->camera);
 	this->torus->Render(*this->camera);
+	this->floor->Render(*this->camera);
 }

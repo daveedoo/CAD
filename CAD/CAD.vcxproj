@@ -141,6 +141,7 @@
     <ClCompile Include="src\gl\wrappers\VBO.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\objects\Ellipsoid\Ellipsoid.cpp" />
+    <ClCompile Include="src\renderer\objects\Floor\Floor.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Scene.cpp" />
     <ClCompile Include="src\renderer\objects\Torus\Torus.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\gl\wrappers\VAO.h" />
     <ClInclude Include="src\gl\wrappers\VBO.h" />
     <ClInclude Include="src\renderer\objects\Ellipsoid\Ellipsoid.h" />
+    <ClInclude Include="src\renderer\objects\Floor\Floor.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Scene.h" />
     <ClInclude Include="src\renderer\objects\Torus\Torus.h" />
