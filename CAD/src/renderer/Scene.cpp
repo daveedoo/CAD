@@ -12,9 +12,11 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	camera(std::make_unique<Camera>(90, static_cast<float>(frame_width) / static_cast<float>(frame_height), 0.1f, 100.f)),
 	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
 	//ellipsoid(std::make_unique<Ellipsoid>(0.01f, 0.2f, 3.f)),
-	torus(std::make_unique<Torus>(0.1f, 0.5f, 8, 8))
+	torus(std::make_unique<Torus>(1.f, 5.f, 8, 8)),
+	floor(std::make_unique<Floor>(50, 50)),
+	cursor(std::make_unique<Cursor>())
 {
-	this->floor = std::make_unique<Floor>(50, 50);
+	this->camera->Scale(1.f / 10.f);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
@@ -37,7 +39,7 @@ void Scene::Render()
 	glClearColor(bgColor.r, bgColor.g, bgColor.b, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//this->ellipsoid->Render(*this->camera);
-	this->torus->Render(*this->camera);
 	this->floor->Render(*this->camera);
+	this->cursor->Render(*this->camera);
+	this->torus->Render(*this->camera);
 }

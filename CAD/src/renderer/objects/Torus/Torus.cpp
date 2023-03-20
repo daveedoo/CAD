@@ -84,5 +84,6 @@ void Torus::Render(const Camera& camera)
 	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 
+	glLineWidth(1.f);
 	glDrawElements(GL_LINES, 4 * minorSegments * majorSegments, static_cast<GLenum>(this->ebo->GetDataType()), (void*)0);
 }

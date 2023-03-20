@@ -2,6 +2,7 @@
 #include <exception>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/integer.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer.h"
 #include "../Config.h"
@@ -205,31 +206,31 @@ void Renderer::RenderGUI()
 	//nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
 	//ImGui::End();
 
-	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
-	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
-	ImGui::Begin("Adaptive shading");
-	if (ImGui::Checkbox("ON", &this->adaptiveShadingOn))
-	{
-		this->UpdateSceneFramebufferSize();
-	}
-	if (!this->adaptiveShadingOn)
-		ImGui::BeginDisabled();
-	if (ImGui::DragInt("Adaptive level", &this->adaptiveLvl, 1.f, 1, glm::min(this->framebufferWidth, this->framebufferHeight), "%d", ImGuiSliderFlags_AlwaysClamp))
-	{
-		this->UpdateMaxAdaptiveLvl();
-		this->UpdateSceneFramebufferSize();
-	}
-	if (!this->adaptiveShadingOn)
-		ImGui::EndDisabled();
-	wndSize = ImGui::GetWindowSize();
-	nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
-	ImGui::End();
+	//ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
+	//ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
+	//ImGui::Begin("Adaptive shading");
+	//if (ImGui::Checkbox("ON", &this->adaptiveShadingOn))
+	//{
+	//	this->UpdateSceneFramebufferSize();
+	//}
+	//if (!this->adaptiveShadingOn)
+	//	ImGui::BeginDisabled();
+	//if (ImGui::DragInt("Adaptive level", &this->adaptiveLvl, 1.f, 1, glm::min(this->framebufferWidth, this->framebufferHeight), "%d", ImGuiSliderFlags_AlwaysClamp))
+	//{
+	//	this->UpdateMaxAdaptiveLvl();
+	//	this->UpdateSceneFramebufferSize();
+	//}
+	//if (!this->adaptiveShadingOn)
+	//	ImGui::EndDisabled();
+	//wndSize = ImGui::GetWindowSize();
+	//nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
+	//ImGui::End();
 
 	static float minorR = this->scene->torus->GetMinorR();
 	static float majorR = this->scene->torus->GetMajorR();
 	static int minorSegments = this->scene->torus->GetMinorSegments();
 	static int majorSegments = this->scene->torus->GetMajorSegments();
-	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
+	ImGui::SetNextWindowPos(nextWndPos);
 	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
 	ImGui::Begin("Torus");
 	if (ImGui::DragFloat("Minor R", &minorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
@@ -240,6 +241,16 @@ void Renderer::RenderGUI()
 		this->scene->torus->SetMinorSegments(minorSegments);
 	if (ImGui::DragInt("Major segments", &majorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
 		this->scene->torus->SetMajorSegments(majorSegments);
+	wndSize = ImGui::GetWindowSize();
+	nextWndPos = ImVec2(0.f, nextWndPos.y + wndSize.y);
+	ImGui::End();
+
+	static glm::vec3 cursorPosition = this->scene->cursor->GetPosition();
+	ImGui::SetNextWindowPos(nextWndPos);
+	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
+	ImGui::Begin("Cursor");
+	if (ImGui::DragFloat3("Position", glm::value_ptr(cursorPosition), 0.1f, 0.f, 0.f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
+		this->scene->cursor->SetPosition(cursorPosition);
 	ImGui::End();
 
 	ImGui::Render();

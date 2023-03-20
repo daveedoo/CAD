@@ -7,6 +7,7 @@
 #include "objects/Ellipsoid/Ellipsoid.h"
 #include "objects/Torus/Torus.h"
 #include "objects/Floor/Floor.h"
+#include "objects/Cursos/Cursor.h"
 
 class Scene
 {
@@ -20,6 +21,8 @@ private:
 public:
 	//std::unique_ptr<Ellipsoid> ellipsoid;
 	std::unique_ptr<Torus> torus;
+	std::unique_ptr<Cursor> cursor;
+
 	Scene(unsigned int frame_width, unsigned int frame_height);
 
 	void Update();

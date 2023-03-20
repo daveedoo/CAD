@@ -51,7 +51,6 @@ void Floor::Render(const Camera& camera) const
 	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 
-	glPointSize(3.f);
-	glDrawArrays(GL_POINTS, 0, 1);
+	glLineWidth(1.f);
 	glDrawElements(GL_LINES, 4 * (this->xUnits + this->zUnits + 1), static_cast<GLenum>(this->ebo->GetDataType()), static_cast<const void*>(0));
 }

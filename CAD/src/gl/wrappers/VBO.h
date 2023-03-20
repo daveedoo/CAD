@@ -19,6 +19,8 @@ namespace GL
 
 		void Bind();
 		static void Unbind();
+		// Sets buffer data of size same as during the VBO construction
+		void SetBufferData(const void* data);
 
 		GLuint GetID() const { return this->ID; }
 		size_t GetDataSize() { return this->dataSize; }
