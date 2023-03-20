@@ -7,7 +7,6 @@
 
 Camera::Camera(float fov, float aspect, float near, float far)
 {
-	//this->yaw = 0.f;
 	UpdateViewMatrix();
 	SetPerspectiveProjection(fov, aspect, near, far);
 }
@@ -22,12 +21,10 @@ void Camera::UpdateViewMatrix()
 		glm::sin(P),
 		glm::cos(P) * glm::sin(Y)
 	);
-	//glm::vec3 center(0.f, 0.f, 0.f);
+	eye *= 1/this->scale;
 	glm::vec3 up(0.f, 1.f, 0.f);
 
-	//this->view = glm::scale(glm::lookAt(eye + translation, this->translation, up), glm::vec3(this->scale));	// TODO: scaling here?
-	//this->view = glm::lookAt(eye + translation, this->translation, up) * Matrix::Scale(this->scale);
-	this->view = Matrix::LookAt(eye + translation, this->translation, up) * Matrix::Scale(this->scale);
+	this->view = Matrix::LookAt(eye + translation, this->translation, up);
 }
 
 
@@ -53,29 +50,15 @@ void Camera::Scale(float ratio)
 
 void Camera::Translate(glm::vec3 v)
 {
-	//glm::vec4 newT = this->view * glm::vec4(v, 0.f);
-	//this->translation += glm::vec3(newT.x, newT.y, newT.z);
-	//glm::mat4 id = glm::identity();
+	glm::vec3 vectorFixed = glm::vec3(Matrix::RotationY(-glm::radians(this->yaw - YAW_ZERO)) * glm::vec4(v, 1.f));
 
-	//glm::vec4 newT = glm::rotate(glm::mat4(1.f), glm::radians(this->yaw), glm::vec3(0.f, 1.f, 0.f)) * glm::vec4(v, 0.f);
-	//this->translation += glm::vec3(newT.x, newT.y, newT.z);
-	//UpdateViewMatrix();
-
-	this->translation += v;
+	this->translation += vectorFixed;
 	UpdateViewMatrix();
-	
-	//this->currentView *= glm::mat4(
-	//	1.f, 0.f, 0.f, 0.f,
-	//	0.f, 1.f, 0.f, 0.f,
-	//	0.f, 0.f, 1.f, 0.f,
-	//	v.x, v.y, v.z, 1.f
-	//);
 }
 
 void Camera::SetPerspectiveProjection(float fov, float aspect, float near, float far)
 {
 	this->projection = Matrix::PerspectiveProjection(fov, aspect, near, far);
-	//this->projection = glm::perspective(glm::radians(fov), aspect, n, f);
 }
 
 void Camera::SetFov(float fov)

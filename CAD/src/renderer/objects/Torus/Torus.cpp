@@ -74,7 +74,7 @@ void Torus::SetBuffers()
 	this->ebo = std::make_unique<GL::EBO>();
 	this->ebo->SetBufferData(indices.data(), GL::EBO::DataType::UINT, 4 * vertsCount);
 	this->vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);	// TODO: resize buffer if is already used
-	this->vao->DefineFloatAttribute(*this->vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, 3 * sizeof(GLfloat), 0);
+	this->vao->DefineFloatAttribute(*this->vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
 }
 
 void Torus::Render(const Camera& camera)
