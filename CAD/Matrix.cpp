@@ -21,6 +21,16 @@ glm::mat4 Matrix::Scale(float ratio)
 	);
 }
 
+glm::mat4 Matrix::Scale(glm::vec3 scale)
+{
+	return glm::mat4(
+		scale.x, 0.f, 0.f, 0.f,
+		0.f, scale.y, 0.f, 0.f,
+		0.f, 0.f, scale.z, 0.f,
+		0.f, 0.f, 0.f, 1.f
+	);
+}
+
 glm::mat4 Matrix::LookAt(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up)
 {
 	const glm::vec3 newZ = glm::normalize(eye - center);
@@ -35,22 +45,48 @@ glm::mat4 Matrix::LookAt(const glm::vec3& eye, const glm::vec3& center, const gl
 	);
 }
 
+glm::mat4 Matrix::RotationX(float angle)
+{
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
+	return glm::mat4(
+		1, 0, 0, 0,
+		0, cos, sin, 0,
+		0, -sin, cos, 0,
+		0, 0, 0, 1
+	);
+}
+
 glm::mat4 Matrix::RotationY(float angle)
 {
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
 	return glm::mat4(
-		glm::cos(angle), 0.f, -glm::sin(angle), 0.f,
+		cos, 0.f, -sin, 0.f,
 		0.f, 1.f, 0.f, 0.f,
-		glm::sin(angle), 0.f, glm::cos(angle), 0.f,
+		sin, 0.f, cos, 0.f,
 		0.f, 0.f, 0.f, 1.f
 	);
 }
 
 glm::mat4 Matrix::RotationZ(float angle)
 {
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
 	return glm::mat4(
-		1.0f, 0.f, 0.f, 0.f,
-		0.f, glm::cos(angle), glm::sin(angle), 0.f,
-		0.f, -glm::sin(angle), glm::cos(angle), 0.f,
-		0.f, 0.f, 0.f, 1.f
+		cos, sin, 0, 0,
+		-sin, cos, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
 	);
+}
+
+glm::mat4 Matrix::Translation(glm::vec3 v)
+{
+	auto mat = glm::mat4(1.f);
+	mat[3][0] = v.x;
+	mat[3][1] = v.y;
+	mat[3][2] = v.z;
+
+	return mat;
 }
