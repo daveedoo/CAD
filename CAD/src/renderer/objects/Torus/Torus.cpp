@@ -1,6 +1,7 @@
 #include "Torus.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include "../../../Config.h"
+#include "../../../../Matrix.h"
 
 glm::vec3 Torus::GetTorusPoint(float majorAngleRad, float minorAngleRad, float majorR, float minorR)
 {
@@ -14,6 +15,9 @@ Torus::Torus(float minorR, float majorR, unsigned int minorSegments, unsigned in
 	: minorR(minorR), majorR(majorR), minorSegments(minorSegments), majorSegments(majorSegments),
 	color(1.f, 1.f, 1.f)
 {
+	this->worldMatrix = glm::mat4(1.f);
+	this->worldMatrix[3][3] = 1.f;
+
 	// shaders
 	auto shadersPath = std::filesystem::path(SHADERS_DIR);
 	GL::Shader vertexShader(GL::Shader::ShaderType::VERTEX_SHADER, shadersPath / "torus.vert");
@@ -48,6 +52,47 @@ void Torus::SetMajorSegments(int val)
 	this->SetBuffers();
 }
 
+void Torus::UpdateWorldMatrix()
+{
+	this->worldMatrix = Matrix::Translation(this->translation) * 
+		Matrix::RotationZ(this->rotZ) * Matrix::RotationY(this->rotY) * Matrix::RotationX(this->rotX) *
+		Matrix::Scale(this->scale);
+}
+
+void Torus::SetTranslation(glm::vec3 v)
+{
+	this->translation = v;
+	this->UpdateWorldMatrix();
+}
+
+void Torus::SetScale(glm::vec3 scale)
+{
+	this->scale = scale;
+	this->UpdateWorldMatrix();
+}
+
+void Torus::SetRotationX(float angleDeg)
+{
+	this->rotX = glm::radians(angleDeg);
+	this->rotX = fmod(this->rotX, glm::two_pi<float>());
+	this->UpdateWorldMatrix();
+}
+
+void Torus::SetRotationY(float angleDeg)
+{
+	this->rotY = glm::radians(angleDeg);
+	this->rotY = fmod(this->rotY, glm::two_pi<float>());
+	this->UpdateWorldMatrix();
+}
+
+void Torus::SetRotationZ(float angleDeg)
+{
+	this->rotZ = glm::radians(angleDeg);
+	this->rotZ = fmod(this->rotZ, glm::two_pi<float>());
+	this->UpdateWorldMatrix();
+}
+
+
 void Torus::SetBuffers()
 {
 	float minorStep = glm::radians(360.0 / minorSegments);
@@ -81,6 +126,7 @@ void Torus::Render(const Camera& camera)
 {
 	this->vao->Bind();
 	this->program->Use();
+	this->program->SetMat4("worldMatrix", this->worldMatrix);
 	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 

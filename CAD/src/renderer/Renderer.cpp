@@ -185,7 +185,7 @@ void Renderer::RenderGUI()
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	static const float GUI_WIDTH = 300.f;
+	static const float GUI_WIDTH = 400.f;
 
 	ImVec2 nextWndPos{};
 	ImVec2 wndSize{};
@@ -226,21 +226,47 @@ void Renderer::RenderGUI()
 	//nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
 	//ImGui::End();
 
-	static float minorR = this->scene->torus->GetMinorR();
-	static float majorR = this->scene->torus->GetMajorR();
-	static int minorSegments = this->scene->torus->GetMinorSegments();
-	static int majorSegments = this->scene->torus->GetMajorSegments();
+	ImGui::ShowDemoWindow();
 	ImGui::SetNextWindowPos(nextWndPos);
 	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
 	ImGui::Begin("Torus");
-	if (ImGui::DragFloat("Minor R", &minorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMinorR(minorR);
-	if (ImGui::DragFloat("Major R", &majorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMajorR(majorR);
-	if (ImGui::DragInt("Minor segments", &minorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMinorSegments(minorSegments);
-	if (ImGui::DragInt("Major segments", &majorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMajorSegments(majorSegments);
+	if (ImGui::TreeNode("Parameters"))
+	{
+		static float minorR = this->scene->torus->GetMinorR();
+		static float majorR = this->scene->torus->GetMajorR();
+		static int minorSegments = this->scene->torus->GetMinorSegments();
+		static int majorSegments = this->scene->torus->GetMajorSegments();
+		if (ImGui::DragFloat("Minor R", &minorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetMinorR(minorR);
+		if (ImGui::DragFloat("Major R", &majorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetMajorR(majorR);
+		if (ImGui::DragInt("Minor segments", &minorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetMinorSegments(minorSegments);
+		if (ImGui::DragInt("Major segments", &majorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetMajorSegments(majorSegments);
+		ImGui::TreePop();
+	}
+	if (ImGui::TreeNodeEx("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		static glm::vec3 scale(1.f, 1.f, 1.f);
+		static float rotX = 0.f, rotY = 0.f, rotZ = 0.f;
+		static glm::vec3 translation;
+		if (ImGui::DragFloat3("Scale", glm::value_ptr(scale), 0.01f))
+			this->scene->torus->SetScale(scale);
+
+		if (ImGui::DragFloat("RotX", &rotX, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetRotationX(rotX);
+		if (ImGui::DragFloat("RotY", &rotY, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetRotationY(rotY);
+		if (ImGui::DragFloat("RotZ", &rotZ, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp))
+			this->scene->torus->SetRotationZ(rotZ);
+
+
+		if (ImGui::DragFloat3("Translation", glm::value_ptr(translation), 0.01f))
+			this->scene->torus->SetTranslation(translation);
+
+		ImGui::TreePop();
+	}
 	wndSize = ImGui::GetWindowSize();
 	nextWndPos = ImVec2(0.f, nextWndPos.y + wndSize.y);
 	ImGui::End();

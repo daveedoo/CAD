@@ -48,6 +48,7 @@ void Floor::Render(const Camera& camera) const
 {
 	this->vao->Bind();
 	this->program->Use();
+	this->program->SetMat4("worldMatrix", glm::mat4(1.f));
 	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 
