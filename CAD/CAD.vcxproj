@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\objects\Component.cpp" />
     <ClCompile Include="src\renderer\objects\Cursos\Cursor.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
@@ -145,13 +146,13 @@
     <ClCompile Include="src\renderer\objects\Floor\Floor.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Scene.cpp" />
-    <ClCompile Include="src\renderer\objects\Torus\Torus.cpp" />
     <ClCompile Include="src\Window\input\handlers\CameraMovementInputHandler.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
     <ClCompile Include="src\gl\wrappers\textures\Texture.cpp" />
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\objects\Component.h" />
     <ClInclude Include="src\renderer\objects\Cursos\Cursor.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />
@@ -166,7 +167,6 @@
     <ClInclude Include="src\renderer\objects\Floor\Floor.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Scene.h" />
-    <ClInclude Include="src\renderer\objects\Torus\Torus.h" />
     <ClInclude Include="src\Window\input\events\InputEvent.h" />
     <ClInclude Include="src\Window\input\events\modded\KeyEvent.h" />
     <ClInclude Include="src\Window\input\events\modded\KeyOrButtonEvent.h" />

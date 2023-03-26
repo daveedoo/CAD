@@ -45,9 +45,6 @@
     <ClCompile Include="src\renderer\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\objects\Torus\Torus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Window\input\handlers\CameraMovementInputHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -67,6 +64,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\objects\Floor\Floor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\objects\Cursos\Cursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\objects\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,9 +99,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\renderer\objects\Torus\Torus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Window\input\events\InputEvent.h">
@@ -149,6 +149,12 @@
     <ClInclude Include="src\renderer\objects\Floor\Floor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\renderer\objects\Cursos\Cursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\objects\Component.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gl\shaders\ellipsoid.frag" />
@@ -157,5 +163,7 @@
     <None Include="src\gl\shaders\texture.frag" />
     <None Include="src\gl\shaders\torus.vert" />
     <None Include="src\gl\shaders\torus.frag" />
+    <None Include="src\gl\shaders\coloredVertices.frag" />
+    <None Include="src\gl\shaders\coloredVertices.vert" />
   </ItemGroup>
 </Project>
