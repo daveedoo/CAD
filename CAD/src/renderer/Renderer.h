@@ -2,6 +2,8 @@
 #include "../Window/Window.h"
 #include "../Camera.h"
 #include "Scene.h"
+#include "../gl/wrappers/FBO.h"
+#include "../gl/wrappers/textures/Texture2D.h"
 //#include "GUI.h"
 
 /// <summary>
@@ -15,7 +17,6 @@ private:
 	int framebufferHeight;
 
 	std::unique_ptr<Scene> scene;
-	//std::unique_ptr<GUI> gui;
 
 	// adapive shading stuff
 	bool adaptiveShadingOn = false;

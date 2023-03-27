@@ -66,10 +66,13 @@
     <ClCompile Include="src\renderer\objects\Floor\Floor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\objects\Cursos\Cursor.cpp">
+    <ClCompile Include="src\renderer\objects\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\objects\Component.cpp">
+    <ClCompile Include="src\renderer\GUI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\ObjectsManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,10 +152,13 @@
     <ClInclude Include="src\renderer\objects\Floor\Floor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\objects\Cursos\Cursor.h">
+    <ClInclude Include="src\renderer\objects\Component.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\objects\Component.h">
+    <ClInclude Include="src\renderer\GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\ObjectsManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

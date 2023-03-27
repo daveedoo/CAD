@@ -4,11 +4,11 @@
 #include "../gl/wrappers/VAO.h"
 #include "../Camera.h"
 #include "../Window/input/handlers/CameraMovementInputHandler.h"
-#include "objects/Ellipsoid/Ellipsoid.h"
 #include "objects/Floor/Floor.h"
-#include "objects/Cursos/Cursor.h"
 #include "objects/Component.h"
 #include <entt/entt.hpp>
+#include "GUI.h"
+#include "ObjectsManager.h"
 
 class Scene
 {
@@ -20,13 +20,17 @@ private:
 
 	std::unique_ptr<Floor> floor;
 
-	std::unique_ptr<entt::registry> registry;
-	std::unique_ptr<GL::Program> torusProgram;
+	std::shared_ptr<entt::registry> registry;
+	std::shared_ptr<ObjectsManager> objectsManager;
 
+	std::unique_ptr<GL::Program> torusProgram;
+	std::unique_ptr<GL::Program> cursorProgram;
+
+	entt::entity cursor;
+
+	std::unique_ptr<GUI> gui;
 
 public:
-	std::unique_ptr<Cursor> cursor;
-
 	Scene(unsigned int frame_width, unsigned int frame_height);
 
 	void Update();
@@ -36,9 +40,8 @@ public:
 	bool IsSceneMoving() const { return cameraMovementHandler->IsCameraMoving(); }
 	void SetFramebufferSize(unsigned int width, unsigned int height);
 
-	void CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments);
-
 private:
 	void torus_system();
 	void namedEntities_system();
+	void cursors_system();
 };

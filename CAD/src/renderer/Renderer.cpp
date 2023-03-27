@@ -188,12 +188,4 @@ void Renderer::RenderGUI()
 {
 	static const float GUI_WIDTH = 400.f;
 	ImGui::ShowDemoWindow();
-
-	static glm::vec3 cursorPosition = this->scene->cursor->GetPosition();
-	ImGui::SetNextWindowPos({});
-	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
-	ImGui::Begin("Cursor");
-	if (ImGui::DragFloat3("Position", glm::value_ptr(cursorPosition), 0.1f, 0.f, 0.f, "%.2f", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->cursor->SetPosition(cursorPosition);
-	ImGui::End();
 }

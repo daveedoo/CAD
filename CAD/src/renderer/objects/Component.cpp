@@ -2,6 +2,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
 #include <vector>
+#include <array>
 
 Mesh Mesh::Torus(TorusComponent val)
 {
@@ -34,6 +35,25 @@ Mesh Mesh::Torus(TorusComponent val)
 	return Mesh(std::move(vao), std::move(vbo), std::move(ebo));
 }
 
+Mesh Mesh::Cursor(float lineLength)
+{
+	std::array<glm::vec3, 12> vertices ={
+		glm::vec3(0.f),										glm::vec3(1.f, 0.f, 0.f),
+		glm::vec3(0.f)+ glm::vec3(lineLength, 0.f, 0.f),	glm::vec3(1.f, 0.f, 0.f),
+		glm::vec3(0.f),										glm::vec3(0.f, 1.f, 0.f),
+		glm::vec3(0.f)+ glm::vec3(0.f, lineLength, 0.f),	glm::vec3(0.f, 1.f, 0.f),
+		glm::vec3(0.f),										glm::vec3(0.f, 0.f, 1.f),
+		glm::vec3(0.f)+ glm::vec3(0.f, 0.f, lineLength),	glm::vec3(0.f, 0.f, 1.f)
+	};
+
+	auto vao = std::make_unique<GL::VAO>();
+	auto vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(vertices));
+	vao->DefineFloatAttribute(*vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, 2 * sizeof(glm::vec3), 0);
+	vao->DefineFloatAttribute(*vbo, 1, 3, GL::VAO::FloatAttribute::FLOAT, 2 * sizeof(glm::vec3), sizeof(glm::vec3));
+
+	return Mesh(std::move(vao), std::move(vbo));
+}
+
 glm::vec3 Mesh::GetTorusPoint(float majorAngleRad, float minorAngleRad, float majorR, float minorR)
 {
 	glm::vec3 minorCirclePt = minorR * glm::vec3(glm::cos(minorAngleRad), glm::sin(minorAngleRad), 0);
@@ -41,4 +61,3 @@ glm::vec3 Mesh::GetTorusPoint(float majorAngleRad, float minorAngleRad, float ma
 
 	return majorCirclePt + glm::rotate(minorCirclePt, majorAngleRad, glm::vec3(0.f, -1.f, 0.f));
 }
-

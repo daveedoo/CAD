@@ -26,6 +26,7 @@ Window::Window(int width, int height, std::string title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, OPENGL_MAJOR);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, OPENGL_MINOR);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
 	this->window = glfwCreateWindow(width, height, title.c_str(), NULL, NULL);
 	if (this->window == NULL)
 		throw std::exception("Window or context creation failed");
