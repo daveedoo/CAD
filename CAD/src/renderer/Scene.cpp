@@ -74,14 +74,19 @@ glm::vec3 GetObjectColor(bool isSelected)
 	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
 }
 
+void Scene::transformations_system()
+{
+	//auto view = this->registry->view<Transformation>();
+}
+
 void Scene::torus_system()
 {
 	this->torusProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
 	this->torusProgram->SetMat4("projMatrix", camera->GetProjectionMatrix());
 	glLineWidth(1.f);
 	
-	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Transformation>();
-	for (auto [entt, torusComp, mesh, selectable, transf] : view.each())
+	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, ScaleRotation, Transformation>();
+	for (auto [entt, torusComp, mesh, selectable, position, sr, transf] : view.each())
 	{
 		mesh.vao->Bind();
 		this->torusProgram->Use();
@@ -91,7 +96,7 @@ void Scene::torus_system()
 
 		if (selectable.selected)
 		{
-			this->gui->RenderTorusGUI(selectable.name, entt, torusComp, transf);
+			this->gui->RenderTorusGUI(selectable.name, entt, torusComp, position, sr);
 		}
 	}
 }
@@ -126,18 +131,13 @@ void Scene::cursors_system()
 		glDrawArrays(GL_LINES, 0, 6);	// TODO: move parameters to Mesh component
 	}
 
-	// bare cursors
-	auto view2 = this->registry->view<Cursor, Mesh, Translation>();
-	for (auto [entity, cursor, mesh, translation] : view2.each())
-	{
-		mesh.vao->Bind();
-		this->cursorProgram->SetMat4("worldMatrix", Matrix::Translation(translation.translation));
-
-		glLineWidth(cursor.lineWidth);
-		glDrawArrays(GL_LINES, 0, 6);
-
-		this->gui->RenderCursorWindow(translation.translation);
-	}
+	// main cursor
+	//auto view2 = this->registry->view<Cursor, Mesh, Position>();
+	auto [cursor, mesh, position] = this->registry->get<Cursor, Mesh, Position>(objectsManager->cursor);
+	//mesh.vao->Bind();
+	//glLineWidth(cursor.lineWidth);
+	//glDrawArrays(GL_LINES, 0, 6);
+	this->gui->RenderCursorWindow(objectsManager->cursor, position.position);
 
 	// point cursors
 	auto view3 = this->registry->view<Cursor, Point>();

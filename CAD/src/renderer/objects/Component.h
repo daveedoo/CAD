@@ -18,27 +18,28 @@ struct Selectable
 		: name(name), selected(selected) {}
 };
 
-struct Transformation
+struct ScaleRotation
 {
-	glm::vec3 translation;
-	glm::vec3 scale = glm::vec3(1.f);
-	float rotX = 0.f;
-	float rotY = 0.f;
-	float rotZ = 0.f;
+	glm::vec3 scale;
+	float rotX;
+	float rotY;
+	float rotZ;
 
-	glm::mat4x4 worldMatrix;
-
-
-	Transformation(glm::vec3 translation = glm::vec3(0.f))
-		: translation(translation), worldMatrix(Matrix::Translation(translation)) {}
+	ScaleRotation(glm::vec3 scale = glm::vec3(1.f), float rotX = 0.f, float rotY = 0.f, float rotZ = 0.f)
+		: scale(scale), rotX(rotX), rotY(rotY), rotZ(rotZ) {}
 };
 
-struct Translation
+struct Transformation
 {
-	glm::vec3 translation;
+	glm::mat4x4 worldMatrix = glm::mat4(1.f);
+};
 
-	Translation(glm::vec3 val = glm::vec3(0.f))
-		: translation(val) {}
+struct Position
+{
+	glm::vec3 position;
+
+	Position(glm::vec3 val = glm::vec3(0.f))
+		: position(val) {}
 };
 
 struct Cursor

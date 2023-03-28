@@ -27,27 +27,28 @@ void GUI::RenderMenu()
 	this->rightPanelHeight = 20;
 }
 
-void GUI::RenderCursorWindow(glm::vec3& position)
+void GUI::RenderCursorWindow(entt::entity entity, glm::vec3& position)
 {
 	ImGui::SetNextWindowPos({0.f, this->leftPanelHeight});
 	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
 
 	ImGui::Begin("Cursor");
-	ImGui::DragFloat3("Position", glm::value_ptr(position), 0.01f);
+	if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.01f))
+		objectsManager->UpdateTransformation(entity);
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;
 	ImGui::End();
 }
 
-void GUI::RenderTorusGUI(std::string name, entt::entity torusEntity, TorusComponent& torusComp, Transformation& transf)
+void GUI::RenderTorusGUI(std::string name, entt::entity torusEntity, TorusComponent& torusComp, Position& position, ScaleRotation& sr)
 {
 	ImGui::SetNextWindowPos({ 0.f, this->leftPanelHeight });
 	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
 
 	ImGui::Begin(name.c_str());
 	RenderTorusTreeNode(torusEntity, torusComp);
-	RenderTransformationTreeNode(transf);
+	RenderTransformationTreeNode(torusEntity, position, sr);
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;
@@ -60,7 +61,7 @@ void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Point& poin
 	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
 
 	ImGui::Begin(name.c_str());
-	ImGui::DragFloat3("Translation", glm::value_ptr(point.position), 0.01f);
+	ImGui::DragFloat3("Position", glm::value_ptr(point.position), 0.01f);
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;
@@ -83,22 +84,18 @@ void GUI::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp)
 	}
 }
 
-void GUI::RenderTransformationTreeNode(Transformation& transf)
+void GUI::RenderTransformationTreeNode(entt::entity entity, Position& position, ScaleRotation& sr)
 {
 	if (ImGui::TreeNodeEx("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		bool transformChanged = false;
-		if (ImGui::DragFloat3("Translation", glm::value_ptr(transf.translation), 0.01f)) transformChanged = true;
-		if (ImGui::DragFloat3("Scale", glm::value_ptr(transf.scale), 0.01f)) transformChanged = true;
-		if (ImGui::DragFloat("RotX", &transf.rotX, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-		if (ImGui::DragFloat("RotY", &transf.rotY, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-		if (ImGui::DragFloat("RotZ", &transf.rotZ, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat3("Position", glm::value_ptr(position.position), 0.01f)) transformChanged = true;
+		if (ImGui::DragFloat3("Scale", glm::value_ptr(sr.scale), 0.01f)) transformChanged = true;
+		if (ImGui::DragFloat("RotX", &sr.rotX, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat("RotY", &sr.rotY, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat("RotZ", &sr.rotZ, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 		if (transformChanged)
-		{
-			transf.worldMatrix = Matrix::Translation(transf.translation) *
-				Matrix::RotationZ(glm::radians(transf.rotZ)) * Matrix::RotationY(glm::radians(transf.rotY)) * Matrix::RotationX(glm::radians(transf.rotX)) *
-				Matrix::Scale(transf.scale);
-		}
+			objectsManager->UpdateTransformation(entity);
 
 		ImGui::TreePop();
 	}

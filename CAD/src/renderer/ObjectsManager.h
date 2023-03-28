@@ -12,12 +12,11 @@ private:
 	const float SelectedObjectCursor_LineHeight = 0.5f;
 
 	std::shared_ptr<entt::registry> registry;
-	entt::entity cursor;
-
 	std::vector<glm::vec3> points;
 
 public:
 	std::unique_ptr<GL::VBO> pointsVBO;
+	entt::entity cursor;
 
 	ObjectsManager(std::shared_ptr<entt::registry> registry);
 
@@ -27,6 +26,7 @@ public:
 	entt::entity CreatePoint(glm::vec3 position);
 	entt::entity CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength);
 	void UpdateTorusMesh(entt::entity torusEntity);
+	void UpdateTransformation(entt::entity entity);
 
 	void OnObjectSelected(entt::entity entity);
 	void OnObjectUnselected(entt::entity entity);

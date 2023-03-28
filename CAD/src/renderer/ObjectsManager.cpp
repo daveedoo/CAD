@@ -12,13 +12,13 @@ ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
 
 entt::entity ObjectsManager::AddTorus()
 {
-	auto& cursorPos = this->registry->get<Translation>(this->cursor).translation;
+	auto& cursorPos = this->registry->get<Position>(this->cursor).position;
 	return CreateTorus(1.f, 5.f, 10, 10, cursorPos);
 }
 
 entt::entity ObjectsManager::AddPoint()
 {
-	auto& cursorPos = this->registry->get<Translation>(this->cursor).translation;
+	auto& cursorPos = this->registry->get<Position>(this->cursor).position;
 	return CreatePoint(cursorPos);
 }
 
@@ -32,9 +32,12 @@ entt::entity ObjectsManager::CreateTorus(float minorR, float majorR, int minorSe
 	Mesh mesh = Mesh::Torus(values);
 
 	this->registry->emplace<TorusComponent>(entity, values);
-	this->registry->emplace<Mesh>(entity, std::move(mesh));
 	this->registry->emplace<Selectable>(entity, name);
-	this->registry->emplace<Transformation>(entity, position);
+	this->registry->emplace<Position>(entity, glm::vec3(position.x, position.y, position.z));
+	this->registry->emplace<ScaleRotation>(entity);
+	this->registry->emplace<Transformation>(entity);
+	this->registry->emplace<Mesh>(entity, std::move(mesh));
+	UpdateTransformation(entity);
 	return entity;
 }
 
@@ -57,7 +60,8 @@ entt::entity ObjectsManager::CreateCursor(glm::vec3 position, GLfloat lineWidth,
 	const auto entity = registry->create();
 	this->registry->emplace<Cursor>(entity, lineWidth, lineLength);
 	this->registry->emplace<Mesh>(entity, std::move(mesh));
-	this->registry->emplace<Translation>(entity);
+	this->registry->emplace<Position>(entity);
+	this->registry->emplace<Transformation>(entity);
 
 	return entity;
 }
@@ -67,6 +71,19 @@ void ObjectsManager::UpdateTorusMesh(entt::entity torusEntity)
 	auto torusComp = registry->get<TorusComponent>(torusEntity);
 	auto newMesh = Mesh::Torus(torusComp);
 	registry->replace<Mesh>(torusEntity, std::move(newMesh));
+}
+
+void ObjectsManager::UpdateTransformation(entt::entity entity)
+{
+	auto [pos, sr, transf] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	
+	transf->worldMatrix = glm::mat4(1.f);
+	if (pos != nullptr)
+		transf->worldMatrix *= Matrix::Translation(pos->position);
+	if (sr != nullptr)
+		transf->worldMatrix *=
+			Matrix::RotationZ(glm::radians(sr->rotZ)) * Matrix::RotationY(glm::radians(sr->rotY)) * Matrix::RotationX(glm::radians(sr->rotX)) *
+			Matrix::Scale(sr->scale);
 }
 
 void ObjectsManager::OnObjectSelected(entt::entity entity)
