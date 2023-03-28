@@ -20,6 +20,7 @@ public:
 	entt::entity selectedEnttsCursor;
 
 	ObjectsManager(std::shared_ptr<entt::registry> registry);
+	unsigned int GetSelectedEntitiesCount(glm::vec3* meanCursorPos = nullptr);
 
 	entt::entity AddTorus();
 	entt::entity AddPoint();

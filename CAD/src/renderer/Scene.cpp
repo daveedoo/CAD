@@ -80,6 +80,8 @@ void Scene::torus_system()
 	this->torusProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
 	this->torusProgram->SetMat4("projMatrix", camera->GetProjectionMatrix());
 	glLineWidth(1.f);
+
+	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
 	
 	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, ScaleRotation, Transformation>();
 	for (auto [entt, torusComp, mesh, selectable, position, sr, transf] : view.each())
@@ -90,7 +92,7 @@ void Scene::torus_system()
 		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
 		glDrawElements(GL_LINES, 4 * torusComp.minorSegments * torusComp.majorSegments, static_cast<GLenum>(mesh.ebo->GetDataType()), static_cast<void*>(0));
 
-		if (selectable.selected)
+		if (selectable.selected && selectedCount == 1)
 		{
 			this->gui->RenderTorusGUI(selectable.name, entt, torusComp, position, sr);
 		}
@@ -140,6 +142,7 @@ void Scene::points_system()
 {
 	this->torusProgram->Use();
 	this->pointsVao->Bind();
+	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
 
 	auto view = this->registry->view<Point, Selectable, Position, Transformation>();
 	for (auto [entity, selectable, position, transf] : view.each())
@@ -149,7 +152,7 @@ void Scene::points_system()
 		glPointSize(5.f);
 		glDrawArrays(GL_POINTS, 0, 1);
 
-		if (selectable.selected)
+		if (selectable.selected && selectedCount == 1)
 			this->gui->RenderPointGUI(selectable.name, entity, position);
 	}
 }

@@ -13,6 +13,29 @@ ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
 	this->pointsVBO = std::make_unique<GL::VBO>(&point, sizeof(point));
 }
 
+unsigned int ObjectsManager::GetSelectedEntitiesCount(glm::vec3* meanCursorPos)
+{
+	int count = 0;
+	auto cursorPos = glm::vec3(0.f);
+
+	auto view = this->registry->view<Selectable, Position>();
+	for (auto [entity, selectable, position] : view.each())
+	{
+		if (selectable.selected)
+		{
+			cursorPos += position.position;
+			count++;
+		}
+	}
+	if (meanCursorPos != nullptr && count > 0)
+	{
+		cursorPos /= count;
+		*meanCursorPos = cursorPos;
+	}
+
+	return count;
+}
+
 entt::entity ObjectsManager::AddTorus()
 {
 	auto& cursorPos = this->registry->get<Position>(this->cursor).position;
@@ -106,28 +129,13 @@ void ObjectsManager::UpdateTransformation(entt::entity entity)
 
 void ObjectsManager::RecalculateMeanCursor()
 {
-	int selectedEnttsCount = 0;
-	auto cursorPos = glm::vec3(0.f);
-
-	auto view = this->registry->view<Selectable, Position>();
-	for (auto [entity, selectable, position] : view.each())
-	{
-		if (selectable.selected)
-		{
-			cursorPos += position.position;
-			selectedEnttsCount++;
-		}
-	}
-
+	glm::vec3 cursorPos;
+	int selectedEnttsCount = GetSelectedEntitiesCount(&cursorPos);
 	if (selectedEnttsCount > 1)
-	{
-		cursorPos /= selectedEnttsCount;
 		this->registry->emplace_or_replace<Position>(this->selectedEnttsCursor, cursorPos);
-	}
 	else
-	{
 		this->registry->remove<Position>(this->selectedEnttsCursor);
-	}
+
 	UpdateTransformation(this->selectedEnttsCursor);
 }
 

@@ -74,7 +74,7 @@ void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Position& p
 
 void GUI::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp)
 {
-	if (ImGui::TreeNodeEx("Parameters", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Parameters"))
 	{
 		bool paramChanged = false;
 		if (ImGui::DragFloat("Minor R", &torusComp.minorR, 0.001f, 0.01f, 0.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) paramChanged = true;
