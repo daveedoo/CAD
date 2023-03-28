@@ -62,7 +62,10 @@ void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Position& p
 
 	ImGui::Begin(name.c_str());
 	if (ImGui::DragFloat3("Position", glm::value_ptr(position.position), 0.01f))
+	{
 		objectsManager->UpdateTransformation(pointEntity);
+		objectsManager->RecalculateMeanCursor();
+	}
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;
@@ -96,7 +99,10 @@ void GUI::RenderTransformationTreeNode(entt::entity entity, Position& position, 
 		if (ImGui::DragFloat("RotY", &sr.rotY, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 		if (ImGui::DragFloat("RotZ", &sr.rotZ, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 		if (transformChanged)
+		{
 			objectsManager->UpdateTransformation(entity);
+			objectsManager->RecalculateMeanCursor();
+		}
 
 		ImGui::TreePop();
 	}

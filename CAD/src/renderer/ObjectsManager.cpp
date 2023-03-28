@@ -5,6 +5,9 @@ ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
 {
 	this->cursor = CreateCursor(glm::vec3(0.f), 3.f, 1.f);
+	this->selectedEnttsCursor = CreateCursor(glm::vec3(0.f), SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineLength);
+	this->registry->remove<Position>(selectedEnttsCursor);
+	UpdateTransformation(selectedEnttsCursor);
 
 	auto point = glm::vec3(0.f);
 	this->pointsVBO = std::make_unique<GL::VBO>(&point, sizeof(point));
@@ -63,8 +66,9 @@ entt::entity ObjectsManager::CreateCursor(glm::vec3 position, GLfloat lineWidth,
 	const auto entity = registry->create();
 	this->registry->emplace<Cursor>(entity, lineWidth, lineLength);
 	this->registry->emplace<Mesh>(entity, std::move(mesh));
-	this->registry->emplace<Position>(entity);
+	this->registry->emplace<Position>(entity, position);
 	this->registry->emplace<Transformation>(entity);
+	UpdateTransformation(entity);
 
 	return entity;
 }
@@ -76,31 +80,66 @@ void ObjectsManager::UpdateTorusMesh(entt::entity torusEntity)
 	registry->replace<Mesh>(torusEntity, std::move(newMesh));
 }
 
+// TODO: add on_update() etc.
 void ObjectsManager::UpdateTransformation(entt::entity entity)
 {
 	auto [pos, sr, transf] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
-	
-	transf->worldMatrix = glm::mat4(1.f);
-	if (pos != nullptr)
-		transf->worldMatrix *= Matrix::Translation(pos->position);
-	if (sr != nullptr)
-		transf->worldMatrix *=
-			Matrix::RotationZ(glm::radians(sr->rotZ)) * Matrix::RotationY(glm::radians(sr->rotY)) * Matrix::RotationX(glm::radians(sr->rotX)) *
-			Matrix::Scale(sr->scale);
+
+	if (pos == nullptr && sr == nullptr)
+	{
+		this->registry->remove<Transformation>(entity);
+	}
+	else
+	{
+		Transformation T;
+		T.worldMatrix = glm::mat4(1.f);
+		if (pos != nullptr)
+			T.worldMatrix *= Matrix::Translation(pos->position);
+		if (sr != nullptr)
+			T.worldMatrix *=
+				Matrix::RotationZ(glm::radians(sr->rotZ)) * Matrix::RotationY(glm::radians(sr->rotY)) * Matrix::RotationX(glm::radians(sr->rotX)) *
+				Matrix::Scale(sr->scale);
+
+		this->registry->emplace_or_replace<Transformation>(entity, T);
+	}
+}
+
+void ObjectsManager::RecalculateMeanCursor()
+{
+	int selectedEnttsCount = 0;
+	auto cursorPos = glm::vec3(0.f);
+
+	auto view = this->registry->view<Selectable, Position>();
+	for (auto [entity, selectable, position] : view.each())
+	{
+		if (selectable.selected)
+		{
+			cursorPos += position.position;
+			selectedEnttsCount++;
+		}
+	}
+
+	if (selectedEnttsCount > 1)
+	{
+		cursorPos /= selectedEnttsCount;
+		this->registry->emplace_or_replace<Position>(this->selectedEnttsCursor, cursorPos);
+	}
+	else
+	{
+		this->registry->remove<Position>(this->selectedEnttsCursor);
+	}
+	UpdateTransformation(this->selectedEnttsCursor);
 }
 
 void ObjectsManager::OnObjectSelected(entt::entity entity)
 {
-	//auto view = this->registry->view<Selectable>();
-	//for (auto [entity, selectable] : view.each())
-	//{
-
-	//}
-	this->registry->get_or_emplace<Cursor>(entity, SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineHeight);
+	RecalculateMeanCursor();
+	this->registry->get_or_emplace<Cursor>(entity, SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineLength);
 }
 
 void ObjectsManager::OnObjectUnselected(entt::entity entity)
 {
+	RecalculateMeanCursor();
 	this->registry->remove<Cursor>(entity);
 }
 
