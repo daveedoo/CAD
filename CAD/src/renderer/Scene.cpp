@@ -74,11 +74,7 @@ glm::vec3 GetObjectColor(bool isSelected)
 	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
 }
 
-void Scene::transformations_system()
-{
-	//auto view = this->registry->view<Transformation>();
-}
-
+// renders toruses, uses their own meshes
 void Scene::torus_system()
 {
 	this->torusProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
@@ -101,6 +97,7 @@ void Scene::torus_system()
 	}
 }
 
+// GUI list only
 void Scene::namedEntities_system()
 {
 	std::vector<std::tuple<entt::entity, Selectable&>> objects;
@@ -112,6 +109,8 @@ void Scene::namedEntities_system()
 	this->gui->RenderObjectsList(objects);
 }
 
+// renders all cursors, uses common mesh
+// TODO: make main cursor bigger
 void Scene::cursors_system()
 {
 	static Mesh cursorMesh = Mesh::Cursor(0.5f);	// TODO
@@ -132,39 +131,25 @@ void Scene::cursors_system()
 	}
 
 	// main cursor
-	//auto view2 = this->registry->view<Cursor, Mesh, Position>();
 	auto [cursor, mesh, position] = this->registry->get<Cursor, Mesh, Position>(objectsManager->cursor);
-	//mesh.vao->Bind();
-	//glLineWidth(cursor.lineWidth);
-	//glDrawArrays(GL_LINES, 0, 6);
 	this->gui->RenderCursorWindow(objectsManager->cursor, position.position);
-
-	// point cursors
-	auto view3 = this->registry->view<Cursor, Point>();
-	for (auto [entity, cursor, point] : view3.each())
-	{
-		cursorMesh.vao->Bind();
-		this->cursorProgram->SetMat4("worldMatrix", Matrix::Translation(point.position));
-
-		glLineWidth(cursor.lineWidth);
-		glDrawArrays(GL_LINES, 0, 6);
-	}
 }
 
+// renders points 1 by 1, uses common VAO
 void Scene::points_system()
 {
 	this->torusProgram->Use();
 	this->pointsVao->Bind();
 
-	auto view = this->registry->view<Point, Selectable>();
-	for (auto [entity, point, selectable] : view.each())
+	auto view = this->registry->view<Point, Selectable, Position, Transformation>();
+	for (auto [entity, selectable, position, transf] : view.each())
 	{
-		this->torusProgram->SetMat4("worldMatrix", Matrix::Translation(point.position));
+		this->torusProgram->SetMat4("worldMatrix", transf.worldMatrix);
 		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
 		glPointSize(5.f);
 		glDrawArrays(GL_POINTS, 0, 1);
 
 		if (selectable.selected)
-			this->gui->RenderPointGUI(selectable.name, entity, point);
+			this->gui->RenderPointGUI(selectable.name, entity, position);
 	}
 }

@@ -55,13 +55,14 @@ void GUI::RenderTorusGUI(std::string name, entt::entity torusEntity, TorusCompon
 	ImGui::End();
 }
 
-void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Point& point)
+void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Position& position)
 {
 	ImGui::SetNextWindowPos({ 0.f, this->leftPanelHeight });
 	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
 
 	ImGui::Begin(name.c_str());
-	ImGui::DragFloat3("Position", glm::value_ptr(point.position), 0.01f);
+	if (ImGui::DragFloat3("Position", glm::value_ptr(position.position), 0.01f))
+		objectsManager->UpdateTransformation(pointEntity);
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;

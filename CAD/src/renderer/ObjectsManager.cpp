@@ -33,7 +33,7 @@ entt::entity ObjectsManager::CreateTorus(float minorR, float majorR, int minorSe
 
 	this->registry->emplace<TorusComponent>(entity, values);
 	this->registry->emplace<Selectable>(entity, name);
-	this->registry->emplace<Position>(entity, glm::vec3(position.x, position.y, position.z));
+	this->registry->emplace<Position>(entity, position);
 	this->registry->emplace<ScaleRotation>(entity);
 	this->registry->emplace<Transformation>(entity);
 	this->registry->emplace<Mesh>(entity, std::move(mesh));
@@ -47,8 +47,11 @@ entt::entity ObjectsManager::CreatePoint(glm::vec3 position)
 	std::string name = std::format("Point {}", ++counter);
 
 	const auto entity = registry->create();
-	this->registry->emplace<Point>(entity, position);
+	this->registry->emplace<Point>(entity);
 	this->registry->emplace<Selectable>(entity, name);
+	this->registry->emplace<Position>(entity, position);
+	this->registry->emplace<Transformation>(entity);
+	UpdateTransformation(entity);
 
 	return entity;
 }
@@ -88,6 +91,11 @@ void ObjectsManager::UpdateTransformation(entt::entity entity)
 
 void ObjectsManager::OnObjectSelected(entt::entity entity)
 {
+	//auto view = this->registry->view<Selectable>();
+	//for (auto [entity, selectable] : view.each())
+	//{
+
+	//}
 	this->registry->get_or_emplace<Cursor>(entity, SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineHeight);
 }
 

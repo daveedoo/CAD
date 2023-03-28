@@ -81,8 +81,4 @@ private:
 
 struct Point
 {
-	glm::vec3 position;
-
-	Point(glm::vec3 position = glm::vec3(0.f))
-		: position(position) {}
 };

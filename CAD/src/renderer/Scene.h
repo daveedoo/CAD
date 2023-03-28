@@ -42,7 +42,6 @@ public:
 	void SetFramebufferSize(unsigned int width, unsigned int height);
 
 private:
-	void transformations_system();
 	void torus_system();
 	void namedEntities_system();
 	void cursors_system();
