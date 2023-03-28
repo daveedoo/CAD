@@ -26,8 +26,9 @@ private:
 	std::unique_ptr<GL::Program> torusProgram;
 	std::unique_ptr<GL::Program> cursorProgram;
 
-	entt::entity cursor;
+	std::unique_ptr<GL::VAO> pointsVao;
 
+	entt::entity cursor;
 	std::unique_ptr<GUI> gui;
 
 public:
@@ -44,4 +45,5 @@ private:
 	void torus_system();
 	void namedEntities_system();
 	void cursors_system();
+	void points_system();
 };

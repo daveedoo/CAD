@@ -77,3 +77,11 @@ public:
 private:
 	static glm::vec3 GetTorusPoint(float majorAngleRad, float minorAngleRad, float majorR, float minorR);
 };
+
+struct Point
+{
+	glm::vec3 position;
+
+	Point(glm::vec3 position = glm::vec3(0.f))
+		: position(position) {}
+};

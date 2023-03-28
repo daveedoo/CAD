@@ -3,6 +3,7 @@
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <gl/glew.h>
+#include "objects/Component.h"
 
 class ObjectsManager
 {
@@ -13,12 +14,17 @@ private:
 	std::shared_ptr<entt::registry> registry;
 	entt::entity cursor;
 
+	std::vector<glm::vec3> points;
+
 public:
+	std::unique_ptr<GL::VBO> pointsVBO;
+
 	ObjectsManager(std::shared_ptr<entt::registry> registry);
 
-	void AddTorus();
-
-	void CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position);
+	entt::entity AddTorus();
+	entt::entity AddPoint();
+	entt::entity CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position);
+	entt::entity CreatePoint(glm::vec3 position);
 	entt::entity CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength);
 	void UpdateTorusMesh(entt::entity torusEntity);
 

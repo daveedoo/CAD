@@ -1,31 +1,53 @@
 #include "ObjectsManager.h"
-#include "objects/Component.h"
 #include <format>
 
 ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
 {
 	this->cursor = CreateCursor(glm::vec3(0.f), 3.f, 1.f);
+
+	auto point = glm::vec3(0.f);
+	this->pointsVBO = std::make_unique<GL::VBO>(&point, sizeof(point));
 }
 
-void ObjectsManager::AddTorus()
+entt::entity ObjectsManager::AddTorus()
 {
-	auto& cursorPos = this->registry->get<Translation>(this->cursor);
-	CreateTorus(1.f, 5.f, 10, 10, cursorPos.translation);
+	auto& cursorPos = this->registry->get<Translation>(this->cursor).translation;
+	return CreateTorus(1.f, 5.f, 10, 10, cursorPos);
 }
 
-void ObjectsManager::CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position)
+entt::entity ObjectsManager::AddPoint()
+{
+	auto& cursorPos = this->registry->get<Translation>(this->cursor).translation;
+	return CreatePoint(cursorPos);
+}
+
+entt::entity ObjectsManager::CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position)
 {
 	static unsigned int counter = 0;
+	std::string name = std::format("Torus {}", ++counter);
 
-	const auto entt = registry->create();
+	const auto entity = registry->create();
 	TorusComponent values(minorR, majorR, minorSegments, majorSegments);
 	Mesh mesh = Mesh::Torus(values);
 
-	this->registry->emplace<TorusComponent>(entt, values);
-	this->registry->emplace<Mesh>(entt, std::move(mesh));
-	this->registry->emplace<Selectable>(entt, std::format("Torus {}", ++counter));
-	this->registry->emplace<Transformation>(entt, position);
+	this->registry->emplace<TorusComponent>(entity, values);
+	this->registry->emplace<Mesh>(entity, std::move(mesh));
+	this->registry->emplace<Selectable>(entity, name);
+	this->registry->emplace<Transformation>(entity, position);
+	return entity;
+}
+
+entt::entity ObjectsManager::CreatePoint(glm::vec3 position)
+{
+	static unsigned int counter = 0;
+	std::string name = std::format("Point {}", ++counter);
+
+	const auto entity = registry->create();
+	this->registry->emplace<Point>(entity, position);
+	this->registry->emplace<Selectable>(entity, name);
+
+	return entity;
 }
 
 entt::entity ObjectsManager::CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength)

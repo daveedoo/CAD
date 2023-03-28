@@ -13,10 +13,10 @@ void GUI::RenderMenu()
 	{
 		if (ImGui::BeginMenu("Add"))
 		{
+			if (ImGui::MenuItem("Point"))
+				objectsManager->AddPoint();
 			if (ImGui::MenuItem("Torus"))
-			{
 				objectsManager->AddTorus();
-			}
 			ImGui::EndMenu();
 		}
 
@@ -48,6 +48,19 @@ void GUI::RenderTorusGUI(std::string name, entt::entity torusEntity, TorusCompon
 	ImGui::Begin(name.c_str());
 	RenderTorusTreeNode(torusEntity, torusComp);
 	RenderTransformationTreeNode(transf);
+
+	ImVec2 wndSize = ImGui::GetWindowSize();
+	this->leftPanelHeight += wndSize.y;
+	ImGui::End();
+}
+
+void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Point& point)
+{
+	ImGui::SetNextWindowPos({ 0.f, this->leftPanelHeight });
+	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
+
+	ImGui::Begin(name.c_str());
+	ImGui::DragFloat3("Translation", glm::value_ptr(point.position), 0.01f);
 
 	ImVec2 wndSize = ImGui::GetWindowSize();
 	this->leftPanelHeight += wndSize.y;

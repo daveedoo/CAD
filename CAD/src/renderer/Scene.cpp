@@ -33,6 +33,9 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	GL::Shader cursorFS(GL::Shader::ShaderType::FRAGMENT_SHADER, shadersPath / "coloredVertices.frag");
 	this->cursorProgram = std::make_unique<GL::Program>(cursorVS, cursorFS);
 
+	this->pointsVao = std::make_unique<GL::VAO>();
+	this->pointsVao->DefineFloatAttribute(*this->objectsManager->pointsVBO, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
+
 	this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
 	this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
 }
@@ -63,6 +66,12 @@ void Scene::Render()
 	cursors_system();
 	torus_system();
 	namedEntities_system();
+	points_system();
+}
+
+glm::vec3 GetObjectColor(bool isSelected)
+{
+	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
 }
 
 void Scene::torus_system()
@@ -77,6 +86,7 @@ void Scene::torus_system()
 		mesh.vao->Bind();
 		this->torusProgram->Use();
 		this->torusProgram->SetMat4("worldMatrix", transf.worldMatrix);
+		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
 		glDrawElements(GL_LINES, 4 * torusComp.minorSegments * torusComp.majorSegments, static_cast<GLenum>(mesh.ebo->GetDataType()), static_cast<void*>(0));
 
 		if (selectable.selected)
@@ -105,6 +115,7 @@ void Scene::cursors_system()
 	this->cursorProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
 	this->cursorProgram->SetMat4("projMatrix", camera->GetProjectionMatrix());
 
+	// torus cursors
 	auto view = this->registry->view<Cursor, Transformation>();
 	for (auto [entity, cursor, Transformation] : view.each())
 	{
@@ -126,5 +137,34 @@ void Scene::cursors_system()
 		glDrawArrays(GL_LINES, 0, 6);
 
 		this->gui->RenderCursorWindow(translation.translation);
+	}
+
+	// point cursors
+	auto view3 = this->registry->view<Cursor, Point>();
+	for (auto [entity, cursor, point] : view3.each())
+	{
+		cursorMesh.vao->Bind();
+		this->cursorProgram->SetMat4("worldMatrix", Matrix::Translation(point.position));
+
+		glLineWidth(cursor.lineWidth);
+		glDrawArrays(GL_LINES, 0, 6);
+	}
+}
+
+void Scene::points_system()
+{
+	this->torusProgram->Use();
+	this->pointsVao->Bind();
+
+	auto view = this->registry->view<Point, Selectable>();
+	for (auto [entity, point, selectable] : view.each())
+	{
+		this->torusProgram->SetMat4("worldMatrix", Matrix::Translation(point.position));
+		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
+		glPointSize(5.f);
+		glDrawArrays(GL_POINTS, 0, 1);
+
+		if (selectable.selected)
+			this->gui->RenderPointGUI(selectable.name, entity, point);
 	}
 }

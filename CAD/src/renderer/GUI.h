@@ -22,6 +22,7 @@ public:
 	void RenderMenu();
 	void RenderCursorWindow(glm::vec3& position);
 	void RenderTorusGUI(std::string name, entt::entity torusEntity, TorusComponent& torusComp, Transformation& transf);
+	void RenderPointGUI(std::string name, entt::entity pointEntity, Point& point);
 	void RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp);
 	void RenderTransformationTreeNode(Transformation& transf);
 	
