@@ -11,6 +11,8 @@ ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
 
 	auto point = glm::vec3(0.f);
 	this->pointsVBO = std::make_unique<GL::VBO>(&point, sizeof(point));
+
+	this->registry->ctx().emplace<AdditionalTransformation>(glm::vec3(1.f));
 }
 
 unsigned int ObjectsManager::GetSelectedEntitiesCount(glm::vec3* meanCursorPos)
@@ -103,10 +105,29 @@ void ObjectsManager::UpdateTorusMesh(entt::entity torusEntity)
 	registry->replace<Mesh>(torusEntity, std::move(newMesh));
 }
 
+glm::vec3 getResultingPosition(const Position& basePosition, std::optional<AdditionalTransformation> addTransf)
+{
+	glm::vec3 resPosition;
+	if (addTransf.has_value())
+		resPosition = addTransf.value().scaleRotation.scale * (basePosition.position - addTransf.value().centerPoint) + addTransf.value().centerPoint;
+	else
+		resPosition = basePosition.position;
+	return resPosition;
+}
+glm::vec3 getResultingScale(const glm::vec3& baseScale, std::optional<AdditionalTransformation> addTransf)
+{
+	glm::vec3 resScale = baseScale;
+	if (addTransf.has_value())
+		resScale *= addTransf.value().scaleRotation.scale;
+	return resScale;
+}
 // TODO: add on_update() etc.
 void ObjectsManager::UpdateTransformation(entt::entity entity)
 {
-	auto [pos, sr, transf] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	auto [pos, sr, transf ] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	std::optional<AdditionalTransformation> addTransf = std::nullopt;
+	if (this->registry->ctx().contains<AdditionalTransformation>())
+		addTransf = this->registry->ctx().get<AdditionalTransformation>();
 
 	if (pos == nullptr && sr == nullptr)
 	{
@@ -116,12 +137,19 @@ void ObjectsManager::UpdateTransformation(entt::entity entity)
 	{
 		Transformation T;
 		T.worldMatrix = glm::mat4(1.f);
+
 		if (pos != nullptr)
-			T.worldMatrix *= Matrix::Translation(pos->position);
+		{
+			glm::vec3 resPosition = getResultingPosition(*pos, addTransf);
+			T.worldMatrix *= Matrix::Translation(resPosition);
+		}
 		if (sr != nullptr)
+		{
+			glm::vec3 resScale = getResultingScale(sr->scale, addTransf);
 			T.worldMatrix *=
 				Matrix::RotationZ(glm::radians(sr->rotZ)) * Matrix::RotationY(glm::radians(sr->rotY)) * Matrix::RotationX(glm::radians(sr->rotX)) *
-				Matrix::Scale(sr->scale);
+				Matrix::Scale(resScale);
+		}
 
 		this->registry->emplace_or_replace<Transformation>(entity, T);
 	}
@@ -172,4 +200,53 @@ void ObjectsManager::UnselectAllObjectsExcept(entt::entity entity)
 void ObjectsManager::RemoveEntity(entt::entity entity)
 {
 	this->registry->destroy(entity);
+}
+
+void ObjectsManager::StartGroupTransformations()
+{
+	this->registry->ctx().insert_or_assign<AdditionalTransformation>(glm::vec3(1.f));
+}
+
+ScaleRotation& ObjectsManager::GetGroupTransformations()
+{
+	return this->registry->ctx().get<AdditionalTransformation&>().scaleRotation;
+}
+
+void ObjectsManager::SetGroupTransformations(ScaleRotation scaleRotation)
+{
+	glm::vec3 centerPos = this->registry->get<Position>(selectedEnttsCursor).position;
+	this->registry->ctx().insert_or_assign(AdditionalTransformation(centerPos, scaleRotation));
+
+	auto view = this->registry->view<Selectable, Position>();
+	for (auto [entity, selectable, position] : view.each())
+	{
+		if (selectable.selected)
+		{
+			UpdateTransformation(entity);
+		}
+	}
+}
+
+void ObjectsManager::EndGroupTransformations(bool apply)
+{
+	auto groupTransf = this->registry->ctx().get<AdditionalTransformation&>();
+	this->registry->ctx().erase<AdditionalTransformation&>();
+
+	auto view = this->registry->view<Selectable, Position>();
+	for (auto [entity, selectable, position] : view.each())
+	{
+		if (apply)
+		{
+			auto newPos = getResultingPosition(position, groupTransf);
+			auto baseScaleRot = this->registry->try_get<ScaleRotation>(entity);
+			if (baseScaleRot != nullptr)
+			{
+				auto newScale = getResultingScale(baseScaleRot->scale, groupTransf);
+				this->registry->emplace_or_replace<ScaleRotation>(entity, newScale);
+			}
+			this->registry->emplace_or_replace<Position>(entity, newPos);
+		}
+		if (selectable.selected)
+			UpdateTransformation(entity);
+	}
 }

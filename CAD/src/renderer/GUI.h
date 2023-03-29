@@ -15,6 +15,8 @@ private:
 	float rightPanelHeight = 0;
 
 public:
+	bool groupTransformationStarted = false;
+
 	GUI(std::shared_ptr<entt::registry> registry, std::shared_ptr<ObjectsManager> objectsManager);
 
 public:
@@ -22,6 +24,7 @@ public:
 	void RenderCursorWindow(entt::entity entity, glm::vec3& position);
 	void RenderTorusGUI(std::string name, entt::entity torusEntity, TorusComponent& torusComp, Position& position, ScaleRotation& sr);
 	void RenderPointGUI(std::string name, entt::entity pointEntity, Position& position);
+	void RenderGroupTransformationGUI();
 	void RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp);
 	void RenderTransformationTreeNode(entt::entity entity, Position& position, ScaleRotation& sr);
 	

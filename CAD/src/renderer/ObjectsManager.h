@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <gl/glew.h>
 #include "objects/Component.h"
+#include <optional>
 
 class ObjectsManager
 {
@@ -35,4 +36,9 @@ public:
 	void OnObjectUnselected(entt::entity entity);
 	void UnselectAllObjectsExcept(entt::entity entity);
 	void RemoveEntity(entt::entity entity);
+
+	void StartGroupTransformations();
+	ScaleRotation& GetGroupTransformations();
+	void SetGroupTransformations(ScaleRotation scaleRotation);
+	void EndGroupTransformations(bool apply);
 };

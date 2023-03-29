@@ -86,9 +86,11 @@ void Scene::torus_system()
 	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, ScaleRotation, Transformation>();
 	for (auto [entt, torusComp, mesh, selectable, position, sr, transf] : view.each())
 	{
+		glm::mat4 worldMtx = transf.worldMatrix;
+
 		mesh.vao->Bind();
 		this->torusProgram->Use();
-		this->torusProgram->SetMat4("worldMatrix", transf.worldMatrix);
+		this->torusProgram->SetMat4("worldMatrix", worldMtx);
 		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
 		glDrawElements(GL_LINES, 4 * torusComp.minorSegments * torusComp.majorSegments, static_cast<GLenum>(mesh.ebo->GetDataType()), static_cast<void*>(0));
 
@@ -102,8 +104,13 @@ void Scene::torus_system()
 // GUI list only
 void Scene::namedEntities_system()
 {
-	std::vector<std::tuple<entt::entity, Selectable&>> objects;
+	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
+	if (selectedCount > 1)
+	{
+		this->gui->RenderGroupTransformationGUI();
+	}
 
+	std::vector<std::tuple<entt::entity, Selectable&>> objects;
 	auto view = this->registry->view<Selectable>();
 	for (auto object : view.each())
 		objects.push_back(object);

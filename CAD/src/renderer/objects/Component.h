@@ -37,6 +37,15 @@ struct Transformation
 		: worldMatrix(matrix) {}
 };
 
+struct AdditionalTransformation
+{
+	glm::vec3 centerPoint;
+	ScaleRotation scaleRotation;
+
+	AdditionalTransformation(glm::vec3 centerPoint, ScaleRotation sr = ScaleRotation())
+		: centerPoint(centerPoint), scaleRotation(sr) {}
+};
+
 struct Position
 {
 	glm::vec3 position;

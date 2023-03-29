@@ -72,6 +72,48 @@ void GUI::RenderPointGUI(std::string name, entt::entity pointEntity, Position& p
 	ImGui::End();
 }
 
+void GUI::RenderGroupTransformationGUI()
+{
+	ImGui::SetNextWindowPos({ 0.f, this->leftPanelHeight });
+	ImGui::SetNextWindowSize({ GUI_WIDTH, 0.f });
+
+	ImGui::Begin("Group transformation");
+	if (!groupTransformationStarted)
+	{
+		if (ImGui::Button("Transform group"))
+		{
+			groupTransformationStarted = true;
+			this->objectsManager->StartGroupTransformations();
+		}
+	}
+	else
+	{
+		auto& scaleRotation = objectsManager->GetGroupTransformations();
+		bool transfChanged = false;
+		if (ImGui::DragFloat3("Scale", glm::value_ptr(scaleRotation.scale), 0.01f)) transfChanged = true;
+		if (ImGui::DragFloat("RotX", &scaleRotation.rotX, 0.01f)) transfChanged = true;
+		if (ImGui::DragFloat("RotY", &scaleRotation.rotY, 0.01f)) transfChanged = true;
+		if (ImGui::DragFloat("RotZ", &scaleRotation.rotZ, 0.01f)) transfChanged = true;
+		if (transfChanged)
+			this->objectsManager->SetGroupTransformations(scaleRotation);
+
+		if (ImGui::Button("Apply"))
+		{
+			groupTransformationStarted = false;
+			this->objectsManager->EndGroupTransformations(true);
+		}
+		if (ImGui::Button("Cancel"))
+		{
+			groupTransformationStarted = false;
+			this->objectsManager->EndGroupTransformations(false);
+		}
+	}
+
+	ImVec2 wndSize = ImGui::GetWindowSize();
+	this->leftPanelHeight += wndSize.y;
+	ImGui::End();
+}
+
 void GUI::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp)
 {
 	if (ImGui::TreeNodeEx("Parameters"))
