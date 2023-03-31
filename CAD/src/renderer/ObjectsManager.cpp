@@ -124,9 +124,9 @@ glm::vec3 getResultingScale(const glm::vec3& baseScale, std::optional<Additional
 // TODO: add on_update() etc.
 void ObjectsManager::UpdateTransformation(entt::entity entity)
 {
-	auto [pos, sr, transf ] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	auto [pos, sr, transf, selectable ] = this->registry->try_get<Position, ScaleRotation, Transformation, Selectable>(entity);
 	std::optional<AdditionalTransformation> addTransf = std::nullopt;
-	if (this->registry->ctx().contains<AdditionalTransformation>())
+	if (selectable != nullptr && selectable->selected && this->registry->ctx().contains<AdditionalTransformation>())
 		addTransf = this->registry->ctx().get<AdditionalTransformation>();
 
 	if (pos == nullptr && sr == nullptr)
