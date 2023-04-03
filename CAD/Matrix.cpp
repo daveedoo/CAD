@@ -90,3 +90,36 @@ glm::mat4 Matrix::Translation(glm::vec3 v)
 
 	return mat;
 }
+
+glm::mat4 Matrix::Rotation(const ScaleRotation& sr)
+{
+	//const float& X = sr.axisFi;
+	//const float& Y = sr.axisLambda;
+	//const float& Z = sr.axisZ;
+
+	//float lambda = glm::atan(X / Y);
+	//float fi = glm::atan(Z / Y * glm::sin(lambda));
+	float lambda = glm::radians(sr.axisLambda);
+	float fi = glm::radians(sr.axisFi);
+	float a = glm::radians(sr.angle);
+
+	float x = glm::cos(fi) * glm::cos(lambda);
+	float z = glm::cos(fi) * glm::sin(lambda);
+	float y = glm::sin(fi);
+	float s = glm::sin(a);
+	float c = glm::cos(a);
+	float t = 1 - c;
+
+	return glm::mat4{
+		t*x*x + c,		t*x*y + s*z,	t*x*z - s*y,	0,
+		t*x*y - s*z,	t*y*y + c,		t*y*z + s*x,	0,
+		t*x*z + s*y,	t*y*z - s*x,	t*z*z + c,		0,
+		0,				0,				0,				1
+	};
+}
+
+glm::mat4 Matrix::RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition)
+{
+	glm::vec3 T = addTransf.centerPoint - objectPosition;
+	return Matrix::Translation(T) * Matrix::Rotation(addTransf.scaleRotation) * Matrix::Translation(-T);
+}

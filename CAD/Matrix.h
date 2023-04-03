@@ -1,5 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
+#include "src/renderer/objects/Component.h"
 
 static class Matrix
 {
@@ -13,5 +14,7 @@ public:
 	static glm::mat4 RotationY(float angle);
 	static glm::mat4 RotationZ(float angle);
 	static glm::mat4 Translation(glm::vec3 v);
-};
 
+	static glm::mat4 Rotation(const ScaleRotation& scaleRotation);
+	static glm::mat4 RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition);
+};

@@ -91,9 +91,9 @@ void GUI::RenderGroupTransformationGUI()
 		auto& scaleRotation = objectsManager->GetGroupTransformations();
 		bool transfChanged = false;
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(scaleRotation.scale), 0.01f)) transfChanged = true;
-		if (ImGui::DragFloat("RotX", &scaleRotation.rotX, 0.01f)) transfChanged = true;
-		if (ImGui::DragFloat("RotY", &scaleRotation.rotY, 0.01f)) transfChanged = true;
-		if (ImGui::DragFloat("RotZ", &scaleRotation.rotZ, 0.01f)) transfChanged = true;
+		if (ImGui::DragFloat("Axis Lambda", &scaleRotation.axisLambda, 0.1f)) transfChanged = true;
+		if (ImGui::DragFloat("Axis Fi", &scaleRotation.axisFi, 0.1f)) transfChanged = true;
+		if (ImGui::DragFloat("Angle", &scaleRotation.angle, 0.1f)) transfChanged = true;
 		if (transfChanged)
 			this->objectsManager->SetGroupTransformations(scaleRotation);
 
@@ -132,14 +132,14 @@ void GUI::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp)
 
 void GUI::RenderTransformationTreeNode(entt::entity entity, Position& position, ScaleRotation& sr)
 {
-	if (ImGui::TreeNodeEx("Transformations", ImGuiTreeNodeFlags_DefaultOpen))
+	if (ImGui::TreeNodeEx("Local transformations", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		bool transformChanged = false;
 		if (ImGui::DragFloat3("Position", glm::value_ptr(position.position), 0.01f)) transformChanged = true;
 		if (ImGui::DragFloat3("Scale", glm::value_ptr(sr.scale), 0.01f)) transformChanged = true;
-		if (ImGui::DragFloat("RotX", &sr.rotX, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-		if (ImGui::DragFloat("RotY", &sr.rotY, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-		if (ImGui::DragFloat("RotZ", &sr.rotZ, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat("Axis Lambda", &sr.axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat("Axis Fi", &sr.axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+		if (ImGui::DragFloat("Angle", &sr.angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 		if (transformChanged)
 		{
 			objectsManager->UpdateTransformation(entity);

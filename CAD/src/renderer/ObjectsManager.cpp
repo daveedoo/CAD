@@ -105,21 +105,56 @@ void ObjectsManager::UpdateTorusMesh(entt::entity torusEntity)
 	registry->replace<Mesh>(torusEntity, std::move(newMesh));
 }
 
-glm::vec3 getResultingPosition(const Position& basePosition, std::optional<AdditionalTransformation> addTransf)
+glm::vec3 getResultingPosition(const Position& basePosition, std::optional<AdditionalTransformation> addTransf, Transformation* transf)
 {
 	glm::vec3 resPosition;
 	if (addTransf.has_value())
 		resPosition = addTransf.value().scaleRotation.scale * (basePosition.position - addTransf.value().centerPoint) + addTransf.value().centerPoint;
 	else
 		resPosition = basePosition.position;
+
+	//if (transf)
+	//	resPosition += glm::vec3(transf->worldMatrix[0][3],
+	//		transf->worldMatrix[1][3],
+	//		transf->worldMatrix[2][3]);
+		//resPosition += glm::vec3(transf->worldMatrix[3][0],
+		//	transf->worldMatrix[3][1],
+		//	transf->worldMatrix[3][2]);
+
 	return resPosition;
 }
-glm::vec3 getResultingScale(const glm::vec3& baseScale, std::optional<AdditionalTransformation> addTransf)
+ScaleRotation getResultingScaleRotation(const Position& basePosition, const ScaleRotation& baseScaleRot, std::optional<AdditionalTransformation> addTransf, glm::mat4 worldMatrix)
 {
-	glm::vec3 resScale = baseScale;
-	if (addTransf.has_value())
-		resScale *= addTransf.value().scaleRotation.scale;
-	return resScale;
+	glm::vec3 resScale = baseScaleRot.scale;
+	if (!addTransf.has_value())
+		return ScaleRotation(resScale);
+	
+	resScale *= addTransf.value().scaleRotation.scale;
+
+	//glm::mat4 pointRotation = Matrix::Translation(basePosition.position - addTransf->centerPoint)
+	float trace = worldMatrix[0][0] + worldMatrix[1][1] + worldMatrix[2][2];
+	float c = (trace - 1.f) / 2.f;
+	float s = glm::sqrt(1 - c * c);
+
+	float x = (worldMatrix[3][2] - worldMatrix[2][3]) / (2 * s);
+	float y = (worldMatrix[1][3] - worldMatrix[3][1]) / (2 * s);
+	float z = (worldMatrix[2][1] - worldMatrix[1][2]) / (2 * s);
+	//float x = (worldMatrix[2][3] - worldMatrix[3][2]) / (2 * s);
+	//float y = (worldMatrix[3][1] - worldMatrix[1][3]) / (2 * s);
+	//float z = (worldMatrix[1][2] - worldMatrix[2][1]) / (2 * s);
+	
+	float a = glm::acos(c);
+	float lambda = glm::atan(x / y);
+	float fi = glm::atan(z / y * glm::sin(lambda));
+	if (isnan(a))
+		a = 0.f;
+	if (isnan(lambda))
+		lambda = 0.f;
+	if (isnan(fi))
+		fi = 0;
+
+	//return ScaleRotation(resScale, baseScaleRot.axisFi, baseScaleRot.axisLambda, baseScaleRot.angle);
+	return ScaleRotation(resScale, glm::degrees(fi), glm::degrees(lambda), glm::degrees(a));
 }
 // TODO: add on_update() etc.
 void ObjectsManager::UpdateTransformation(entt::entity entity)
@@ -140,18 +175,31 @@ void ObjectsManager::UpdateTransformation(entt::entity entity)
 
 		if (pos != nullptr)
 		{
-			glm::vec3 resPosition = getResultingPosition(*pos, addTransf);
+			glm::vec3 resPosition = getResultingPosition(*pos, addTransf, transf);
 			T.worldMatrix *= Matrix::Translation(resPosition);
+			if (addTransf.has_value() && sr == nullptr)
+			{
+				// points only
+				T.worldMatrix *= Matrix::RotationAroundPoint(addTransf.value(), pos->position);
+			}
 		}
 		if (sr != nullptr)
 		{
-			glm::vec3 resScale = getResultingScale(sr->scale, addTransf);
-			T.worldMatrix *=
-				Matrix::RotationZ(glm::radians(sr->rotZ)) * Matrix::RotationY(glm::radians(sr->rotY)) * Matrix::RotationX(glm::radians(sr->rotX)) *
-				Matrix::Scale(resScale);
+			auto resScaleRot = getResultingScaleRotation(*pos, *sr, addTransf, transf->worldMatrix);
+			auto rotScaleMtx = Matrix::Rotation(*sr) * Matrix::Scale(resScaleRot.scale);
+			T.worldMatrix *= rotScaleMtx;
+
+			if (addTransf.has_value())
+			{
+				// toruses only
+				T.worldMatrix *= glm::inverse(rotScaleMtx) * Matrix::RotationAroundPoint(addTransf.value(), pos->position) * rotScaleMtx;	// TODO: points?
+			}
+
+			//if (selectable->selected)
+				//T.worldMatrix *= Matrix::Translation(glm::vec3(-10.f, 0.f, -10.f));
 		}
 
-		this->registry->emplace_or_replace<Transformation>(entity, T);
+		this->registry->emplace_or_replace<Transformation>(entity, T.worldMatrix);
 	}
 }
 
@@ -232,16 +280,20 @@ void ObjectsManager::EndGroupTransformations(bool apply)
 	auto groupTransf = this->registry->ctx().get<AdditionalTransformation&>();
 	this->registry->ctx().erase<AdditionalTransformation&>();
 
-	auto view = this->registry->view<Selectable, Position>();
-	for (auto [entity, selectable, position] : view.each())
+	auto view = this->registry->view<Selectable, Position, Transformation>();
+	for (auto [entity, selectable, position, transf] : view.each())
 	{
 		if (apply)
 		{
-			auto newPos = getResultingPosition(position, groupTransf);
+			auto newPos = getResultingPosition(position, groupTransf, &transf);
 			auto baseScaleRot = this->registry->try_get<ScaleRotation>(entity);
 			if (baseScaleRot != nullptr)
 			{
-				auto newScale = getResultingScale(baseScaleRot->scale, groupTransf);
+				auto newScale = getResultingScaleRotation(position, *baseScaleRot, groupTransf, transf.worldMatrix);
+				float axisFi = baseScaleRot->axisFi;
+				float axisLambda = baseScaleRot->axisLambda;
+				float angle = baseScaleRot->angle;
+				//this->registry->emplace_or_replace<ScaleRotation>(entity, newScale.scale, axisFi, axisLambda, angle);
 				this->registry->emplace_or_replace<ScaleRotation>(entity, newScale);
 			}
 			this->registry->emplace_or_replace<Position>(entity, newPos);

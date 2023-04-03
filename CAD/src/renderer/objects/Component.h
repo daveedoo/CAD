@@ -6,7 +6,6 @@
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "../../../Matrix.h"
 
 
 struct Selectable
@@ -21,12 +20,12 @@ struct Selectable
 struct ScaleRotation
 {
 	glm::vec3 scale;
-	float rotX;
-	float rotY;
-	float rotZ;
+	float axisFi;
+	float axisLambda;
+	float angle;
 
-	ScaleRotation(glm::vec3 scale = glm::vec3(1.f), float rotX = 0.f, float rotY = 0.f, float rotZ = 0.f)
-		: scale(scale), rotX(rotX), rotY(rotY), rotZ(rotZ) {}
+	ScaleRotation(glm::vec3 scale = glm::vec3(1.f), float axisFi = 0.f, float axisLambda = 0.f, float angle = 0.f)
+		: scale(scale), axisFi(axisFi), axisLambda(axisLambda), angle(angle) {}
 };
 
 struct Transformation
