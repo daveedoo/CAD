@@ -49,8 +49,15 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	this->guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
 
-	this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
+	//this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
+	const auto& point1 = this->objectsManager->CreatePoint(0.f, 1.f, 0.f);
+	const auto& point2 = this->objectsManager->CreatePoint(1.f, 2.f, 1.f);
 	//this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
+
+	auto bezierPoints = std::vector<entt::entity>{
+		point1, point2
+	};
+	this->objectsManager->CreateBezierC0(bezierPoints);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent

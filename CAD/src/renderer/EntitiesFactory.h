@@ -20,5 +20,7 @@ public:
 
 	entt::entity CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position);
 	entt::entity CreatePoint(glm::vec3 position);
+	entt::entity CreatePoint(float pos_x, float pos_y, float pos_z);
 	entt::entity CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength);
+	entt::entity CreateBezierC0(const std::vector<entt::entity>& points);
 };

@@ -39,4 +39,5 @@ private:
 	void RenderEntitiesDetailsWindow();
 	void RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp);
 	void RenderTransformationsTreeNode(entt::entity entity, Position* position, ScaleRotation* sr);
+	void RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier);
 };

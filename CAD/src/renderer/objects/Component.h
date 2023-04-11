@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <vector>
+#include <entt/entt.hpp>
 
 
 struct Selectable
@@ -95,4 +97,12 @@ private:
 
 struct Point
 {
+};
+
+struct BezierC0
+{
+	std::vector<entt::entity> points;
+
+	BezierC0(const std::vector<entt::entity>& points)
+		: points(points) {}
 };

@@ -38,6 +38,11 @@ entt::entity EntitiesFactory::CreatePoint(glm::vec3 position)
 	return entity;
 }
 
+entt::entity EntitiesFactory::CreatePoint(float pos_x, float pos_y, float pos_z)
+{
+	return CreatePoint(glm::vec3(pos_x, pos_y, pos_z));
+}
+
 entt::entity EntitiesFactory::CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength)
 {
 	auto mesh = Mesh::Cursor(lineLength);
@@ -49,4 +54,16 @@ entt::entity EntitiesFactory::CreateCursor(glm::vec3 position, GLfloat lineWidth
 	this->registry->emplace<Transformation>(entity);
 	this->registry->emplace<Dirty>(entity);
 	return entity;
+}
+
+entt::entity EntitiesFactory::CreateBezierC0(const std::vector<entt::entity>& points)
+{
+	static unsigned int counter = 0;
+	std::string name = std::format("BezierC0 {}", ++counter);
+
+	const auto& entity = registry->create();
+	this->registry->emplace<Selectable>(entity, name);
+	this->registry->emplace<BezierC0>(entity, points);
+
+	return entt::entity();
 }

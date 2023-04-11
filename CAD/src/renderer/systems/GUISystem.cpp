@@ -218,15 +218,17 @@ void GUISystem::RenderEntitiesDetailsWindow()
 				if (!selectable.selected)
 					continue;
 
-				if (this->registry->any_of<TorusComponent, Position, ScaleRotation>(entity))
+				if (this->registry->any_of<TorusComponent, Position, ScaleRotation, BezierC0>(entity))
 				{
 					if (ImGui::TreeNodeEx(selectable.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						auto [torusComp, position, scaleRot] = this->registry->try_get<TorusComponent, Position, ScaleRotation>(entity);
+						auto [torusComp, position, scaleRot, bezier_c0] = this->registry->try_get<TorusComponent, Position, ScaleRotation, BezierC0>(entity);	// TODO: duplicated type parameters
 						if (torusComp != nullptr)
 							RenderTorusTreeNode(entity, *torusComp);
 						if (position != nullptr || scaleRot != nullptr)
 							RenderTransformationsTreeNode(entity, position, scaleRot);
+						if (bezier_c0 != nullptr)
+							RenderBezierC0TreeNode(entity, *bezier_c0);
 						ImGui::TreePop();
 					}
 				}
@@ -267,6 +269,19 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 				SetDirty(entity);
 		}
 
+		ImGui::TreePop();
+	}
+}
+
+void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier)
+{
+	if (ImGui::TreeNodeEx("Points:", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		for (const auto& point : bezier.points)
+		{
+			const auto& selectable = this->registry->get<Selectable>(point);
+			ImGui::Selectable(selectable.name.c_str());
+		}
 		ImGui::TreePop();
 	}
 }
