@@ -265,9 +265,9 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 			if (ImGui::DragFloat("Axis Lambda", &sr->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 			if (ImGui::DragFloat("Axis Fi", &sr->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
 			if (ImGui::DragFloat("Angle", &sr->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (transformChanged)
-				SetDirty(entity);
 		}
+		if (transformChanged)
+			SetDirty(entity);
 
 		ImGui::TreePop();
 	}
