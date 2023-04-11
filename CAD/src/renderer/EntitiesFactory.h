@@ -7,7 +7,7 @@
 #include <optional>
 #include "../../Matrix.h"
 
-class ObjectsManager
+class EntitiesFactory
 {
 private:
 	const GLfloat SelectedObjectCursor_LineWidth = 2.f;
@@ -16,7 +16,7 @@ private:
 	std::shared_ptr<entt::registry> registry;
 
 public:
-	ObjectsManager(std::shared_ptr<entt::registry> registry);
+	EntitiesFactory(std::shared_ptr<entt::registry> registry);
 
 	entt::entity CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position);
 	entt::entity CreatePoint(glm::vec3 position);

@@ -1,7 +1,7 @@
 #include "SelectionSystem.h"
 #include "../objects/Component.h"
 
-SelectionSystem::SelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<ObjectsManager> objectsManager) : System(registry),
+SelectionSystem::SelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<EntitiesFactory> objectsManager) : System(registry),
 	objectsManager(objectsManager),
 	selectionCursor(objectsManager->CreateCursor(glm::vec3(0.f), Cursor_LineWidth, Cursor_LineLength))
 {

@@ -1,11 +1,11 @@
-#include "ObjectsManager.h"
+#include "EntitiesFactory.h"
 #include <format>
 
-ObjectsManager::ObjectsManager(std::shared_ptr<entt::registry> registry)
+EntitiesFactory::EntitiesFactory(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
 {}
 
-entt::entity ObjectsManager::CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position)
+entt::entity EntitiesFactory::CreateTorus(float minorR, float majorR, int minorSegments, int majorSegments, glm::vec3 position)
 {
 	static unsigned int counter = 0;
 	std::string name = std::format("Torus {}", ++counter);
@@ -24,7 +24,7 @@ entt::entity ObjectsManager::CreateTorus(float minorR, float majorR, int minorSe
 	return entity;
 }
 
-entt::entity ObjectsManager::CreatePoint(glm::vec3 position)
+entt::entity EntitiesFactory::CreatePoint(glm::vec3 position)
 {
 	static unsigned int counter = 0;
 	std::string name = std::format("Point {}", ++counter);
@@ -38,7 +38,7 @@ entt::entity ObjectsManager::CreatePoint(glm::vec3 position)
 	return entity;
 }
 
-entt::entity ObjectsManager::CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength)
+entt::entity EntitiesFactory::CreateCursor(glm::vec3 position, GLfloat lineWidth, float lineLength)
 {
 	auto mesh = Mesh::Cursor(lineLength);
 

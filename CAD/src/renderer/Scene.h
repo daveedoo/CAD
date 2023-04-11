@@ -7,7 +7,7 @@
 #include "objects/Floor/Floor.h"
 #include "objects/Component.h"
 #include <entt/entt.hpp>
-#include "ObjectsManager.h"
+#include "EntitiesFactory.h"
 #include "systems/System.h"
 #include "systems/GUISystem.h"
 #include "systems/TransformationsSystem.h"
@@ -25,7 +25,7 @@ private:
 	std::unique_ptr<Floor> floor;
 
 	std::shared_ptr<entt::registry> registry;
-	std::shared_ptr<ObjectsManager> objectsManager;
+	std::shared_ptr<EntitiesFactory> objectsManager;
 
 	entt::entity mainCursor;
 

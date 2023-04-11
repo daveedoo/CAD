@@ -139,8 +139,7 @@
     <ClCompile Include="src\renderer\systems\PointSystem.cpp" />
     <ClCompile Include="src\renderer\systems\GUISystem.cpp" />
     <ClCompile Include="src\gl\ProgramFactory.cpp" />
-    <ClCompile Include="src\renderer\ObjectsFactory.cpp" />
-    <ClCompile Include="src\renderer\ObjectsManager.cpp" />
+    <ClCompile Include="src\renderer\EntitiesFactory.cpp" />
     <ClCompile Include="src\renderer\objects\Component.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
@@ -174,8 +173,7 @@
     <ClInclude Include="src\renderer\systems\PointSystem.h" />
     <ClInclude Include="src\renderer\systems\GUISystem.h" />
     <ClInclude Include="src\gl\ProgramFactory.h" />
-    <ClInclude Include="src\renderer\ObjectsFactory.h" />
-    <ClInclude Include="src\renderer\ObjectsManager.h" />
+    <ClInclude Include="src\renderer\EntitiesFactory.h" />
     <ClInclude Include="src\renderer\objects\Component.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />

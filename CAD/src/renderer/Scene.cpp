@@ -28,7 +28,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
 	floor(std::make_unique<Floor>(50, 50)),
 	registry(std::make_shared<entt::registry>()),
-	objectsManager(std::make_shared<ObjectsManager>(this->registry)),
+	objectsManager(std::make_shared<EntitiesFactory>(this->registry)),
 	//gui(std::make_shared<GUI>(*this, this->objectsManager)),
 	torusSystem(std::make_unique<TorusSystem>(registry)),
 	pointsSystem(std::make_unique<PointSystem>(registry)),
@@ -50,7 +50,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 
 	this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
-	this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
+	//this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
