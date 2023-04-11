@@ -1,6 +1,5 @@
 #include "Program.h"
 #include <glm/gtc/type_ptr.hpp>
-//#include <iostream>
 
 namespace GL
 {

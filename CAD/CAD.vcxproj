@@ -131,6 +131,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\commands\CancelGroupTransformation.cpp" />
+    <ClCompile Include="src\renderer\commands\ChangeGroupTransformation.cpp" />
+    <ClCompile Include="src\renderer\gui\GroupTransformationWindow.cpp" />
+    <ClCompile Include="src\renderer\systems\SelectionSystem.cpp" />
+    <ClCompile Include="src\renderer\systems\CursorSystem.cpp" />
+    <ClCompile Include="src\renderer\systems\PointSystem.cpp" />
+    <ClCompile Include="src\renderer\systems\GUISystem.cpp" />
+    <ClCompile Include="src\gl\ProgramFactory.cpp" />
+    <ClCompile Include="src\renderer\ObjectsFactory.cpp" />
+    <ClCompile Include="src\renderer\ObjectsManager.cpp" />
+    <ClCompile Include="src\renderer\objects\Component.cpp" />
     <ClCompile Include="Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
     <ClCompile Include="src\Camera.cpp" />
@@ -141,15 +152,31 @@
     <ClCompile Include="src\gl\wrappers\VBO.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\objects\Ellipsoid\Ellipsoid.cpp" />
+    <ClCompile Include="src\renderer\objects\Floor\Floor.cpp" />
     <ClCompile Include="src\renderer\Renderer.cpp" />
     <ClCompile Include="src\renderer\Scene.cpp" />
-    <ClCompile Include="src\renderer\objects\Torus\Torus.cpp" />
     <ClCompile Include="src\Window\input\handlers\CameraMovementInputHandler.cpp" />
     <ClCompile Include="src\Window\Window.cpp" />
     <ClCompile Include="src\gl\wrappers\textures\Texture.cpp" />
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp" />
+    <ClCompile Include="src\renderer\systems\TorusSystem.cpp" />
+    <ClCompile Include="src\renderer\systems\TransformationsSystem.cpp" />
+    <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\commands\CancelGroupTransformation.h" />
+    <ClInclude Include="src\renderer\commands\ChangeGroupTransformation.h" />
+    <ClInclude Include="src\renderer\gui\GUIElement.h" />
+    <ClInclude Include="src\renderer\gui\GroupTransformationWindow.h" />
+    <ClInclude Include="src\renderer\commands\Command.h" />
+    <ClInclude Include="src\renderer\systems\SelectionSystem.h" />
+    <ClInclude Include="src\renderer\systems\CursorSystem.h" />
+    <ClInclude Include="src\renderer\systems\PointSystem.h" />
+    <ClInclude Include="src\renderer\systems\GUISystem.h" />
+    <ClInclude Include="src\gl\ProgramFactory.h" />
+    <ClInclude Include="src\renderer\ObjectsFactory.h" />
+    <ClInclude Include="src\renderer\ObjectsManager.h" />
+    <ClInclude Include="src\renderer\objects\Component.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />
     <ClInclude Include="src\Camera.h" />
@@ -160,9 +187,9 @@
     <ClInclude Include="src\gl\wrappers\VAO.h" />
     <ClInclude Include="src\gl\wrappers\VBO.h" />
     <ClInclude Include="src\renderer\objects\Ellipsoid\Ellipsoid.h" />
+    <ClInclude Include="src\renderer\objects\Floor\Floor.h" />
     <ClInclude Include="src\renderer\Renderer.h" />
     <ClInclude Include="src\renderer\Scene.h" />
-    <ClInclude Include="src\renderer\objects\Torus\Torus.h" />
     <ClInclude Include="src\Window\input\events\InputEvent.h" />
     <ClInclude Include="src\Window\input\events\modded\KeyEvent.h" />
     <ClInclude Include="src\Window\input\events\modded\KeyOrButtonEvent.h" />
@@ -175,8 +202,14 @@
     <ClInclude Include="src\Window\Window.h" />
     <ClInclude Include="src\gl\wrappers\textures\Texture.h" />
     <ClInclude Include="src\gl\wrappers\textures\Texture2D.h" />
+    <ClInclude Include="src\renderer\systems\TorusSystem.h" />
+    <ClInclude Include="src\renderer\systems\System.h" />
+    <ClInclude Include="src\renderer\systems\TransformationsSystem.h" />
+    <ClInclude Include="src\renderer\commands\StartGroupTransformation.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\gl\shaders\coloredVertices.frag" />
+    <None Include="src\gl\shaders\coloredVertices.vert" />
     <None Include="src\gl\shaders\ellipsoid.frag" />
     <None Include="src\gl\shaders\texture.frag" />
     <None Include="src\gl\shaders\texture.vert" />

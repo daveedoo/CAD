@@ -21,6 +21,16 @@ glm::mat4 Matrix::Scale(float ratio)
 	);
 }
 
+glm::mat4 Matrix::Scale(glm::vec3 scale)
+{
+	return glm::mat4(
+		scale.x, 0.f, 0.f, 0.f,
+		0.f, scale.y, 0.f, 0.f,
+		0.f, 0.f, scale.z, 0.f,
+		0.f, 0.f, 0.f, 1.f
+	);
+}
+
 glm::mat4 Matrix::LookAt(const glm::vec3& eye, const glm::vec3& center, const glm::vec3& up)
 {
 	const glm::vec3 newZ = glm::normalize(eye - center);
@@ -35,22 +45,81 @@ glm::mat4 Matrix::LookAt(const glm::vec3& eye, const glm::vec3& center, const gl
 	);
 }
 
+glm::mat4 Matrix::RotationX(float angle)
+{
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
+	return glm::mat4(
+		1, 0, 0, 0,
+		0, cos, sin, 0,
+		0, -sin, cos, 0,
+		0, 0, 0, 1
+	);
+}
+
 glm::mat4 Matrix::RotationY(float angle)
 {
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
 	return glm::mat4(
-		glm::cos(angle), 0.f, -glm::sin(angle), 0.f,
+		cos, 0.f, -sin, 0.f,
 		0.f, 1.f, 0.f, 0.f,
-		glm::sin(angle), 0.f, glm::cos(angle), 0.f,
+		sin, 0.f, cos, 0.f,
 		0.f, 0.f, 0.f, 1.f
 	);
 }
 
 glm::mat4 Matrix::RotationZ(float angle)
 {
+	float cos = glm::cos(angle);
+	float sin = glm::sin(angle);
 	return glm::mat4(
-		1.0f, 0.f, 0.f, 0.f,
-		0.f, glm::cos(angle), glm::sin(angle), 0.f,
-		0.f, -glm::sin(angle), glm::cos(angle), 0.f,
-		0.f, 0.f, 0.f, 1.f
+		cos, sin, 0, 0,
+		-sin, cos, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
 	);
+}
+
+glm::mat4 Matrix::Translation(glm::vec3 v)
+{
+	auto mat = glm::mat4(1.f);
+	mat[3][0] = v.x;
+	mat[3][1] = v.y;
+	mat[3][2] = v.z;
+
+	return mat;
+}
+
+glm::mat4 Matrix::Rotation(const ScaleRotation& sr)
+{
+	//const float& X = sr.axisFi;
+	//const float& Y = sr.axisLambda;
+	//const float& Z = sr.axisZ;
+
+	//float lambda = glm::atan(X / Y);
+	//float fi = glm::atan(Z / Y * glm::sin(lambda));
+	float lambda = glm::radians(sr.axisLambda);
+	float fi = glm::radians(sr.axisFi);
+	float a = glm::radians(sr.angle);
+
+	float x = glm::cos(fi) * glm::cos(lambda);
+	float z = glm::cos(fi) * glm::sin(lambda);
+	float y = glm::sin(fi);
+	float s = glm::sin(a);
+	float c = glm::cos(a);
+	float t = 1 - c;
+
+	return glm::mat4{
+		t*x*x + c,		t*x*y + s*z,	t*x*z - s*y,	0,
+		t*x*y - s*z,	t*y*y + c,		t*y*z + s*x,	0,
+		t*x*z + s*y,	t*y*z - s*x,	t*z*z + c,		0,
+		0,				0,				0,				1
+	};
+}
+
+glm::mat4 Matrix::RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition)
+{
+	glm::vec3 T = addTransf.centerPoint - objectPosition;
+	return Matrix::Translation(T) * Matrix::Rotation(addTransf.scaleRotation) * Matrix::Translation(-T);
 }

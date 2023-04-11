@@ -2,6 +2,7 @@
 #include <exception>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/integer.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "Renderer.h"
 #include "../Config.h"
@@ -153,6 +154,10 @@ bool Renderer::ShouldBeRenderedAdaptively() const
 
 void Renderer::Render()
 {
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+
 	if (this->ShouldBeRenderedAdaptively())
 	{
 		// 1st pass
@@ -173,75 +178,14 @@ void Renderer::Render()
 		glViewport(0, 0, this->framebufferWidth, this->framebufferHeight);
 		this->scene->Render();
 	}
-
-
 	this->RenderGUI();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Renderer::RenderGUI()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	static const float GUI_WIDTH = 300.f;
-
-	ImVec2 nextWndPos{};
-	ImVec2 wndSize{};
-	//ImGui::SetNextWindowPos(nextWndPos);
-	//ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0.f));
-	//ImGui::Begin("Ellipsoid");
-	//ImGui::DragFloat("X semi-axis", &this->scene->ellipsoid->R_X, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-	//ImGui::DragFloat("Y semi-axis", &this->scene->ellipsoid->R_Y, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-	//ImGui::DragFloat("Z semi-axis", &this->scene->ellipsoid->R_Z, 0.001f, 0.001f, 10.0f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-	//nextWndPos.y += ImGui::GetWindowSize().y;
-	//ImGui::End();
-
-	//ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
-	//ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
-	//ImGui::Begin("Light");
-	//ImGui::DragFloat("Shininess", &this->scene->ellipsoid->shininess, 0.1f, 0.f, 100.f, "%.3f", ImGuiSliderFlags_AlwaysClamp);
-	//ImVec2 wndSize = ImGui::GetWindowSize();
-	//nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
-	//ImGui::End();
-
-	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
-	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
-	ImGui::Begin("Adaptive shading");
-	if (ImGui::Checkbox("ON", &this->adaptiveShadingOn))
-	{
-		this->UpdateSceneFramebufferSize();
-	}
-	if (!this->adaptiveShadingOn)
-		ImGui::BeginDisabled();
-	if (ImGui::DragInt("Adaptive level", &this->adaptiveLvl, 1.f, 1, glm::min(this->framebufferWidth, this->framebufferHeight), "%d", ImGuiSliderFlags_AlwaysClamp))
-	{
-		this->UpdateMaxAdaptiveLvl();
-		this->UpdateSceneFramebufferSize();
-	}
-	if (!this->adaptiveShadingOn)
-		ImGui::EndDisabled();
-	wndSize = ImGui::GetWindowSize();
-	nextWndPos = ImVec2(nextWndPos.x + wndSize.x, nextWndPos.y + wndSize.y);
-	ImGui::End();
-
-	static float minorR = this->scene->torus->GetMinorR();
-	static float majorR = this->scene->torus->GetMajorR();
-	static int minorSegments = this->scene->torus->GetMinorSegments();
-	static int majorSegments = this->scene->torus->GetMajorSegments();
-	ImGui::SetNextWindowPos(ImVec2(0, nextWndPos.y));
-	ImGui::SetNextWindowSize(ImVec2(GUI_WIDTH, 0));
-	ImGui::Begin("Torus");
-	if (ImGui::DragFloat("Minor R", &minorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMinorR(minorR);
-	if (ImGui::DragFloat("Major R", &majorR, 0.001f, 0.01f, 10.f, "%3f", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMajorR(majorR);
-	if (ImGui::DragInt("Minor segments", &minorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMinorSegments(minorSegments);
-	if (ImGui::DragInt("Major segments", &majorSegments, 1, 3, 200, "%d", ImGuiSliderFlags_AlwaysClamp))
-		this->scene->torus->SetMajorSegments(majorSegments);
-	ImGui::End();
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	static const float GUI_WIDTH = 400.f;
+	ImGui::ShowDemoWindow();
 }

@@ -64,17 +64,18 @@ void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& even
 		}
 		if (translationOn)
 		{
-			this->camera.Translate(glm::vec3(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY, 0, mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY));
+			// negative, because we are translating the camera, not scene
+			this->camera.Translate(glm::vec3(-(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY), 0, -(mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY)));
 		}
 	}
 }
 
 void CameraMovementInputHandler::HandleScrollEvent(const MouseScrollEvent& event)
 {
-	static constexpr double MOUSE_SCROLL_SENSITIVITY = 0.05;
+	static constexpr float MOUSE_SCROLL_SENSITIVITY = 0.05f;
 
 	if (event.yoffset > 0)
-		this->camera.Scale((float)(1.0 + MOUSE_SCROLL_SENSITIVITY * event.yoffset));
+		this->camera.Scale(1.f + MOUSE_SCROLL_SENSITIVITY * event.yoffset);
 	else
-		this->camera.Scale((float)(1.0/(1.0 - MOUSE_SCROLL_SENSITIVITY * event.yoffset)));
+		this->camera.Scale(1.f/(1.f - MOUSE_SCROLL_SENSITIVITY * event.yoffset));
 }

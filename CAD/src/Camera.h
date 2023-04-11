@@ -8,9 +8,10 @@ private:
 	glm::mat4 projection;
 
 	glm::vec3 translation = glm::vec3(0.f, 0.f, 0.f);
-	//float roll = 0.f;
+
+	static constexpr float YAW_ZERO = 90.f;
 	float pitch = 0.f;
-	float yaw = 270.f;	// defualt camera position is (0, 0, -1)
+	float yaw = YAW_ZERO;	// defualt camera position is (0, 0, 1)
 	float scale = 1.0;
 
 	void UpdateViewMatrix();

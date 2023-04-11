@@ -4,10 +4,10 @@ namespace GL
 {
 	GLuint VBO::currentlyBoundVboID = 0;
 
-	VBO::VBO(const void* data, size_t size) : dataSize(0)
+	VBO::VBO(const void* data, size_t size) : dataSize(size)
 	{
 		glGenBuffers(1, &this->ID);
-		this->SetBufferData(data, size);
+		SetBufferData(data, size);
 	}
 
 	VBO::~VBO()
@@ -37,14 +37,14 @@ namespace GL
 
 	void VBO::SetBufferData(const void* data, size_t size)
 	{
-		this->Bind();
 		if (size == 0)
 		{
 			this->dataSize = 0;
 			return;
 		}
 
+		this->Bind();
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
-		this->dataSize = size;
+		//glBufferSubData(GL_ARRAY_BUFFER, 0, this->dataSize, data);
 	}
 }
