@@ -36,6 +36,9 @@ struct Transformation
 		: worldMatrix(matrix) {}
 };
 
+struct Dirty
+{};
+
 struct AdditionalTransformation
 {
 	glm::vec3 centerPoint;

@@ -7,29 +7,34 @@
 #include "objects/Floor/Floor.h"
 #include "objects/Component.h"
 #include <entt/entt.hpp>
-#include "GUI.h"
 #include "ObjectsManager.h"
+#include "systems/System.h"
+#include "systems/GUISystem.h"
+#include "systems/TransformationsSystem.h"
+#include "systems/SelectionSystem.h"
 
 class Scene
 {
 private:
+	const GLfloat SelectedObjectCursor_LineWidth = 2.f;
+	const float SelectedObjectCursor_LineLength = 0.5f;
 	const glm::vec3 bgColor = glm::vec3(0.4f, 0.4f, 0.4f);
 
 	std::unique_ptr<Camera> camera;
 	std::unique_ptr<CameraMovementInputHandler> cameraMovementHandler;
-
 	std::unique_ptr<Floor> floor;
 
 	std::shared_ptr<entt::registry> registry;
 	std::shared_ptr<ObjectsManager> objectsManager;
 
-	std::unique_ptr<GL::Program> torusProgram;
-	std::unique_ptr<GL::Program> cursorProgram;
+	entt::entity mainCursor;
 
-	std::unique_ptr<GL::VAO> pointsVao;
-
-	entt::entity cursor;
-	std::unique_ptr<GUI> gui;
+	std::unique_ptr<System> torusSystem;
+	std::unique_ptr<System> pointsSystem;
+	std::unique_ptr<System> cursorSystem;
+	std::unique_ptr<GUISystem> guiSystem;
+	std::unique_ptr<TransformationsSystem> transformationsSystem;
+	std::shared_ptr<SelectionSystem> selectionSystem;
 
 public:
 	Scene(unsigned int frame_width, unsigned int frame_height);
@@ -40,10 +45,11 @@ public:
 	void HandleEvent(const InputEvent& inputEvent);
 	bool IsSceneMoving() const { return cameraMovementHandler->IsCameraMoving(); }
 	void SetFramebufferSize(unsigned int width, unsigned int height);
+	entt::entity GetMainCursor() { return this->mainCursor; }
 
-private:
-	void torus_system();
-	void namedEntities_system();
-	void cursors_system();
-	void points_system();
+	entt::entity AddTorus();
+	entt::entity AddPoint();
+	void RemoveEntity(entt::entity entity);
+	void SetSelected(entt::entity entity);
+	void SetUnselected(entt::entity entity);
 };

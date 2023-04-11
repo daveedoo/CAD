@@ -11,6 +11,16 @@
 #include <imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "../../Matrix.h"
+#include "../gl/ProgramFactory.h"
+#include "systems/TorusSystem.h"
+#include "systems/PointSystem.h"
+#include "systems/CursorSystem.h"
+#include "systems/GUISystem.h"
+#include "commands/Command.h"
+#include "commands/StartGroupTransformation.h"
+#include "gui/GroupTransformationWindow.h"
+#include "commands/ChangeGroupTransformation.h"
+#include "commands/CancelGroupTransformation.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -19,22 +29,25 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	floor(std::make_unique<Floor>(50, 50)),
 	registry(std::make_shared<entt::registry>()),
 	objectsManager(std::make_shared<ObjectsManager>(this->registry)),
-	gui(std::make_unique<GUI>(this->registry, this->objectsManager))
+	//gui(std::make_shared<GUI>(*this, this->objectsManager)),
+	torusSystem(std::make_unique<TorusSystem>(registry)),
+	pointsSystem(std::make_unique<PointSystem>(registry)),
+	cursorSystem(std::make_unique<CursorSystem>(registry)),
+	guiSystem(std::make_unique<GUISystem>(registry, *this)),
+	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
+	selectionSystem(std::make_shared<SelectionSystem>(registry, objectsManager)),
+	mainCursor(objectsManager->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
 {
 	this->camera->Scale(1.f / 10.f);
 
-	auto shadersPath = std::filesystem::path(SHADERS_DIR);
-	GL::Shader vertexShader(GL::Shader::ShaderType::VERTEX_SHADER, shadersPath / "torus.vert");
-	GL::Shader fragmentShader(GL::Shader::ShaderType::FRAGMENT_SHADER, shadersPath / "torus.frag");
-	this->torusProgram = std::make_unique<GL::Program>(vertexShader, fragmentShader);
-	this->torusProgram->SetVec3("color", glm::vec3(1.f));
+	// build GUI
+	auto groupScaleRoation = std::make_shared<ScaleRotation>();
+	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupScaleRoation);
+	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupScaleRoation);
+	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupScaleRoation);
+	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, cancel, cancel);
+	this->guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
-	GL::Shader cursorVS(GL::Shader::ShaderType::VERTEX_SHADER, shadersPath / "coloredVertices.vert");
-	GL::Shader cursorFS(GL::Shader::ShaderType::FRAGMENT_SHADER, shadersPath / "coloredVertices.frag");
-	this->cursorProgram = std::make_unique<GL::Program>(cursorVS, cursorFS);
-
-	this->pointsVao = std::make_unique<GL::VAO>();
-	this->pointsVao->DefineFloatAttribute(*this->objectsManager->pointsVBO, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
 
 	this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
 	this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
@@ -52,6 +65,8 @@ void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 
 void Scene::Update()
 {
+	this->selectionSystem->Update(*this->camera);
+	this->transformationsSystem->Update(*this->camera);
 }
 
 void Scene::Render()
@@ -62,104 +77,38 @@ void Scene::Render()
 	// TODO: make it to ECS
 	this->floor->Render(*this->camera);
 
-	this->gui->RenderMenu();
-	cursors_system();
-	torus_system();
-	namedEntities_system();
-	points_system();
+	this->guiSystem->Render(*this->camera);
+	this->torusSystem->Render(*this->camera);
+	this->pointsSystem->Render(*this->camera);
+	this->cursorSystem->Render(*this->camera);
 }
 
-glm::vec3 GetObjectColor(bool isSelected)
+
+entt::entity Scene::AddTorus()
 {
-	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
+	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
+	return objectsManager->CreateTorus(1.f, 5.f, 10, 10, cursorPos);
 }
 
-// renders toruses, uses their own meshes
-void Scene::torus_system()
+entt::entity Scene::AddPoint()
 {
-	this->torusProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
-	this->torusProgram->SetMat4("projMatrix", camera->GetProjectionMatrix());
-	glLineWidth(1.f);
-
-	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
-	
-	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, ScaleRotation, Transformation>();
-	for (auto [entt, torusComp, mesh, selectable, position, sr, transf] : view.each())
-	{
-		glm::mat4 worldMtx = transf.worldMatrix;
-
-		mesh.vao->Bind();
-		this->torusProgram->Use();
-		this->torusProgram->SetMat4("worldMatrix", worldMtx);
-		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
-		glDrawElements(GL_LINES, 4 * torusComp.minorSegments * torusComp.majorSegments, static_cast<GLenum>(mesh.ebo->GetDataType()), static_cast<void*>(0));
-
-		if (selectable.selected && selectedCount == 1)
-		{
-			this->gui->RenderTorusGUI(selectable.name, entt, torusComp, position, sr);
-		}
-	}
+	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
+	return objectsManager->CreatePoint(cursorPos);
 }
 
-// GUI list only
-void Scene::namedEntities_system()
+void Scene::RemoveEntity(entt::entity entity)
 {
-	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
-	if (selectedCount > 1)
-	{
-		this->gui->RenderGroupTransformationGUI();
-	}
-
-	std::vector<std::tuple<entt::entity, Selectable&>> objects;
-	auto view = this->registry->view<Selectable>();
-	for (auto object : view.each())
-		objects.push_back(object);
-
-	this->gui->RenderObjectsList(objects);
+	this->registry->destroy(entity);
 }
 
-// renders all cursors, uses common mesh
-// TODO: make main cursor bigger
-void Scene::cursors_system()
+void Scene::SetSelected(entt::entity entity)
 {
-	static Mesh cursorMesh = Mesh::Cursor(0.5f);	// TODO
-
-	this->cursorProgram->Use();
-	this->cursorProgram->SetMat4("viewMatrix", camera->GetViewMatrix());
-	this->cursorProgram->SetMat4("projMatrix", camera->GetProjectionMatrix());
-
-	// torus cursors
-	auto view = this->registry->view<Cursor, Transformation>();
-	for (auto [entity, cursor, Transformation] : view.each())
-	{
-		cursorMesh.vao->Bind();
-		this->cursorProgram->SetMat4("worldMatrix", Transformation.worldMatrix);
-
-		glLineWidth(cursor.lineWidth);
-		glDrawArrays(GL_LINES, 0, 6);	// TODO: move parameters to Mesh component
-	}
-
-	// main cursor
-	auto [cursor, mesh, position] = this->registry->get<Cursor, Mesh, Position>(objectsManager->cursor);
-	this->gui->RenderCursorWindow(objectsManager->cursor, position.position);
+	this->registry->emplace_or_replace<Cursor>(entity, SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineLength);
+	this->selectionSystem->UpdateCursor();
 }
 
-// renders points 1 by 1, uses common VAO
-void Scene::points_system()
+void Scene::SetUnselected(entt::entity entity)
 {
-	this->torusProgram->Use();
-	this->pointsVao->Bind();
-	const unsigned int selectedCount = this->objectsManager->GetSelectedEntitiesCount();
-
-	auto view = this->registry->view<Point, Selectable, Position, Transformation>();
-	for (auto [entity, selectable, position, transf] : view.each())
-	{
-		this->torusProgram->SetMat4("worldMatrix", transf.worldMatrix);
-		this->torusProgram->SetVec3("color", GetObjectColor(selectable.selected));
-		glPointSize(5.f);
-		glDrawArrays(GL_POINTS, 0, 1);
-
-		if (selectable.selected && selectedCount == 1)
-			this->gui->RenderPointGUI(selectable.name, entity, position);
-	}
+	this->registry->remove<Cursor>(entity);
+	this->selectionSystem->UpdateCursor();
 }
