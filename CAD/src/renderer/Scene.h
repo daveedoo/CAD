@@ -35,6 +35,7 @@ private:
 	std::unique_ptr<GUISystem> guiSystem;
 	std::unique_ptr<TransformationsSystem> transformationsSystem;
 	std::shared_ptr<SelectionSystem> selectionSystem;
+	std::unique_ptr<System> bezierC0System;
 
 public:
 	Scene(unsigned int frame_width, unsigned int frame_height);

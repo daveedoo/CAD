@@ -21,6 +21,7 @@
 #include "gui/GroupTransformationWindow.h"
 #include "commands/ChangeGroupTransformation.h"
 #include "commands/CancelGroupTransformation.h"
+#include "systems/BezierC0System.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -36,6 +37,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	guiSystem(std::make_unique<GUISystem>(registry, *this)),
 	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, objectsManager)),
+	bezierC0System(std::make_unique<BezierC0System>(registry)),
 	mainCursor(objectsManager->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
 {
 	this->camera->Scale(1.f / 10.f);
@@ -51,11 +53,13 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 	//this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
 	const auto& point1 = this->objectsManager->CreatePoint(0.f, 1.f, 0.f);
-	const auto& point2 = this->objectsManager->CreatePoint(1.f, 2.f, 1.f);
+	const auto& point2 = this->objectsManager->CreatePoint(1.f, 7.f, 1.f);
+	const auto& point3 = this->objectsManager->CreatePoint(2.f, 3.f, 3.f);
+	const auto& point4 = this->objectsManager->CreatePoint(3.f, 4.f, 8.f);
 	//this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
 
 	auto bezierPoints = std::vector<entt::entity>{
-		point1, point2
+		point1, point2, point3, point4
 	};
 	this->objectsManager->CreateBezierC0(bezierPoints);
 }
@@ -88,6 +92,7 @@ void Scene::Render()
 	this->torusSystem->Render(*this->camera);
 	this->pointsSystem->Render(*this->camera);
 	this->cursorSystem->Render(*this->camera);
+	this->bezierC0System->Render(*this->camera);
 }
 
 

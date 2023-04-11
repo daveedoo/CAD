@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\systems\BezierC0System.cpp" />
     <ClCompile Include="src\renderer\commands\CancelGroupTransformation.cpp" />
     <ClCompile Include="src\renderer\commands\ChangeGroupTransformation.cpp" />
     <ClCompile Include="src\renderer\gui\GroupTransformationWindow.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\systems\BezierC0System.h" />
     <ClInclude Include="src\renderer\commands\CancelGroupTransformation.h" />
     <ClInclude Include="src\renderer\commands\ChangeGroupTransformation.h" />
     <ClInclude Include="src\renderer\gui\GUIElement.h" />
