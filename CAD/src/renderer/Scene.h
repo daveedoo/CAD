@@ -12,6 +12,7 @@
 #include "systems/GUISystem.h"
 #include "systems/TransformationsSystem.h"
 #include "systems/SelectionSystem.h"
+#include "systems/BezierC0System.h"
 
 class Scene
 {
@@ -20,8 +21,8 @@ private:
 	const float SelectedObjectCursor_LineLength = 0.5f;
 	const glm::vec3 bgColor = glm::vec3(0.4f, 0.4f, 0.4f);
 
-	std::unique_ptr<Camera> camera;
-	std::unique_ptr<CameraMovementInputHandler> cameraMovementHandler;
+	std::shared_ptr<Camera> camera;
+	std::shared_ptr<CameraMovementInputHandler> cameraMovementHandler;
 	std::unique_ptr<Floor> floor;
 
 	std::shared_ptr<entt::registry> registry;
@@ -35,7 +36,7 @@ private:
 	std::unique_ptr<GUISystem> guiSystem;
 	std::unique_ptr<TransformationsSystem> transformationsSystem;
 	std::shared_ptr<SelectionSystem> selectionSystem;
-	std::unique_ptr<System> bezierC0System;
+	std::unique_ptr<BezierC0System> bezierC0System;
 
 public:
 	Scene(unsigned int frame_width, unsigned int frame_height);

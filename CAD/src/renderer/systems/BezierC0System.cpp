@@ -3,15 +3,31 @@
 #include <iostream>
 
 
-BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry) : System(std::move(registry)),
-	program(ProgramFactory::CreateProgram("torus.vert", "torus.frag"))
+BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<Camera> camera)
+	: System(std::move(registry)),
+	program(ProgramFactory::CreateProgram("torus.vert", "torus.frag")),
+	cameraHandler(std::move(cameraHandler)),
+	camera(camera)
 {
-	this->registry->on_construct<BezierC0>().connect<&BezierC0System::OnBezierC0Construct>(*this);
+	this->registry->on_construct<BezierC0>().connect<&BezierC0System::UpdateCurveMesh>(*this);
+}
+
+void BezierC0System::UpdateScreenSize(int width, int height)
+{
+	this->scrWidth = width;
+	this->scrHeight = scrHeight;
 }
 
 void BezierC0System::Update(const Camera& camera)
 {
-
+	if (cameraHandler->IsCameraMoving())
+	{
+		auto view = this->registry->view<BezierC0, Mesh>();
+		for (auto [entity, bezier, mesh] : view.each())
+		{
+			UpdateCurveMesh(*this->registry, entity);
+		}
+	}
 }
 
 void BezierC0System::Render(const Camera& camera)
@@ -22,6 +38,11 @@ void BezierC0System::Render(const Camera& camera)
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 	this->program->SetVec3("color", glm::vec3(1.f));
 	glLineWidth(1.f);
+	glPointSize(0.5f);
+	
+	double min = 0.0;
+	double max = 10.0;
+	ImGui::DragScalar("Segments multiplier", ImGuiDataType_Double, &this->segmentsMultiplier, 0.1f, &min, &max, 0, ImGuiSliderFlags_Logarithmic);
 
 	auto view = this->registry->view<BezierC0, Mesh>();
 	for (auto [entity, bezier, mesh] : view.each())
@@ -48,7 +69,7 @@ glm::vec3 BezierC0System::CalculateBezierValue(const glm::vec3& b0, const glm::v
 	return b3_0;
 }
 
-std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bezier, unsigned int segments)
+std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bezier)
 {
 	std::vector<glm::vec3> points;
 	for (size_t i = 0; i < bezier.points.size() / 4; i++)
@@ -58,7 +79,9 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 		auto b1 = this->registry->get<Position>(bezier.points[4 * i + 1]).position;
 		auto b2 = this->registry->get<Position>(bezier.points[4 * i + 2]).position;
 		auto b3 = this->registry->get<Position>(bezier.points[4 * i + 3]).position;
+		auto arr = std::array<glm::vec3, 4>{ b0, b1, b2, b3 };
 
+		unsigned int segments = CalculateSegmentsCount(arr);
 		for (size_t j = 0; j <= segments; j++)
 		{
 			points.push_back(BezierC0System::CalculateBezierValue(b0, b1, b2, b3, static_cast<float>(j) / segments));
@@ -68,16 +91,38 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 	return points;
 }
 
-unsigned int BezierC0System::CalculateSegmentsCount()
+unsigned int BezierC0System::CalculateSegmentsCount(std::array<glm::vec3, 4> arr)
 {
-	return 4;
+	auto viewProj = this->camera->GetProjectionMatrix() * this->camera->GetViewMatrix();
+
+	std::array<glm::vec2, 4> bezierPoints;
+	for (size_t i = 0; i < 4; i++)
+	{
+		auto bi = glm::vec4(arr[i], 1.f);
+		auto bi_scr = viewProj * bi;
+		bi_scr /= bi_scr.w;
+
+		bezierPoints[i] = bi_scr;
+	}
+
+	double length = 0.0;
+	for (size_t i = 0; i < 4; i++)
+	{
+		const auto& p1 = bezierPoints[(i + 0) % 4];
+		const auto& p2 = bezierPoints[(i + 1) % 4];
+
+		float w = ((p1.x - p2.x) / 2) * scrWidth;
+		float h = ((p1.y - p2.y) / 2) * scrHeight;
+		length += sqrt(w * w + h * h);
+	}
+	std::cout << length << std::endl;
+	return segmentsMultiplier * length;
 }
 
-void BezierC0System::OnBezierC0Construct(entt::registry& registry, entt::entity entity)
+void BezierC0System::UpdateCurveMesh(entt::registry& registry, entt::entity entity)
 {
 	const auto& bezier = registry.get<BezierC0>(entity);
-	int segments = CalculateSegmentsCount();
-	auto points = CalculateBezierValues(bezier, segments);
+	auto points = CalculateBezierValues(bezier);
 
 	auto vao = std::make_unique<GL::VAO>();
 	auto ebo = std::make_unique<GL::EBO>();

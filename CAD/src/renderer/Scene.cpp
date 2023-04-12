@@ -25,19 +25,18 @@
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
-	camera(std::make_unique<Camera>(90, static_cast<float>(frame_width) / static_cast<float>(frame_height), 0.1f, 100.f)),
-	cameraMovementHandler(std::make_unique<CameraMovementInputHandler>(*this->camera)),
+	camera(std::make_shared<Camera>(90, static_cast<float>(frame_width) / static_cast<float>(frame_height), 0.1f, 100.f)),
+	cameraMovementHandler(std::make_shared<CameraMovementInputHandler>(*this->camera)),
 	floor(std::make_unique<Floor>(50, 50)),
 	registry(std::make_shared<entt::registry>()),
 	objectsManager(std::make_shared<EntitiesFactory>(this->registry)),
-	//gui(std::make_shared<GUI>(*this, this->objectsManager)),
 	torusSystem(std::make_unique<TorusSystem>(registry)),
 	pointsSystem(std::make_unique<PointSystem>(registry)),
 	cursorSystem(std::make_unique<CursorSystem>(registry)),
 	guiSystem(std::make_unique<GUISystem>(registry, *this)),
 	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, objectsManager)),
-	bezierC0System(std::make_unique<BezierC0System>(registry)),
+	bezierC0System(std::make_unique<BezierC0System>(registry, cameraMovementHandler, camera)),
 	mainCursor(objectsManager->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
 {
 	this->camera->Scale(1.f / 10.f);
@@ -72,12 +71,14 @@ void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 {
 	this->camera->SetAspect(static_cast<float>(width) / static_cast<float>(height));
+	this->bezierC0System->UpdateScreenSize(width, height);
 }
 
 void Scene::Update()
 {
 	this->selectionSystem->Update(*this->camera);
 	this->transformationsSystem->Update(*this->camera);
+	this->bezierC0System->Update(*this->camera);
 }
 
 void Scene::Render()
