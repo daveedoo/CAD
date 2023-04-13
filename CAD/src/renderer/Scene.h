@@ -13,6 +13,7 @@
 #include "systems/TransformationsSystem.h"
 #include "systems/SelectionSystem.h"
 #include "systems/BezierC0System.h"
+#include "systems/CurveSegmentsMetrics/BernsteinPolygonMetrics.h"
 
 class Scene
 {
@@ -26,7 +27,8 @@ private:
 	std::unique_ptr<Floor> floor;
 
 	std::shared_ptr<entt::registry> registry;
-	std::shared_ptr<EntitiesFactory> objectsManager;
+	std::shared_ptr<EntitiesFactory> entitiesFactory;
+	std::shared_ptr<BernsteinPolygonMetrics> curveSegmentsMetrics;
 
 	entt::entity mainCursor;
 

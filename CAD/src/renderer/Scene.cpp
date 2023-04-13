@@ -29,15 +29,16 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	cameraMovementHandler(std::make_shared<CameraMovementInputHandler>(*this->camera)),
 	floor(std::make_unique<Floor>(50, 50)),
 	registry(std::make_shared<entt::registry>()),
-	objectsManager(std::make_shared<EntitiesFactory>(this->registry)),
+	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
+	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
 	torusSystem(std::make_unique<TorusSystem>(registry)),
 	pointsSystem(std::make_unique<PointSystem>(registry)),
 	cursorSystem(std::make_unique<CursorSystem>(registry)),
 	guiSystem(std::make_unique<GUISystem>(registry, *this)),
 	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
-	selectionSystem(std::make_shared<SelectionSystem>(registry, objectsManager)),
-	bezierC0System(std::make_unique<BezierC0System>(registry, cameraMovementHandler, camera)),
-	mainCursor(objectsManager->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
+	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
+	bezierC0System(std::make_unique<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics)),
+	mainCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
 {
 	this->camera->Scale(1.f / 10.f);
 
@@ -49,18 +50,16 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, cancel, cancel);
 	this->guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
-
-	//this->objectsManager->CreateTorus(1.f, 3.f, 10, 10, glm::vec3(0.f));
-	const auto& point1 = this->objectsManager->CreatePoint(0.f, 1.f, 0.f);
-	const auto& point2 = this->objectsManager->CreatePoint(1.f, 7.f, 1.f);
-	const auto& point3 = this->objectsManager->CreatePoint(2.f, 3.f, 3.f);
-	const auto& point4 = this->objectsManager->CreatePoint(3.f, 4.f, 8.f);
-	//this->objectsManager->CreateTorus(1.f, 10.f, 20, 20, glm::vec3(0.f));
+	// create scene entities
+	const auto& point1 = this->entitiesFactory->CreatePoint(0.f, 1.f, 0.f);
+	const auto& point2 = this->entitiesFactory->CreatePoint(1.f, 7.f, 1.f);
+	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
+	const auto& point4 = this->entitiesFactory->CreatePoint(3.f, 4.f, 8.f);
 
 	auto bezierPoints = std::vector<entt::entity>{
 		point1, point2, point3, point4
 	};
-	this->objectsManager->CreateBezierC0(bezierPoints);
+	this->entitiesFactory->CreateBezierC0(bezierPoints);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
@@ -71,7 +70,7 @@ void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 {
 	this->camera->SetAspect(static_cast<float>(width) / static_cast<float>(height));
-	this->bezierC0System->UpdateScreenSize(width, height);
+	this->curveSegmentsMetrics->UpdateScreenSize(width, height);
 }
 
 void Scene::Update()
@@ -100,13 +99,13 @@ void Scene::Render()
 entt::entity Scene::AddTorus()
 {
 	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
-	return objectsManager->CreateTorus(1.f, 5.f, 10, 10, cursorPos);
+	return entitiesFactory->CreateTorus(1.f, 5.f, 10, 10, cursorPos);
 }
 
 entt::entity Scene::AddPoint()
 {
 	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
-	return objectsManager->CreatePoint(cursorPos);
+	return entitiesFactory->CreatePoint(cursorPos);
 }
 
 void Scene::RemoveEntity(entt::entity entity)
