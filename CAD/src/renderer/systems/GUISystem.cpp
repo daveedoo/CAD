@@ -256,17 +256,24 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 {
 	if (ImGui::TreeNodeEx("Local transformations", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		bool transformChanged = false;
+		bool positionChanged = false;
+		bool scaleRotChanged = false;
 		if (position != nullptr)
-			if (ImGui::DragFloat3("Position", glm::value_ptr(position->position), 0.01f)) transformChanged = true;
+		{
+			if (ImGui::DragFloat3("Position", glm::value_ptr(position->position), 0.01f)) positionChanged = true;
+			if (positionChanged)
+				this->registry->patch<Position>(entity);
+		}
 		if (sr != nullptr)
 		{
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(sr->scale), 0.01f)) transformChanged = true;
-			if (ImGui::DragFloat("Axis Lambda", &sr->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (ImGui::DragFloat("Axis Fi", &sr->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (ImGui::DragFloat("Angle", &sr->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(sr->scale), 0.01f)) scaleRotChanged = true;
+			if (ImGui::DragFloat("Axis Lambda", &sr->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
+			if (ImGui::DragFloat("Axis Fi", &sr->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
+			if (ImGui::DragFloat("Angle", &sr->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
+			if (scaleRotChanged)
+				this->registry->patch<ScaleRotation>(entity);
 		}
-		if (transformChanged)
+		if (positionChanged || scaleRotChanged)
 			SetDirty(entity);
 
 		ImGui::TreePop();
