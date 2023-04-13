@@ -15,14 +15,6 @@ BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::sh
 
 void BezierC0System::Update(const Camera& camera)
 {
-	if (cameraHandler->IsCameraMoving())
-	{
-		auto view = this->registry->view<BezierC0, Mesh>();
-		for (auto [entity, bezier, mesh] : view.each())
-		{
-			UpdateCurveMesh(entity);
-		}
-	}
 }
 
 void BezierC0System::Render(const Camera& camera)
@@ -133,5 +125,14 @@ void BezierC0System::UpdateIfBezierPoint(entt::registry& registry, entt::entity 
 	{
 		if (std::find(bezier.points.begin(), bezier.points.end(), entity) != bezier.points.end())
 			UpdateCurveMesh(bezierEntity);
+	}
+}
+
+void BezierC0System::NotifyCameraMove()
+{
+	auto view = this->registry->view<BezierC0, Mesh>();
+	for (auto [entity, bezier, mesh] : view.each())
+	{
+		UpdateCurveMesh(entity);
 	}
 }

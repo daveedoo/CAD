@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\CameraSubscriber.cpp" />
+    <ClCompile Include="src\CameraSubscriber.h" />
     <ClCompile Include="src\renderer\systems\CurveSegmentsMetrics\BernsteinPolygonMetrics.cpp" />
     <ClCompile Include="src\renderer\systems\BezierC0System.cpp" />
     <ClCompile Include="src\renderer\commands\CancelGroupTransformation.cpp" />

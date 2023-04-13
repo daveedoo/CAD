@@ -37,10 +37,11 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	guiSystem(std::make_unique<GUISystem>(registry, *this)),
 	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
-	bezierC0System(std::make_unique<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics)),
+	bezierC0System(std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics)),
 	mainCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
 {
 	this->camera->Scale(1.f / 10.f);
+	this->cameraMovementHandler->AddSubscriber(bezierC0System);
 
 	// build GUI
 	auto groupScaleRoation = std::make_shared<ScaleRotation>();

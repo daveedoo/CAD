@@ -5,7 +5,7 @@
 #include "CurveSegmentsMetrics/ICurveSegmentsMetrics.h"
 #include <tuple>
 
-class BezierC0System : public System
+class BezierC0System : public System, public CameraSubscriber
 {
 private:
 	std::unique_ptr<GL::Program> program;
@@ -13,10 +13,13 @@ private:
 	std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics;
 
 public:
+	BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics);
+
 	virtual void Update(const Camera& camera) override;
 	virtual void Render(const Camera& camera) override;
 
-	BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics);
+	// Inherited via CameraSubscriber
+	virtual void NotifyCameraMove() override;
 
 private:
 	static glm::vec3 CalculateBezierValue(const glm::vec3& b0, const glm::vec3& b1, const glm::vec3& b2, const glm::vec3& b3, float t);
