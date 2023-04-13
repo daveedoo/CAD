@@ -9,7 +9,7 @@ BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::sh
 	cameraHandler(std::move(cameraHandler)),
 	curveSegmentsMetrics(std::move(curveSegmentsMetrics))
 {
-	this->registry->on_construct<BezierC0>().connect<&BezierC0System::UpdateCurveMesh>(*this);
+	this->registry->on_construct<BezierC0>().connect<&BezierC0System::SetCurveMesh>(*this);
 }
 
 void BezierC0System::Update(const Camera& camera)
@@ -32,7 +32,6 @@ void BezierC0System::Render(const Camera& camera)
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 	this->program->SetVec3("color", glm::vec3(1.f));
 	glLineWidth(1.f);
-	glPointSize(0.5f);
 	
 	auto view = this->registry->view<BezierC0, Mesh>();
 	for (auto [entity, bezier, mesh] : view.each())
@@ -81,14 +80,9 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 	return points;
 }
 
-void BezierC0System::UpdateCurveMesh(entt::registry& registry, entt::entity entity)
+std::tuple<std::vector<glm::vec3>, std::vector<unsigned int>> BezierC0System::GetCurveMeshData(const BezierC0 bezier)
 {
-	const auto& bezier = registry.get<BezierC0>(entity);
 	auto points = CalculateBezierValues(bezier);
-
-	auto vao = std::make_unique<GL::VAO>();
-	auto ebo = std::make_unique<GL::EBO>();
-	auto vbo = std::make_unique<GL::VBO>(points.data(), points.size() * sizeof(glm::vec3));
 
 	std::vector<unsigned int> idx;
 	for (size_t i = 0; i < points.size() - 1; i++)
@@ -97,8 +91,31 @@ void BezierC0System::UpdateCurveMesh(entt::registry& registry, entt::entity enti
 		idx.push_back(i + 1);
 	}
 
+	return std::make_tuple(points, idx);
+}
+
+void BezierC0System::SetCurveMesh(entt::registry& registry, entt::entity entity)
+{
+	const auto& bezier = registry.get<BezierC0>(entity);
+	auto [points, idx] = GetCurveMeshData(bezier);
+
+	auto vao = std::make_unique<GL::VAO>();
+	auto ebo = std::make_unique<GL::EBO>();
+	auto vbo = std::make_unique<GL::VBO>(points.data(), points.size() * sizeof(glm::vec3));
 	ebo->SetBufferData(idx.data(), GL::EBO::DataType::UINT, idx.size());
 	vao->DefineFloatAttribute(*vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
 
-	registry.emplace_or_replace<Mesh>(entity, std::move(vao), std::move(vbo), std::move(ebo));
+	registry.emplace<Mesh>(entity, std::move(vao), std::move(vbo), std::move(ebo));
+}
+
+void BezierC0System::UpdateCurveMesh(entt::registry& registry, entt::entity entity)
+{
+	const auto& bezier = registry.get<BezierC0>(entity);
+	auto [points, idx] = GetCurveMeshData(bezier);
+
+	registry.patch<Mesh>(entity, [&](Mesh& mesh) -> void
+		{
+			mesh.ebo->SetBufferData(idx.data(), GL::EBO::DataType::UINT, idx.size());
+			mesh.vbo->SetBufferData(points.data(), points.size() * sizeof(glm::vec3));
+		});
 }

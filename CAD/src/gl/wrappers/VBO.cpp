@@ -37,11 +37,9 @@ namespace GL
 
 	void VBO::SetBufferData(const void* data, size_t size)
 	{
+		this->dataSize = size;
 		if (size == 0)
-		{
-			this->dataSize = 0;
 			return;
-		}
 
 		this->Bind();
 		glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW);
