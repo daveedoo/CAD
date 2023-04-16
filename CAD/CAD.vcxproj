@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\systems\SortingSystem.cpp" />
     <ClCompile Include="src\renderer\gui\MainMenuBar.cpp" />
     <ClCompile Include="src\CameraSubscriber.cpp" />
     <ClCompile Include="src\CameraSubscriber.h" />
@@ -168,6 +169,7 @@
     <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\systems\SortingSystem.h" />
     <ClInclude Include="src\renderer\gui\MainMenuBar.h" />
     <ClInclude Include="src\renderer\systems\CurveSegmentsMetrics\BernsteinPolygonMetrics.h" />
     <ClInclude Include="src\renderer\systems\CurveSegmentsMetrics\ICurveSegmentsMetrics.h" />

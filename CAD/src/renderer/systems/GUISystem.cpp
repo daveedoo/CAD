@@ -94,18 +94,6 @@ void GUISystem::RenderWindowOnRight(std::string windowName, const std::function<
 	ImGui::End();
 }
 
-void GUISystem::PopupCentered(std::string windowName, const std::function<void()>& inside)
-{
-	auto disp = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos({disp.x * 0.5f, disp.y * 0.5f}, ImGuiCond_Appearing, {0.5f, 0.5f});
-	if (ImGui::BeginPopupModal(windowName.c_str(), (bool*)0, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		inside();
-		ImGui::EndPopup();
-	}
-
-}
-
 void GUISystem::RenderMainMenuBar()
 {
 	this->mainMenuBar->Draw();
@@ -171,39 +159,30 @@ void GUISystem::RenderEntitiesList()
 		{
 			for (auto [entity, selectable] : selectablesView.each())
 			{
-				std::string renamePopup = std::format("Rename {}", selectable.name);
 				if (ImGui::Selectable(selectable.name.c_str(), &selectable.selected, ImGuiSelectableFlags_AllowDoubleClick))
 				{
 					if (!ImGui::GetIO().KeyCtrl)
 						unselectAllExcept(entity);
 
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-						ImGui::OpenPopup(renamePopup.c_str());
-
 					selectionChanged();
 				}
 				if (ImGui::BeginPopupContextItem())
 				{
-					
+					std::string newName = selectable.name;
+					ImGui::InputText("Name", &newName, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (ImGui::IsItemDeactivatedAfterEdit())
+					{
+						selectable.name = newName;
+						ImGui::CloseCurrentPopup();
+					}
+
+					if (ImGui::Button("Remove"))
+						scene.RemoveEntity(entity);
+
+					if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+						ImGui::CloseCurrentPopup();
 					ImGui::EndPopup();
 				}
-
-				PopupCentered(renamePopup, [&]() -> void
-					{
-						std::string newName = selectable.name;
-						ImGui::InputText("Name", &newName, ImGuiInputTextFlags_EnterReturnsTrue);
-						if (ImGui::IsItemDeactivatedAfterEdit())
-						{
-							selectable.name = newName;
-							ImGui::CloseCurrentPopup();
-						}
-
-						if (ImGui::Button("Remove"))
-							scene.RemoveEntity(entity);
-
-						if (ImGui::IsKeyPressed(ImGuiKey_Escape))
-							ImGui::CloseCurrentPopup();
-					});
 			}
 		});
 }
@@ -363,6 +342,7 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 						{
 							patchBezier.points.erase(it);
 						});
+					ImGui::CloseCurrentPopup();
 					iteratorInvalid = true;
 				}
 

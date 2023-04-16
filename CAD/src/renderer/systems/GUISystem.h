@@ -32,7 +32,6 @@ private:
 	void RenderWindowOnLeft(std::string windowName, GUIElement& guiElement);
 	void RenderWindowOnLeft(std::string windowName, const std::function<void()>& inside);
 	void RenderWindowOnRight(std::string windowName, const std::function<void()>& inside);
-	void PopupCentered(std::string windowName, const std::function<void()>& inside);
 
 	void RenderMainMenuBar();
 	void RenderCursorWindow(entt::entity entity, glm::vec3& position);

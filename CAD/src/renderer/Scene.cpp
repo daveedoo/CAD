@@ -23,6 +23,7 @@
 #include "commands/CancelGroupTransformation.h"
 #include "systems/BezierC0System.h"
 #include "gui/MainMenuBar.h"
+#include "systems/SortingSystem.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -32,6 +33,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	registry(std::make_shared<entt::registry>()),
 	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
+	sortingSystem(std::make_unique<SortingSystem>(registry)),
 	torusSystem(std::make_unique<TorusSystem>(registry)),
 	pointsSystem(std::make_unique<PointSystem>(registry)),
 	cursorSystem(std::make_unique<CursorSystem>(registry)),

@@ -32,6 +32,7 @@ private:
 
 	entt::entity mainCursor;
 
+	std::unique_ptr<System> sortingSystem;
 	std::unique_ptr<System> torusSystem;
 	std::unique_ptr<System> pointsSystem;
 	std::unique_ptr<System> cursorSystem;
