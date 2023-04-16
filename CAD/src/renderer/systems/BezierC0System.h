@@ -26,8 +26,9 @@ private:
 	std::vector<glm::vec3> CalculateBezierValues(const BezierC0& bezier);
 	
 	std::tuple<std::vector<glm::vec3>, std::vector<unsigned int>> GetCurveMeshData(const BezierC0& bezier);
-	void SetCurveMesh(entt::registry& registry, entt::entity entity);
-	void UpdateCurveMesh(entt::entity entity);
+	void SetCurveMesh(entt::registry& registry, entt::entity bezierEntity);
+	void UpdateCurveMesh(entt::registry& registry, entt::entity bezierEntity);
 
-	void UpdateIfBezierPoint(entt::registry& registry, entt::entity entity);
+	void UpdateAllBeziersContainingPoint(entt::registry& registry, entt::entity positionEntity);
+	void RemovePointFromBeziers(entt::registry& registry, entt::entity pointEntity);
 };

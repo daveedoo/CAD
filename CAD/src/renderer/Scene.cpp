@@ -22,6 +22,7 @@
 #include "commands/ChangeGroupTransformation.h"
 #include "commands/CancelGroupTransformation.h"
 #include "systems/BezierC0System.h"
+#include "gui/MainMenuBar.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -34,7 +35,6 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	torusSystem(std::make_unique<TorusSystem>(registry)),
 	pointsSystem(std::make_unique<PointSystem>(registry)),
 	cursorSystem(std::make_unique<CursorSystem>(registry)),
-	guiSystem(std::make_unique<GUISystem>(registry, *this)),
 	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
 	bezierC0System(std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics)),
@@ -44,6 +44,9 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	this->cameraMovementHandler->AddSubscriber(bezierC0System);
 
 	// build GUI
+	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
+	this->guiSystem = std::make_unique<GUISystem>(registry, std::move(mainMenuBar), *this);
+
 	auto groupScaleRoation = std::make_shared<ScaleRotation>();
 	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupScaleRoation);
 	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupScaleRoation);
@@ -107,6 +110,11 @@ entt::entity Scene::AddPoint()
 {
 	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
 	return entitiesFactory->CreatePoint(cursorPos);
+}
+
+entt::entity Scene::AddBezierC0(const std::vector<entt::entity>& points)
+{
+	return entitiesFactory->CreateBezierC0(points);
 }
 
 void Scene::RemoveEntity(entt::entity entity)

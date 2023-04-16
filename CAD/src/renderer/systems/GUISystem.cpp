@@ -2,9 +2,10 @@
 #include <imgui_stdlib.h>
 #include <iostream>
 #include "../Scene.h"
+#include <algorithm>
 
-GUISystem::GUISystem(std::shared_ptr<entt::registry> registry, Scene& scene) : System(registry),
-	scene(scene)
+GUISystem::GUISystem(std::shared_ptr<entt::registry> registry, std::unique_ptr<GUIElement> mainMenuBar, Scene& scene) : System(registry),
+	mainMenuBar(std::move(mainMenuBar)), scene(scene)
 {}
 
 unsigned int GUISystem::GetSelectedEntitiesCount()
@@ -107,20 +108,8 @@ void GUISystem::PopupCentered(std::string windowName, const std::function<void()
 
 void GUISystem::RenderMainMenuBar()
 {
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("Add"))
-		{
-			if (ImGui::MenuItem("Point"))
-				scene.AddPoint();
-			if (ImGui::MenuItem("Torus"))
-				scene.AddTorus();
-			ImGui::EndMenu();
-		}
-		ImGui::Text(std::format("entities: {}", this->registry->size()).c_str());
+	this->mainMenuBar->Draw();
 
-		ImGui::EndMainMenuBar();
-	}
 	this->leftPanelHeight += 20;
 	this->rightPanelHeight += 20;
 }
@@ -172,6 +161,12 @@ void GUISystem::RenderEntitiesList()
 		}
 	};
 
+	auto beziersView = this->registry->view<BezierC0, Selectable>();
+	for (auto [entity, bezier, bezierSelect] : beziersView.each())
+	{
+		//if (bezierSelect.selected)
+	}
+
 	RenderWindowOnRight("Entity list", [&]() -> void
 		{
 			for (auto [entity, selectable] : selectablesView.each())
@@ -186,6 +181,11 @@ void GUISystem::RenderEntitiesList()
 						ImGui::OpenPopup(renamePopup.c_str());
 
 					selectionChanged();
+				}
+				if (ImGui::BeginPopupContextItem())
+				{
+					
+					ImGui::EndPopup();
 				}
 
 				PopupCentered(renamePopup, [&]() -> void
@@ -282,13 +282,128 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 
 void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier)
 {
-	if (ImGui::TreeNodeEx("Points:", ImGuiTreeNodeFlags_DefaultOpen))
+	static const std::string NEW_BEZIER_POINT_PayloadID = "BEZIER_C0_NEW_POINT_ID";
+	// helper function
+	std::function<void(size_t, size_t)> replaceValues = [&](size_t idx1, size_t idx2) -> void
 	{
-		for (const auto& point : bezier.points)
+		this->registry->patch<BezierC0>(entity, [&](BezierC0& patchBezier)
+			{
+				auto val1 = patchBezier.points[idx1];
+				patchBezier.points[idx1] = patchBezier.points[idx2];
+				patchBezier.points[idx2] = val1;
+			});
+	};
+
+
+	if (ImGui::BeginListBox("Curve points", ImVec2(-FLT_MIN, 0.f)))
+	{
+		ImGui::SeparatorText(std::format("{} curve points:", bezier.points.size()).c_str());
+		if (ImGui::BeginDragDropTarget())
 		{
-			const auto& selectable = this->registry->get<Selectable>(point);
-			ImGui::Selectable(selectable.name.c_str());
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str()))
+			{
+				entt::entity movedPointEntity = *static_cast<entt::entity*>(payload->Data);
+				this->registry->patch<BezierC0>(entity, [&](BezierC0& bezierToAddPoint) -> void
+					{
+						bezierToAddPoint.points.push_back(movedPointEntity);
+					});
+			}
+			ImGui::EndDragDropTarget();
 		}
-		ImGui::TreePop();
+
+		for (auto it = bezier.points.begin(); it != bezier.points.end(); it++)
+		{
+			// TODO: this bool may be removed if using std::list<> instead of std::vector<>
+			// also, continuous dragging might be possible to implement then
+			bool iteratorInvalid = false;
+
+			const auto& selectable = this->registry->get<Selectable>(*it);
+			ImGui::PushID(&(*it));
+			ImGui::Selectable(selectable.name.c_str());
+
+			// reordering drag and drop inside "Points" list
+			if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+			{
+				int it_advance = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).y < 0.f ? -1 : 1;
+				if (it != bezier.points.begin() || it_advance > 0)
+				{
+					auto it2 = it + it_advance;
+					if (it2 >= bezier.points.begin() && it2 < bezier.points.end())
+					{
+						int it1_idx = std::distance(bezier.points.begin(), it);
+						int it2_idx = std::distance(bezier.points.begin(), it2);
+						replaceValues(it1_idx, it2_idx);
+						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+					}
+				}
+			}
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				int currentIdx = it - bezier.points.begin();
+				if (currentIdx > 0)
+				{
+					if (ImGui::Button("Up", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, (size_t)currentIdx - 1);
+						ImGui::CloseCurrentPopup();
+					}
+				}
+				if (bezier.points.end() - it > 1)
+				{
+					if (ImGui::Button("Down", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, static_cast<size_t>(currentIdx) + 1);
+						ImGui::CloseCurrentPopup();
+					}
+				}
+				if (ImGui::Button("Remove from curve"))
+				{
+					this->registry->patch<BezierC0>(entity, [&](BezierC0& patchBezier) -> void
+						{
+							patchBezier.points.erase(it);
+						});
+					iteratorInvalid = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+			if (iteratorInvalid) break;
+		}
+
+		ImGui::EndListBox();
+	}
+
+	if (ImGui::BeginListBox("All points", ImVec2(-FLT_MIN, 0.f)))
+	{
+		ImGui::SeparatorText("All points:");
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+			ImGui::SetTooltip("Double click to add to the list above");
+
+		auto view = this->registry->view<Point, Selectable>();
+		for (auto [pointEntity, selectable] : view.each())
+		{
+			if (ImGui::Selectable(selectable.name.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					this->registry->patch<BezierC0>(entity, [&](BezierC0& bezier) -> void
+						{
+							bezier.points.push_back(pointEntity);
+						});
+				}
+			}
+
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str(), &pointEntity, sizeof(pointEntity));
+				ImGui::Text(selectable.name.c_str());
+
+				ImGui::EndDragDropSource();
+			}
+		}
+		ImGui::EndListBox();
 	}
 }

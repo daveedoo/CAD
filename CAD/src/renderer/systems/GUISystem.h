@@ -15,9 +15,10 @@ private:
 
 	std::unique_ptr<GUIElement> groupButtonWindow;
 	std::unique_ptr<GUIElement> groupGuiWindow;
+	std::unique_ptr<GUIElement> mainMenuBar;
 
 public:
-	GUISystem(std::shared_ptr<entt::registry> registry, Scene& scene);
+	GUISystem(std::shared_ptr<entt::registry> registry, std::unique_ptr<GUIElement> mainMenuBar, Scene& scene);
 
 	virtual void Update(const Camera& camera) override;
 	virtual void Render(const Camera& camera) override;
