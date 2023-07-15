@@ -33,30 +33,39 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	registry(std::make_shared<entt::registry>()),
 	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
-	sortingSystem(std::make_unique<SortingSystem>(registry)),
-	torusSystem(std::make_unique<TorusSystem>(registry)),
-	pointsSystem(std::make_unique<PointSystem>(registry)),
-	cursorSystem(std::make_unique<CursorSystem>(registry)),
-	transformationsSystem(std::make_unique<TransformationsSystem>(registry)),
-	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
-	bezierC0System(std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics)),
-	mainCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f))
+	mainCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f)),
+	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory))
 {
-	this->camera->Scale(1.f / 10.f);
-	this->cameraMovementHandler->AddSubscriber(bezierC0System);
+	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
 
 	// build GUI
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
-	this->guiSystem = std::make_unique<GUISystem>(registry, std::move(mainMenuBar), *this);
+	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
 
 	auto groupScaleRoation = std::make_shared<ScaleRotation>();
 	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupScaleRoation);
 	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupScaleRoation);
 	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupScaleRoation);
 	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, cancel, cancel);
-	this->guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
+	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
-	// create scene entities
+	// systems
+	this->systems.push_back(std::make_shared<PointSystem>(registry));
+	this->systems.push_back(std::make_shared<SortingSystem>(registry));
+	this->systems.push_back(std::make_shared<TorusSystem>(registry));
+	this->systems.push_back(std::make_shared<PointSystem>(registry));
+	this->systems.push_back(std::make_shared<CursorSystem>(registry));
+	this->systems.push_back(std::make_shared<TransformationsSystem>(registry));
+	this->systems.push_back(selectionSystem);
+	this->systems.push_back(bezierC0System);
+	this->systems.push_back(guiSystem);
+
+	// camera and movement
+	this->camera->Scale(1.f / 10.f);
+	this->cameraMovementHandler->AddSubscriber(bezierC0System);
+
+
+	// create starting scene entities
 	const auto& point1 = this->entitiesFactory->CreatePoint(0.f, 1.f, 0.f);
 	const auto& point2 = this->entitiesFactory->CreatePoint(1.f, 7.f, 1.f);
 	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
@@ -81,9 +90,10 @@ void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 
 void Scene::Update()
 {
-	this->selectionSystem->Update(*this->camera);
-	this->transformationsSystem->Update(*this->camera);
-	this->bezierC0System->Update(*this->camera);
+	for (auto& system : this->systems)
+	{
+		system->Update(*this->camera);
+	}
 }
 
 void Scene::Render()
@@ -94,11 +104,10 @@ void Scene::Render()
 	// TODO: make it to ECS
 	this->floor->Render(*this->camera);
 
-	this->guiSystem->Render(*this->camera);
-	this->torusSystem->Render(*this->camera);
-	this->pointsSystem->Render(*this->camera);
-	this->cursorSystem->Render(*this->camera);
-	this->bezierC0System->Render(*this->camera);
+	for (auto& system : this->systems)
+	{
+		system->Render(*this->camera);
+	}
 }
 
 

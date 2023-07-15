@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include "../gl/wrappers/Program.h"
 #include "../gl/wrappers/VAO.h"
 #include "../Camera.h"
@@ -32,14 +33,8 @@ private:
 
 	entt::entity mainCursor;
 
-	std::unique_ptr<System> sortingSystem;
-	std::unique_ptr<System> torusSystem;
-	std::unique_ptr<System> pointsSystem;
-	std::unique_ptr<System> cursorSystem;
-	std::unique_ptr<GUISystem> guiSystem;
-	std::unique_ptr<TransformationsSystem> transformationsSystem;
+	std::vector<std::shared_ptr<System>> systems;
 	std::shared_ptr<SelectionSystem> selectionSystem;
-	std::shared_ptr<BezierC0System> bezierC0System;
 
 public:
 	Scene(unsigned int frame_width, unsigned int frame_height);

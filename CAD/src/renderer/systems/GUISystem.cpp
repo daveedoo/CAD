@@ -4,8 +4,12 @@
 #include "../Scene.h"
 #include <algorithm>
 
-GUISystem::GUISystem(std::shared_ptr<entt::registry> registry, std::unique_ptr<GUIElement> mainMenuBar, Scene& scene) : System(registry),
-	mainMenuBar(std::move(mainMenuBar)), scene(scene)
+GUISystem::GUISystem(std::shared_ptr<entt::registry> registry,
+	std::unique_ptr<GUIElement> mainMenuBar, 
+	Scene& scene)
+	: System(registry),
+	  mainMenuBar(std::move(mainMenuBar)),
+	  scene(scene)
 {}
 
 unsigned int GUISystem::GetSelectedEntitiesCount()
