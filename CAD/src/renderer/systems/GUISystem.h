@@ -36,7 +36,7 @@ private:
 	void RenderWindowOnRight(std::string windowName, const std::function<void()>& inside);
 
 	void RenderMainMenuBar();
-	void RenderCursorWindow(entt::entity entity, glm::vec3& position);
+	void RenderCursorWindow(entt::entity entity, glm::vec3& position, glm::vec3& screenPos);
 	void RenderEntitiesList();
 	void RenderEntitiesDetailsWindow();
 	void RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp);

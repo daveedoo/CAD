@@ -24,6 +24,7 @@
 #include "systems/BezierC0System.h"
 #include "gui/MainMenuBar.h"
 #include "systems/SortingSystem.h"
+#include "systems/ScreenPositionSystem.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -35,8 +36,6 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory))
 {
-	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
-
 	// build GUI
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
 	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
@@ -49,13 +48,18 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
 	// systems
+	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
+	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera);
+	this->AddSubscriber(screenPositionSystem);
+
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
 	this->systems.push_back(std::make_shared<SortingSystem>(registry));
 	this->systems.push_back(std::make_shared<TorusSystem>(registry));
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
 	this->systems.push_back(std::make_shared<CursorSystem>(registry));
 	this->systems.push_back(std::make_shared<TransformationsSystem>(registry));
-	this->systems.push_back(selectionSystem);
+	this->systems.push_back(screenPositionSystem);
+	this->systems.push_back(this->selectionSystem);
 	this->systems.push_back(bezierC0System);
 	this->systems.push_back(guiSystem);
 

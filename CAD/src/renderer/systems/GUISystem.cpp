@@ -56,8 +56,8 @@ void GUISystem::Render(const Camera& camera)
 		
 	// main cursor
 	auto mainCursor = scene.GetMainCursor();
-	auto& position = this->registry->get<Position>(mainCursor);
-	RenderCursorWindow(mainCursor, position.position);
+	auto [pos3d, screenPos] = this->registry->get<Position, ScreenPosition>(mainCursor);
+	RenderCursorWindow(mainCursor, pos3d.position, screenPos.position);
 
 	RenderEntitiesList();
 	if (GetSelectedEntitiesCount() > 1)
@@ -108,12 +108,16 @@ void GUISystem::RenderMainMenuBar()
 
 
 
-void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& position)
+void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& pos3d, glm::vec3& screenPos)
 {
-	RenderWindowOnLeft("Cursor", [&]() -> void
+	RenderWindowOnLeft("3D Cursor", [&]() -> void
 		{
-			if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.01f))
+			if (ImGui::DragFloat3("3D Position", glm::value_ptr(pos3d), 0.01f))
+			{
 				SetDirty(entity);
+				this->registry->patch<Position>(entity);
+			}
+			ImGui::DragFloat3("Screen Position", glm::value_ptr(screenPos), 0.1f);
 		});
 }
 

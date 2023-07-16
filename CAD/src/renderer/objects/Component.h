@@ -58,6 +58,16 @@ struct Position
 		: position(val) {}
 };
 
+struct ScreenPosition
+{
+	glm::vec3 position;
+
+	ScreenPosition(const glm::vec3& position = glm::vec3(0.f))
+		: position(position)
+	{
+	}
+};
+
 struct Cursor
 {
 	GLfloat lineWidth;

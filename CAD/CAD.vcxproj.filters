@@ -114,13 +114,16 @@
     <ClCompile Include="src\CameraSubscriber.h">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CameraSubscriber.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\renderer\gui\MainMenuBar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\systems\SortingSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer\systems\ScreenPositionSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ScreenSizeChangePublisher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -261,6 +264,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\systems\SortingSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer\systems\ScreenPositionSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScreenSizeChangeSubscriber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ScreenSizeChangePublisher.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -33,7 +33,7 @@ entt::entity EntitiesFactory::CreatePoint(glm::vec3 position)
 	this->registry->emplace<Point>(entity);
 	this->registry->emplace<Selectable>(entity, name);
 	this->registry->emplace<Position>(entity, position);
-	this->registry->emplace<Transformation>(entity);
+	//this->registry->emplace<Transformation>(entity);
 	this->registry->emplace<Dirty>(entity);
 	return entity;
 }
@@ -51,7 +51,7 @@ entt::entity EntitiesFactory::CreateCursor(glm::vec3 position, GLfloat lineWidth
 	this->registry->emplace<Cursor>(entity, lineWidth, lineLength);
 	this->registry->emplace<Mesh>(entity, std::move(mesh));
 	this->registry->emplace<Position>(entity, position);
-	this->registry->emplace<Transformation>(entity);
+	//this->registry->emplace<Transformation>(entity);
 	this->registry->emplace<Dirty>(entity);
 	return entity;
 }
