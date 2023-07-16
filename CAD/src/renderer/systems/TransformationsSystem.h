@@ -10,5 +10,5 @@ public:
 	virtual void Render(const Camera& camera) override;
 
 private:
-	void FixTransfomationComponenets();
+	void FixTransfomationComponent(entt::registry& registry, entt::entity entity);
 };

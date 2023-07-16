@@ -2,7 +2,12 @@
 #include "../../../Matrix.h"
 
 TransformationsSystem::TransformationsSystem(std::shared_ptr<entt::registry> registry) : System(registry)
-{}
+{
+	this->registry->on_construct<Position>().before().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
+	this->registry->on_construct<ScaleRotation>().before().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
+	this->registry->on_destroy<Position>().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
+	this->registry->on_destroy<ScaleRotation>().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
+}
 
 glm::mat4 GetTransformation(const Position& position, const ScaleRotation* scaleRot, const Transformation& transformation, const AdditionalTransformation* addTransf)	// TODO: remove transformation (?)
 {
@@ -56,7 +61,7 @@ glm::mat4 GetTransformation(const Position& position, const ScaleRotation* scale
 
 void TransformationsSystem::Update(const Camera& camera)
 {
-	FixTransfomationComponenets();
+	//FixTransfomationComponent();
 
 	AdditionalTransformation* groupTransf = this->registry->ctx().contains<AdditionalTransformation>() ?
 		&(this->registry->ctx().get<AdditionalTransformation>()) :
@@ -77,16 +82,16 @@ void TransformationsSystem::Render(const Camera& camera)
 {
 }
 
-void TransformationsSystem::FixTransfomationComponenets()
+void TransformationsSystem::FixTransfomationComponent(entt::registry& registry, entt::entity entity)
 {
-	auto view = this->registry->view<Dirty>();
-	for (auto [entity] : view.each())
-	{
-		auto [position, scaleRot, transformation] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	//auto view = this->registry->view<Dirty>();
+	//for (auto [entity] : view.each())
+	//{
+	auto [position, scaleRot, transformation] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
 
-		if (position == nullptr && scaleRot == nullptr && transformation != nullptr)
-			this->registry->remove<Transformation>(entity);
-		else if ((position != nullptr || scaleRot != nullptr) && transformation == nullptr)
-			this->registry->emplace<Transformation>(entity);
-	}
+	if (position == nullptr && scaleRot == nullptr && transformation != nullptr)
+		this->registry->remove<Transformation>(entity);
+	else if ((position != nullptr || scaleRot != nullptr) && transformation == nullptr)
+		this->registry->emplace<Transformation>(entity);
+	//}
 }
