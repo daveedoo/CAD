@@ -66,6 +66,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	// camera and movement
 	this->camera->Scale(1.f / 10.f);
 	this->cameraMovementHandler->AddSubscriber(bezierC0System);
+	this->cameraMovementHandler->AddSubscriber(screenPositionSystem);
 
 
 	// create starting scene entities

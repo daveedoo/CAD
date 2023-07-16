@@ -2,8 +2,9 @@
 #include "System.h"
 #include "../../Camera.h"
 #include "../../ScreenSizeChangeSubscriber.h"
+#include "../../CameraSubscriber.h"
 
-class ScreenPositionSystem : public System, public ScreenSizeChangeSubscriber
+class ScreenPositionSystem : public System, public ScreenSizeChangeSubscriber, public CameraSubscriber
 {
 private:
 	Camera& camera;
@@ -23,6 +24,11 @@ private:
 	void AddScreenPositionComponent(entt::registry& registry, entt::entity entity);
 	void RemoveScreenPositionComponent(entt::registry& registry, entt::entity entity);
 
+	void UpdateScreenPositions();
+
 	// Inherited via ScreenSizeChangeSubscriber
 	virtual void OnScreenSizeChanged(unsigned int width, unsigned int height) override;
+
+	// Inherited via CameraSubscriber
+	virtual void OnCameraMove() override;
 };

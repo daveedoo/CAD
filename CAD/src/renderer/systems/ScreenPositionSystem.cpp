@@ -78,14 +78,23 @@ void ScreenPositionSystem::RemoveScreenPositionComponent(entt::registry& registr
 	registry.remove<ScreenPosition>(entity);
 }
 
-void ScreenPositionSystem::OnScreenSizeChanged(unsigned int width, unsigned int height)
+void ScreenPositionSystem::UpdateScreenPositions()
 {
-	this->screenWidth = width;
-	this->screenHeight = height;
-
 	auto view = this->registry->view<Position>();
 	for (auto [entity, position] : view.each())
 	{
 		SetPosition_ScreenBasedOn3D(*this->registry, entity);
 	}
+}
+
+void ScreenPositionSystem::OnScreenSizeChanged(unsigned int width, unsigned int height)
+{
+	this->screenWidth = width;
+	this->screenHeight = height;
+	UpdateScreenPositions();
+}
+
+void ScreenPositionSystem::OnCameraMove()
+{
+	UpdateScreenPositions();
 }
