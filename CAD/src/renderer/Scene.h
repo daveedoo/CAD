@@ -15,8 +15,9 @@
 #include "systems/SelectionSystem.h"
 #include "systems/BezierC0System.h"
 #include "systems/CurveSegmentsMetrics/BernsteinPolygonMetrics.h"
+#include "../ScreenSizeChangePublisher.h"
 
-class Scene
+class Scene : public ScreenSizeChangePublisher
 {
 private:
 	const GLfloat SelectedObjectCursor_LineWidth = 2.f;

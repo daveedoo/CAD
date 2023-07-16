@@ -94,6 +94,6 @@ void CameraMovementInputHandler::NotifySubscribers()
 	{
 		auto shared_sub = subscriber.lock();
 		if (shared_sub)
-			shared_sub->NotifyCameraMove();
+			shared_sub->OnCameraMove();
 	}
 }

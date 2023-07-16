@@ -19,7 +19,7 @@ public:
 	virtual void Render(const Camera& camera) override;
 
 	// Inherited via CameraSubscriber
-	virtual void NotifyCameraMove() override;
+	virtual void OnCameraMove() override;
 
 private:
 	static glm::vec3 CalculateBezierValue(const glm::vec3& b0, const glm::vec3& b1, const glm::vec3& b2, const glm::vec3& b3, float t);

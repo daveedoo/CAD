@@ -148,7 +148,7 @@ void BezierC0System::RemovePointFromBeziers(entt::registry& registry, entt::enti
 	}
 }
 
-void BezierC0System::NotifyCameraMove()
+void BezierC0System::OnCameraMove()
 {
 	auto view = this->registry->view<BezierC0, Mesh>();
 	for (auto [entity, bezier, mesh] : view.each())

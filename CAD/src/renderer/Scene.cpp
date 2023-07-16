@@ -33,7 +33,6 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	registry(std::make_shared<entt::registry>()),
 	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
-	mainCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory))
 {
 	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
@@ -66,15 +65,17 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 
 	// create starting scene entities
+	this->mainCursor = entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f);
+
 	const auto& point1 = this->entitiesFactory->CreatePoint(0.f, 1.f, 0.f);
 	const auto& point2 = this->entitiesFactory->CreatePoint(1.f, 7.f, 1.f);
 	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
 	const auto& point4 = this->entitiesFactory->CreatePoint(3.f, 4.f, 8.f);
 
-	auto bezierPoints = std::vector<entt::entity>{
-		point1, point2, point3, point4
-	};
-	this->entitiesFactory->CreateBezierC0(bezierPoints);
+	//auto bezierPoints = std::vector<entt::entity>{
+	//	point1, point2, point3, point4
+	//};
+	//this->entitiesFactory->CreateBezierC0(bezierPoints);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
@@ -86,6 +87,8 @@ void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 {
 	this->camera->SetAspect(static_cast<float>(width) / static_cast<float>(height));
 	this->curveSegmentsMetrics->UpdateScreenSize(width, height);
+	
+	this->NotifySubscribers();
 }
 
 void Scene::Update()
