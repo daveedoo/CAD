@@ -5,10 +5,10 @@ void ScreenSizeChangePublisher::AddSubscriber(std::shared_ptr<ScreenSizeChangeSu
 	subscribers.push_back(subscriber);
 }
 
-void ScreenSizeChangePublisher::NotifySubscribers()
+void ScreenSizeChangePublisher::NotifySubscribers(unsigned int width, unsigned int height)
 {
 	for (auto& subscriber : this->subscribers)
 	{
-		subscriber->OnScreenSizeChanged();
+		subscriber->OnScreenSizeChanged(width, height);
 	}
 }

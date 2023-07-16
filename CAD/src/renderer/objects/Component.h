@@ -62,7 +62,7 @@ struct ScreenPosition
 {
 	glm::vec3 position;
 
-	ScreenPosition(const glm::vec3& position = glm::vec3(0.f))
+	ScreenPosition(const glm::dvec3& position = glm::vec3(0.f))
 		: position(position)
 	{
 	}

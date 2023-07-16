@@ -49,7 +49,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 	// systems
 	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
-	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera);
+	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera, frame_width, frame_height);
 	this->AddSubscriber(screenPositionSystem);
 
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
@@ -92,7 +92,7 @@ void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 	this->camera->SetAspect(static_cast<float>(width) / static_cast<float>(height));
 	this->curveSegmentsMetrics->UpdateScreenSize(width, height);
 	
-	this->NotifySubscribers();
+	this->NotifySubscribers(width, height);
 }
 
 void Scene::Update()

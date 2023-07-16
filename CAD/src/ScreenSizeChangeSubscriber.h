@@ -3,5 +3,5 @@
 class ScreenSizeChangeSubscriber
 {
 public:
-	virtual void OnScreenSizeChanged() = 0;
+	virtual void OnScreenSizeChanged(unsigned int width, unsigned int height) = 0;
 };

@@ -3,16 +3,6 @@
 #include <memory>
 #include "ScreenSizeChangeSubscriber.h"
 
-template<typename TSubscriber>
-class Publisher
-{
-private:
-	std::vector<std::weak_ptr<TSubscriber>> subscribers;
-
-public:
-	void NotifySubscribers();
-};
-
 class ScreenSizeChangePublisher
 {
 private:
@@ -20,5 +10,5 @@ private:
 
 public:
 	void AddSubscriber(std::shared_ptr<ScreenSizeChangeSubscriber> subscriber);
-	void NotifySubscribers();
+	void NotifySubscribers(unsigned int width, unsigned int height);
 };

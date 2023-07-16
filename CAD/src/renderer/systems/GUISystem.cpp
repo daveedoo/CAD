@@ -117,7 +117,11 @@ void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& pos3d, glm::v
 				SetDirty(entity);
 				this->registry->patch<Position>(entity);
 			}
-			ImGui::DragFloat3("Screen Position", glm::value_ptr(screenPos), 0.1f);
+			if (ImGui::DragFloat2("Screen Position", glm::value_ptr(screenPos), 0.1f))
+			{
+				this->registry->patch<ScreenPosition>(entity);
+				SetDirty(entity);
+			}
 		});
 }
 
