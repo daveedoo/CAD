@@ -14,9 +14,12 @@ public:
 	};
 	Button button;
 	Action action;
+	double xpos;
+	double ypos;
 
 public:
-	MouseClickEvent(int button, int action, int mods) : KeyOrButtonEvent(EventType::MOUSE_CLICK, mods)
+	MouseClickEvent(int button, int action, int mods, double xpos, double ypos) : KeyOrButtonEvent(EventType::MOUSE_CLICK, mods),
+		xpos(xpos), ypos(ypos)
 	{
 		switch (button)
 		{

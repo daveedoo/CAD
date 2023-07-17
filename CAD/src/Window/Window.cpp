@@ -76,7 +76,9 @@ void Window::SetInputEventHandler(std::function<void(const InputEvent&)> callbac
 	glfwSetMouseButtonCallback(this->window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
-			const MouseClickEvent inputEvent = MouseClickEvent(button, action, mods);
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			const MouseClickEvent inputEvent = MouseClickEvent(button, action, mods, xpos, ypos);
 			thisWindow->onInputEvent(inputEvent);
 		});
 	glfwSetCursorPosCallback(this->window, [](GLFWwindow* window, double xpos, double ypos)
