@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "Mesh.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
 #include <vector>
@@ -37,13 +37,13 @@ Mesh Mesh::Torus(TorusComponent val)
 
 Mesh Mesh::Cursor(float lineLength)
 {
-	std::array<glm::vec3, 12> vertices ={
+	std::array<glm::vec3, 12> vertices = {
 		glm::vec3(0.f),										glm::vec3(1.f, 0.f, 0.f),
-		glm::vec3(0.f)+ glm::vec3(lineLength, 0.f, 0.f),	glm::vec3(1.f, 0.f, 0.f),
+		glm::vec3(0.f) + glm::vec3(lineLength, 0.f, 0.f),	glm::vec3(1.f, 0.f, 0.f),
 		glm::vec3(0.f),										glm::vec3(0.f, 1.f, 0.f),
-		glm::vec3(0.f)+ glm::vec3(0.f, lineLength, 0.f),	glm::vec3(0.f, 1.f, 0.f),
+		glm::vec3(0.f) + glm::vec3(0.f, lineLength, 0.f),	glm::vec3(0.f, 1.f, 0.f),
 		glm::vec3(0.f),										glm::vec3(0.f, 0.f, 1.f),
-		glm::vec3(0.f)+ glm::vec3(0.f, 0.f, lineLength),	glm::vec3(0.f, 0.f, 1.f)
+		glm::vec3(0.f) + glm::vec3(0.f, 0.f, lineLength),	glm::vec3(0.f, 0.f, 1.f)
 	};
 
 	auto vao = std::make_unique<GL::VAO>();

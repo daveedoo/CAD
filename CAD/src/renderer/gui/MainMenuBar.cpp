@@ -1,5 +1,7 @@
 #include "MainMenuBar.h"
 #include "../Scene.h"
+#include "../../renderer/objects/Components/Selectable.h"
+#include "../../renderer/objects/Components/Point.h"
 
 MainMenuBar::MainMenuBar(Scene& scene, std::shared_ptr<entt::registry> registry) : GUIElement(),
 	scene(scene), registry(registry)

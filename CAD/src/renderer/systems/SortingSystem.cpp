@@ -1,4 +1,5 @@
 #include "SortingSystem.h"
+#include "..\objects\Components\Selectable.h"
 
 SortingSystem::SortingSystem(std::shared_ptr<entt::registry> registry) : System(std::move(registry))
 {

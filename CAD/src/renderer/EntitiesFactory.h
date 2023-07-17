@@ -3,7 +3,6 @@
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>
 #include <gl/glew.h>
-#include "objects/Component.h"
 #include <optional>
 #include "../../Matrix.h"
 

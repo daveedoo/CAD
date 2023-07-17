@@ -1,4 +1,6 @@
 #include "GroupTransformationWindow.h"
+#include "..\objects\Components\ScaleRotation.h"
+#include <glm\gtc\type_ptr.hpp>
 
 GroupTransformationWindow::GroupTransformationWindow(std::shared_ptr<ScaleRotation> scaleRotation,
 	std::shared_ptr<Command> startCommand,

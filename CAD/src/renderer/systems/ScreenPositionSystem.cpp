@@ -1,6 +1,8 @@
 #include "ScreenPositionSystem.h"
 #include "../../Config.h"
-#include <iostream>
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\ScreenPosition.h"
 
 ScreenPositionSystem::ScreenPositionSystem(std::shared_ptr<entt::registry> registry,
 	Camera& camera, unsigned int screenWidth, unsigned int screenHeight)

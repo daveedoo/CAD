@@ -1,5 +1,10 @@
 #include "PointSystem.h"
 #include "../../gl/ProgramFactory.h"
+#include <glm\gtc\type_ptr.hpp>
+#include "..\objects\Components\Point.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Transformation.h"
 
 PointSystem::PointSystem(std::shared_ptr<entt::registry> registry) : System(registry),
 	vao(std::make_unique<GL::VAO>()),

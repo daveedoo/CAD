@@ -25,6 +25,9 @@
 #include "gui/MainMenuBar.h"
 #include "systems/SortingSystem.h"
 #include "systems/ScreenPositionSystem.h"
+#include "objects\Components\Position.h"
+#include "objects\Components\ScaleRotation.h"
+#include "objects\Components\Cursor.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :

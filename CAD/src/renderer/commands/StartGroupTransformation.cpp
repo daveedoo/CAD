@@ -1,5 +1,4 @@
 #include "StartGroupTransformation.h"
-#include "../objects/Component.h"
 
 StartGroupTransformation::StartGroupTransformation(std::shared_ptr<entt::registry> registry,
 	std::shared_ptr<SelectionSystem> selectionSystem,

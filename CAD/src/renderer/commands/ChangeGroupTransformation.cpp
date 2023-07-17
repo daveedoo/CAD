@@ -1,5 +1,7 @@
 #include "ChangeGroupTransformation.h"
-#include "../objects/Component.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Dirty.h"
 
 ChangeGroupTransformation::ChangeGroupTransformation(std::shared_ptr<entt::registry> registry,
 	std::shared_ptr<SelectionSystem> selectionSystem,

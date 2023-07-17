@@ -6,7 +6,6 @@
 #include "../Camera.h"
 #include "../Window/input/handlers/CameraMovementInputHandler.h"
 #include "objects/Floor/Floor.h"
-#include "objects/Component.h"
 #include <entt/entt.hpp>
 #include "EntitiesFactory.h"
 #include "systems/System.h"

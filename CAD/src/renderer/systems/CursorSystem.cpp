@@ -1,5 +1,7 @@
 #include "CursorSystem.h"
 #include "../../gl/ProgramFactory.h"
+#include "..\objects\Components\Cursor.h"
+#include "..\objects\Components\Transformation.h"
 
 CursorSystem::CursorSystem(std::shared_ptr<entt::registry> registry) : System(registry),
 	program(ProgramFactory::CreateProgram("coloredVertices.vert", "coloredVertices.frag")),

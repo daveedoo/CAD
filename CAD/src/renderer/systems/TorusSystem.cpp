@@ -1,6 +1,11 @@
 #include "TorusSystem.h"
 #include "../../gl/ProgramFactory.h"
-#include <iostream>
+#include "..\objects\Components\TorusComponent.h"
+#include "..\objects\Components\Mesh.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\ScaleRotation.h"
+#include "..\objects\Components\Transformation.h"
 
 
 void on_update(entt::registry& registry, entt::entity entity)

@@ -2,7 +2,7 @@
 #include "GUIElement.h"
 #include "../commands/Command.h"
 #include <memory>
-#include "../objects/Component.h"
+#include "../../renderer/objects/Components/ScaleRotation.h"
 
 class GroupTransformationWindow : public GUIElement
 {

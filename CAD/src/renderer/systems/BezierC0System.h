@@ -4,6 +4,7 @@
 #include "../../Window/input/handlers/CameraMovementInputHandler.h"
 #include "CurveSegmentsMetrics/ICurveSegmentsMetrics.h"
 #include <tuple>
+#include "..\objects\Components\BezierC0.h"
 
 class BezierC0System : public System, public CameraSubscriber
 {

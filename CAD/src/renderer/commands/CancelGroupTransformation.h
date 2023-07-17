@@ -2,7 +2,7 @@
 #include "Command.h"
 #include <memory>
 #include <entt/entt.hpp>
-#include "../objects/Component.h"
+#include "..\objects\Components\ScaleRotation.h"
 
 class CancelGroupTransformation : public Command
 {

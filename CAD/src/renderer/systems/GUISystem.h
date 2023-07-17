@@ -1,6 +1,11 @@
 #pragma once
 #include "System.h"
 #include "../gui/GUIElement.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\TorusComponent.h"
+#include "..\objects\Components\BezierC0.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\ScaleRotation.h"
 
 class Scene;
 

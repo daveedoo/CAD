@@ -1,5 +1,9 @@
 #include "TransformationsSystem.h"
 #include "../../../Matrix.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Transformation.h"
+#include "..\objects\Components\Dirty.h"
+#include "..\objects\Components\Selectable.h"
 
 TransformationsSystem::TransformationsSystem(std::shared_ptr<entt::registry> registry) : System(registry)
 {

@@ -1,5 +1,7 @@
 #include "SelectionSystem.h"
-#include "../objects/Component.h"
+#include "..\objects\Components\Dirty.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Position.h"
 
 SelectionSystem::SelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<EntitiesFactory> entitiesFactory) : System(registry),
 	entitiesFactory(entitiesFactory),

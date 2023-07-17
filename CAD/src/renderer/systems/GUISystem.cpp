@@ -3,6 +3,14 @@
 #include <iostream>
 #include "../Scene.h"
 #include <algorithm>
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\ScreenPosition.h"
+#include "..\objects\Components\Dirty.h"
+#include <glm\gtc\type_ptr.hpp>
+#include "..\objects\Components\TorusComponent.h"
+#include "..\objects\Components\ScaleRotation.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Point.h"
 
 GUISystem::GUISystem(std::shared_ptr<entt::registry> registry,
 	std::unique_ptr<GUIElement> mainMenuBar, 

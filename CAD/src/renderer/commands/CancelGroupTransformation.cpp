@@ -1,5 +1,8 @@
 #include "CancelGroupTransformation.h"
-#include "../objects/Component.h"
+#include "..\objects\Components\AdditionalTransformation.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Dirty.h"
 
 CancelGroupTransformation::CancelGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<ScaleRotation> scaleRotation) :
 	Command(), registry(registry), scaleRotation(std::move(scaleRotation))

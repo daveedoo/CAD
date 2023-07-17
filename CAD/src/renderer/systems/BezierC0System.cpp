@@ -2,6 +2,9 @@
 #include "../../gl/ProgramFactory.h"
 #include <iostream>
 #include <algorithm>
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\Point.h"
+#include "..\objects\Components\Mesh.h"
 
 BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics)
 	: System(std::move(registry)),

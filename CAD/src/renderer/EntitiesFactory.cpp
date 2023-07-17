@@ -1,5 +1,14 @@
 #include "EntitiesFactory.h"
 #include <format>
+#include "objects\Components\TorusComponent.h"
+#include "objects\Components\Mesh.h"
+#include "objects\Components\Selectable.h"
+#include "objects\Components\Position.h"
+#include "objects\Components\Transformation.h"
+#include "objects\Components\Dirty.h"
+#include "objects\Components\Point.h"
+#include "objects\Components\Cursor.h"
+#include "objects\Components\BezierC0.h"
 
 EntitiesFactory::EntitiesFactory(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
