@@ -5,10 +5,10 @@
 
 
 
-Camera::Camera(float fov, float aspect, float near, float far)
+Camera::Camera(float fov, int viewportWidth, int viewportHeight, float near, float far)
 {
 	UpdateViewMatrix();
-	SetPerspectiveProjection(fov, aspect, near, far);
+	UpdatePerspective();
 }
 
 void Camera::UpdateViewMatrix()
@@ -56,9 +56,9 @@ void Camera::Translate(glm::vec3 v)
 	UpdateViewMatrix();
 }
 
-void Camera::SetPerspectiveProjection(float fov, float aspect, float near, float far)
+void Camera::SetPerspectiveProjection(float fov, int viewportWidth, int viewportHeight, float near, float far)
 {
-	this->projection = Matrix::PerspectiveProjection(fov, aspect, near, far);
+	this->projection = Matrix::PerspectiveProjection(fov, static_cast<float>(viewportWidth) / viewportHeight, near, far);
 }
 
 void Camera::SetFov(float fov)
@@ -67,10 +67,17 @@ void Camera::SetFov(float fov)
 	UpdatePerspective();
 }
 
-void Camera::SetAspect(float aspect)
+void Camera::SetViewportSize(int viewportWidth, int viewportHeight)
 {
-	this->aspect = aspect;
+	this->viewportWidth = viewportWidth;
+	this->viewportHeight = viewportHeight;
 	UpdatePerspective();
+}
+
+void Camera::GetViewportSize(int& viewportWidth, int& viewportHeight)
+{
+	viewportWidth = this->viewportWidth;
+	viewportHeight = this->viewportHeight;
 }
 
 void Camera::SetNear(float near)
@@ -87,5 +94,5 @@ void Camera::SetFar(float far)
 
 void Camera::UpdatePerspective()
 {
-	SetPerspectiveProjection(fov, aspect, near, far);
+	SetPerspectiveProjection(this->fov, this->viewportWidth, this->viewportHeight, this->near, this->far);
 }
