@@ -40,7 +40,7 @@ public:
 	void SetPerspectiveProjection(float fov, int viewportWidth, int viewportHeight, float near, float far);
 	void SetFov(float fov);
 	void SetViewportSize(int viewportWidth, int viewportHeight);
-	void GetViewportSize(int& viewportWidth, int& viewportHeight);
+	void GetViewportSize(int& viewportWidth, int& viewportHeight) const;
 	void SetNear(float near);
 	void SetFar(float far);
 };

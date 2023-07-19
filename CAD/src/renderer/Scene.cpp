@@ -28,6 +28,7 @@
 #include "objects\Components\Position.h"
 #include "objects\Components\ScaleRotation.h"
 #include "objects\Components\Cursor.h"
+#include "systems/MouseSelectionSystem.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -37,7 +38,8 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	registry(std::make_shared<entt::registry>()),
 	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
-	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory))
+	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
+	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera))
 {
 	// build GUI
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
@@ -89,6 +91,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
 {
 	this->cameraMovementHandler->ProcessInput(inputEvent);
+	this->mouseSelectionSystem->ProcessInput(inputEvent);
 }
 
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)

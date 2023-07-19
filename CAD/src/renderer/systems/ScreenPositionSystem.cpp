@@ -3,6 +3,7 @@
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\ScreenPosition.h"
+#include "../../../Utils.h"
 
 ScreenPositionSystem::ScreenPositionSystem(std::shared_ptr<entt::registry> registry,
 	Camera& camera)
@@ -39,14 +40,7 @@ void ScreenPositionSystem::SetPosition_ScreenBasedOn3D(entt::registry& registry,
 	const auto& pos3d = registry.get<Position>(entity);
 	registry.patch<ScreenPosition>(entity, [&](ScreenPosition& screenPosition) -> void
 		{
-			int scrWidth, scrHeight;
-			camera.GetViewportSize(scrWidth, scrHeight);
-
-			auto scr = camera.GetProjectionMatrix() * camera.GetViewMatrix() * glm::vec4(pos3d.position, 1.f);
-			scr /= scr.w;
-			scr.x = ((scr.x + 1.f) / 2.f) * scrWidth;
-			scr.y = ((-scr.y + 1.f) / 2.f) * scrHeight;
-			screenPosition.position = glm::vec3(scr);
+			screenPosition.position = Utils::GetScreenPositionFrom3DCoordinates(pos3d.position, this->camera);
 		});
 
 	this->registry->on_update<ScreenPosition>().connect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);

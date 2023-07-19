@@ -8,13 +8,14 @@
 #include "objects/Floor/Floor.h"
 #include <entt/entt.hpp>
 #include "EntitiesFactory.h"
+#include "../ScreenSizeChangePublisher.h"
 #include "systems/System.h"
 #include "systems/GUISystem.h"
 #include "systems/TransformationsSystem.h"
 #include "systems/SelectionSystem.h"
 #include "systems/BezierC0System.h"
 #include "systems/CurveSegmentsMetrics/BernsteinPolygonMetrics.h"
-#include "../ScreenSizeChangePublisher.h"
+#include "systems/MouseSelectionSystem.h"
 
 class Scene : public ScreenSizeChangePublisher
 {
@@ -34,6 +35,7 @@ private:
 	entt::entity mainCursor;
 
 	std::vector<std::shared_ptr<System>> systems;
+	std::shared_ptr<MouseSelectionSystem> mouseSelectionSystem;
 	std::shared_ptr<SelectionSystem> selectionSystem;
 
 public:

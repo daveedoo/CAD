@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\renderer\objects\Components\Mesh.cpp" />
+    <ClCompile Include="src\renderer\systems\MouseSelectionSystem.cpp" />
     <ClCompile Include="src\ScreenSizeChangePublisher.cpp" />
     <ClCompile Include="src\renderer\systems\ScreenPositionSystem.cpp" />
     <ClCompile Include="src\renderer\systems\SortingSystem.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="src\renderer\systems\TorusSystem.cpp" />
     <ClCompile Include="src\renderer\systems\TransformationsSystem.cpp" />
     <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\renderer\objects\Components\AdditionalTransformation.h" />
@@ -182,6 +184,7 @@
     <ClInclude Include="src\renderer\objects\Components\Selectable.h" />
     <ClInclude Include="src\renderer\objects\Components\TorusComponent.h" />
     <ClInclude Include="src\renderer\objects\Components\Transformation.h" />
+    <ClInclude Include="src\renderer\systems\MouseSelectionSystem.h" />
     <ClInclude Include="src\ScreenSizeChangePublisher.h" />
     <ClInclude Include="src\ScreenSizeChangeSubscriber.h" />
     <ClInclude Include="src\renderer\systems\ScreenPositionSystem.h" />
@@ -230,6 +233,7 @@
     <ClInclude Include="src\renderer\systems\System.h" />
     <ClInclude Include="src\renderer\systems\TransformationsSystem.h" />
     <ClInclude Include="src\renderer\commands\StartGroupTransformation.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gl\shaders\coloredVertices.frag" />

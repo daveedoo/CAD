@@ -74,7 +74,7 @@ void Camera::SetViewportSize(int viewportWidth, int viewportHeight)
 	UpdatePerspective();
 }
 
-void Camera::GetViewportSize(int& viewportWidth, int& viewportHeight)
+void Camera::GetViewportSize(int& viewportWidth, int& viewportHeight) const
 {
 	viewportWidth = this->viewportWidth;
 	viewportHeight = this->viewportHeight;
