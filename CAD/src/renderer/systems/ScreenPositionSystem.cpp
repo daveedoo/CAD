@@ -5,11 +5,9 @@
 #include "..\objects\Components\ScreenPosition.h"
 
 ScreenPositionSystem::ScreenPositionSystem(std::shared_ptr<entt::registry> registry,
-	Camera& camera, unsigned int screenWidth, unsigned int screenHeight)
+	Camera& camera)
 	: System(registry),
-	  camera(camera),
-	  screenWidth(screenWidth),
-	  screenHeight(screenHeight)
+	  camera(camera)
 {
 	this->registry->on_construct<Position>().connect<&ScreenPositionSystem::AddScreenPositionComponent>(*this);
 	this->registry->on_destroy<Position>().connect<&ScreenPositionSystem::RemoveScreenPositionComponent>(*this);
@@ -41,10 +39,13 @@ void ScreenPositionSystem::SetPosition_ScreenBasedOn3D(entt::registry& registry,
 	const auto& pos3d = registry.get<Position>(entity);
 	registry.patch<ScreenPosition>(entity, [&](ScreenPosition& screenPosition) -> void
 		{
+			int scrWidth, scrHeight;
+			camera.GetViewportSize(scrWidth, scrHeight);
+
 			auto scr = camera.GetProjectionMatrix() * camera.GetViewMatrix() * glm::vec4(pos3d.position, 1.f);
 			scr /= scr.w;
-			scr.x = ((scr.x + 1.f) / 2.f) * screenWidth;
-			scr.y = ((-scr.y + 1.f) / 2.f) * screenHeight;
+			scr.x = ((scr.x + 1.f) / 2.f) * scrWidth;
+			scr.y = ((-scr.y + 1.f) / 2.f) * scrHeight;
 			screenPosition.position = glm::vec3(scr);
 		});
 
@@ -58,9 +59,12 @@ void ScreenPositionSystem::SetPosition_3DBasedOnScreen(entt::registry& registry,
 	const auto& screenPos = registry.get<ScreenPosition>(entity);
 	registry.patch<Position>(entity, [&](Position& position) -> void
 		{
+			int scrWidth, scrHeight;
+			camera.GetViewportSize(scrWidth, scrHeight);
+
 			auto scr = glm::vec4(screenPos.position, 1.f);
-			scr.x = ((scr.x / screenWidth) * 2.f) - 1.f;
-			scr.y = ((scr.y / screenHeight) * -2.f) + 1.f;
+			scr.x = ((scr.x / scrWidth) * 2.f) - 1.f;
+			scr.y = ((scr.y / scrHeight) * -2.f) + 1.f;
 
 			glm::vec4 pos3d = glm::inverse(camera.GetViewMatrix()) * glm::inverse(camera.GetProjectionMatrix()) * scr;
 			pos3d /= pos3d.w;
@@ -91,8 +95,6 @@ void ScreenPositionSystem::UpdateScreenPositions()
 
 void ScreenPositionSystem::OnScreenSizeChanged(unsigned int width, unsigned int height)
 {
-	this->screenWidth = width;
-	this->screenHeight = height;
 	UpdateScreenPositions();
 }
 

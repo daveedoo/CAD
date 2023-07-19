@@ -8,11 +8,9 @@ class ScreenPositionSystem : public System, public ScreenSizeChangeSubscriber, p
 {
 private:
 	Camera& camera;
-	unsigned int screenWidth;
-	unsigned int screenHeight;
 
 public:
-	ScreenPositionSystem(std::shared_ptr<entt::registry> registry, Camera& camera, unsigned int screenWidth, unsigned int screenHeight);
+	ScreenPositionSystem(std::shared_ptr<entt::registry> registry, Camera& camera);
 
 	// Inherited via System
 	virtual void Update(const Camera& camera) override;

@@ -52,7 +52,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 	// systems
 	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
-	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera, frame_width, frame_height);
+	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera);
 	this->AddSubscriber(screenPositionSystem);
 
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
