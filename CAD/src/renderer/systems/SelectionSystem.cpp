@@ -8,13 +8,12 @@ SelectionSystem::SelectionSystem(std::shared_ptr<entt::registry> registry, std::
 	selectionCursor(entitiesFactory->CreateCursor(glm::vec3(0.f), Cursor_LineWidth, Cursor_LineLength))
 {
 	HideSelectionCursor();
+
+	this->registry->on_update<Selectable>().connect<&SelectionSystem::UpdateCursor>(*this);
 }
 
 void SelectionSystem::Update(const Camera& camera)
 {
-	auto view = this->registry->view<Dirty>();
-	if (view.size() > 0)
-		UpdateCursor();
 }
 
 void SelectionSystem::Render(const Camera& camera)

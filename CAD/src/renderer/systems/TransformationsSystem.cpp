@@ -7,10 +7,10 @@
 
 TransformationsSystem::TransformationsSystem(std::shared_ptr<entt::registry> registry) : System(registry)
 {
-	this->registry->on_construct<Position>().before().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
-	this->registry->on_construct<ScaleRotation>().before().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
-	this->registry->on_destroy<Position>().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
-	this->registry->on_destroy<ScaleRotation>().connect<&TransformationsSystem::FixTransfomationComponent>(*this);
+	this->registry->on_construct<Position>().connect<&TransformationsSystem::FixTransfomationComponent_OnConstruct>(*this);
+	this->registry->on_construct<ScaleRotation>().connect<&TransformationsSystem::FixTransfomationComponent_OnConstruct>(*this);
+	this->registry->on_destroy<Position>().connect<&TransformationsSystem::FixTransfomationComponent_OnPositionDestroy>(*this);
+	this->registry->on_destroy<ScaleRotation>().connect<&TransformationsSystem::FixTransfomationComponent_OnScaleRotationDestroy>(*this);
 }
 
 glm::mat4 GetTransformation(const Position& position, const ScaleRotation* scaleRot, const Transformation& transformation, const AdditionalTransformation* addTransf)	// TODO: remove transformation (?)
@@ -65,8 +65,6 @@ glm::mat4 GetTransformation(const Position& position, const ScaleRotation* scale
 
 void TransformationsSystem::Update(const Camera& camera)
 {
-	//FixTransfomationComponent();
-
 	AdditionalTransformation* groupTransf = this->registry->ctx().contains<AdditionalTransformation>() ?
 		&(this->registry->ctx().get<AdditionalTransformation>()) :
 		nullptr;
@@ -86,16 +84,29 @@ void TransformationsSystem::Render(const Camera& camera)
 {
 }
 
-void TransformationsSystem::FixTransfomationComponent(entt::registry& registry, entt::entity entity)
+void TransformationsSystem::FixTransfomationComponent(entt::entity entity,
+	const Position* position, const ScaleRotation* scaleRot, const Transformation* transformation)
 {
-	//auto view = this->registry->view<Dirty>();
-	//for (auto [entity] : view.each())
-	//{
-	auto [position, scaleRot, transformation] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
-
 	if (position == nullptr && scaleRot == nullptr && transformation != nullptr)
 		this->registry->remove<Transformation>(entity);
 	else if ((position != nullptr || scaleRot != nullptr) && transformation == nullptr)
 		this->registry->emplace<Transformation>(entity);
-	//}
+}
+
+void TransformationsSystem::FixTransfomationComponent_OnConstruct(entt::registry& registry, entt::entity entity)
+{
+	auto [position, scaleRot, transformation] = this->registry->try_get<Position, ScaleRotation, Transformation>(entity);
+	FixTransfomationComponent(entity, position, scaleRot, transformation);
+}
+
+void TransformationsSystem::FixTransfomationComponent_OnPositionDestroy(entt::registry& registry, entt::entity entity)
+{
+	auto [scaleRot, transformation] = this->registry->try_get<ScaleRotation, Transformation>(entity);
+	FixTransfomationComponent(entity, nullptr, scaleRot, transformation);
+}
+
+void TransformationsSystem::FixTransfomationComponent_OnScaleRotationDestroy(entt::registry& registry, entt::entity entity)
+{
+	auto [position, transformation] = this->registry->try_get<Position, Transformation>(entity);
+	FixTransfomationComponent(entity, position, nullptr, transformation);
 }

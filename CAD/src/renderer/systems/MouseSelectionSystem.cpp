@@ -35,10 +35,13 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 			{
 				if (!mouseEvent.mods.IsCtrlDown())
 				{
-					this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
-						{
-							selectable.selected = false;
-						});
+					if (selectable.selected)
+					{
+						this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
+							{
+								selectable.selected = false;
+							});
+					}
 				}
 
 				glm::vec3 screenPos = Utils::GetScreenPositionFrom3DCoordinates(position.position, *this->camera);
