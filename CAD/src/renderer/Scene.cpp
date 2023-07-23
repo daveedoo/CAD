@@ -29,6 +29,7 @@
 #include "objects\Components\ScaleRotation.h"
 #include "objects\Components\Cursor.h"
 #include "systems/MouseSelectionSystem.h"
+#include "..\Window\input\events\modded\KeyEvent.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
@@ -90,8 +91,22 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
 {
-	this->cameraMovementHandler->ProcessInput(inputEvent);
-	this->mouseSelectionSystem->ProcessInput(inputEvent);
+	if (inputEvent.type == InputEvent::EventType::KEY)
+	{
+		const auto& keyEvent = static_cast<const KeyEvent&>(inputEvent);
+		if (keyEvent.key == GLFW_KEY_LEFT_CONTROL)
+		{
+			if (keyEvent.action == KeyOrButtonEvent::Action::PRESS)
+				isCtrlDown = true;
+			else if (keyEvent.action == KeyOrButtonEvent::Action::RELEASE)
+				isCtrlDown = false;
+		}
+	}
+
+	if (isCtrlDown)
+		this->mouseSelectionSystem->ProcessInput(inputEvent);
+	else
+		this->cameraMovementHandler->ProcessInput(inputEvent);
 }
 
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)

@@ -141,30 +141,12 @@ void GUISystem::RenderEntitiesList()
 	{
 		for (auto [entity, selectable] : selectablesView.each())
 		{
-			if (entity != ent)
-				selectable.selected = false;
-		}
-	};
-
-	// TODO: all selection logic to be in one system
-	static std::function<void()> selectionChanged = [&]() -> void
-	{
-		int count = 0;
-		auto cursorPos = glm::vec3(0.f);
-
-		auto view = this->registry->view<Selectable, Position>();
-		for (auto [entity, selectable, position] : view.each())
-		{
-			if (selectable.selected)
+			if (entity != ent && selectable.selected == true)
 			{
-				scene.SetSelected(entity);
-
-				cursorPos += position.position;
-				count++;
-			}
-			else
-			{
-				scene.SetUnselected(entity);
+				this->registry->patch<Selectable>(entity, [](Selectable& selectbl) -> void
+					{
+						selectbl.selected = false;
+					});
 			}
 		}
 	};
@@ -183,8 +165,7 @@ void GUISystem::RenderEntitiesList()
 				{
 					if (!ImGui::GetIO().KeyCtrl)
 						unselectAllExcept(entity);
-
-					selectionChanged();
+					this->registry->patch<Selectable>(entity);
 				}
 				if (ImGui::BeginPopupContextItem())
 				{

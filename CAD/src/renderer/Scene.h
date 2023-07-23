@@ -26,6 +26,7 @@ private:
 
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<CameraMovementInputHandler> cameraMovementHandler;
+	bool isCtrlDown = false;
 	std::unique_ptr<Floor> floor;
 
 	std::shared_ptr<entt::registry> registry;

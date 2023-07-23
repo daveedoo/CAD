@@ -33,17 +33,6 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 			auto view = this->registry->view<Position, Selectable>();
 			for (auto [entity, position, selectable] : view.each())
 			{
-				if (!mouseEvent.mods.IsCtrlDown())
-				{
-					if (selectable.selected)
-					{
-						this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
-							{
-								selectable.selected = false;
-							});
-					}
-				}
-
 				glm::vec3 screenPos = Utils::GetScreenPositionFrom3DCoordinates(position.position, *this->camera);
 				if (glm::distance(glm::vec2(mouseEvent.xpos, mouseEvent.ypos), glm::vec2(screenPos.x, screenPos.y)) < MAX_SCREEN_DIFFERENCE)
 				{
@@ -65,6 +54,19 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 					{
 						selectable.selected = !selectable.selected;
 					});
+			}
+			else
+			{
+				for (auto [entity, position, selectable] : view.each())
+				{
+					if (selectable.selected)
+					{
+						this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
+							{
+								selectable.selected = false;
+							});
+					}
+				}
 			}
 		}
 	}

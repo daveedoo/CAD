@@ -20,7 +20,6 @@ void SelectionSystem::Render(const Camera& camera)
 {
 }
 
-// force update. basically is called when selection state of an entity was changed
 void SelectionSystem::UpdateCursor()
 {
 	int count = 0;
