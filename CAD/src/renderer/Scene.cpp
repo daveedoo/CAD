@@ -32,7 +32,8 @@
 #include "..\Window\input\events\modded\KeyEvent.h"
 
 
-Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
+Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window) :
+	window(window),
 	camera(std::make_shared<Camera>(90, frame_width, frame_height, 0.1f, 100.f)),
 	cameraMovementHandler(std::make_shared<CameraMovementInputHandler>(*this->camera)),
 	floor(std::make_unique<Floor>(50, 50)),
@@ -40,7 +41,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height) :
 	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
 	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
-	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera))
+	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera, window))
 {
 	// build GUI
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
@@ -160,16 +161,4 @@ entt::entity Scene::AddBezierC0(const std::vector<entt::entity>& points)
 void Scene::RemoveEntity(entt::entity entity)
 {
 	this->registry->destroy(entity);
-}
-
-void Scene::SetSelected(entt::entity entity)
-{
-	this->registry->emplace_or_replace<Cursor>(entity, SelectedObjectCursor_LineWidth, SelectedObjectCursor_LineLength);
-	this->selectionSystem->UpdateCursor();
-}
-
-void Scene::SetUnselected(entt::entity entity)
-{
-	this->registry->remove<Cursor>(entity);
-	this->selectionSystem->UpdateCursor();
 }

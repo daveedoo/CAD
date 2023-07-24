@@ -16,6 +16,7 @@
 #include "systems/BezierC0System.h"
 #include "systems/CurveSegmentsMetrics/BernsteinPolygonMetrics.h"
 #include "systems/MouseSelectionSystem.h"
+#include "..\Window\Window.h"
 
 class Scene : public ScreenSizeChangePublisher
 {
@@ -23,6 +24,8 @@ private:
 	const GLfloat SelectedObjectCursor_LineWidth = 2.f;
 	const float SelectedObjectCursor_LineLength = 0.5f;
 	const glm::vec3 bgColor = glm::vec3(0.4f, 0.4f, 0.4f);
+
+	std::shared_ptr<Window> window;
 
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<CameraMovementInputHandler> cameraMovementHandler;
@@ -40,7 +43,7 @@ private:
 	std::shared_ptr<SelectionSystem> selectionSystem;
 
 public:
-	Scene(unsigned int frame_width, unsigned int frame_height);
+	Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window);
 
 	void Update();
 	void Render();
@@ -54,6 +57,4 @@ public:
 	entt::entity AddPoint();
 	entt::entity AddBezierC0(const std::vector<entt::entity>& points);
 	void RemoveEntity(entt::entity entity);
-	void SetSelected(entt::entity entity);
-	void SetUnselected(entt::entity entity);
 };
