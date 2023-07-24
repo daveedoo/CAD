@@ -12,10 +12,19 @@
 /// </summary>
 class Window
 {
+public:
+	enum CursorType
+	{
+		Normal,
+		Hand
+	};
+
 private:
 	static unsigned int windowsCounter;
 
 	GLFWwindow* window;
+	GLFWcursor* handCursor;
+	CursorType currentCursor = Normal;
 	std::function<void(const InputEvent&)> onInputEvent = {};
 	std::function<void(const ResizeEvent&)> onFramebufferSizeEvent = {};
 
@@ -33,6 +42,8 @@ public:
 	/// <param name="callback"></param>
 	void SetFramebufferSizeEventHandler(std::function<void(const ResizeEvent&)> callback);
 	void SetInputEventHandler(std::function<void(const InputEvent&)> callback);
+	void SetCursor(CursorType type);
+	CursorType GetCursorType() { return this->currentCursor; }
 
 	bool ShouldClose() const;
 	void PollEvents();

@@ -4,9 +4,12 @@
 #include "..\objects\Components\Selectable.h"
 #include "../../../Utils.h"
 #include <tuple>
+#include "..\..\Window\input\events\MouseMoveEvent.h"
 
-MouseSelectionSystem::MouseSelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<Camera> camera) : System(registry),
-	camera(camera)
+MouseSelectionSystem::MouseSelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<Camera> camera, std::shared_ptr<Window> window)
+	: System(registry),
+	camera(camera),
+	window(window)
 {
 }
 
@@ -20,9 +23,30 @@ void MouseSelectionSystem::Render(const Camera& camera)
 
 void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 {
-	static const float MAX_SCREEN_DIFFERENCE = 5.f;	// px
+	static const float MAX_SCREEN_DIFFERENCE = 8.f;	// px
 
-	if (event.type == InputEvent::EventType::MOUSE_CLICK)
+	if (event.type == InputEvent::EventType::MOUSE_MOVE)
+	{
+		const auto& mouseEvent = static_cast<const MouseMoveEvent&>(event);
+
+		bool hoveringOverEntity = false;
+		auto view = this->registry->view<Position, Selectable>();
+		for (auto [entity, position, selectable] : view.each())
+		{
+			glm::vec3 screenPos = Utils::GetScreenPositionFrom3DCoordinates(position.position, *this->camera);
+			if (glm::distance(glm::vec2(mouseEvent.xpos, mouseEvent.ypos), glm::vec2(screenPos.x, screenPos.y)) < MAX_SCREEN_DIFFERENCE)
+			{
+				this->window->SetCursor(Window::CursorType::Hand);
+				hoveringOverEntity = true;
+				break;
+			}
+		}
+		if (!hoveringOverEntity)
+		{
+			this->window->SetCursor(Window::CursorType::Normal);
+		}
+	}
+	else if (event.type == InputEvent::EventType::MOUSE_CLICK)
 	{
 		const auto& mouseEvent = static_cast<const MouseClickEvent&>(event);
 		if (mouseEvent.action == KeyOrButtonEvent::Action::RELEASE &&

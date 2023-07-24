@@ -100,7 +100,10 @@ void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type
 			if (keyEvent.action == KeyOrButtonEvent::Action::PRESS)
 				isCtrlDown = true;
 			else if (keyEvent.action == KeyOrButtonEvent::Action::RELEASE)
+			{
 				isCtrlDown = false;
+				this->window->SetCursor(Window::CursorType::Normal);
+			}
 		}
 	}
 
