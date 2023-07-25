@@ -52,7 +52,7 @@ void Renderer::SetupGUI()
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
-	ImGui_ImplGlfw_InitForOpenGL(this->window->GetRawWindow(), false);
+	ImGui_ImplGlfw_InitForOpenGL(this->window->GetRawWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 

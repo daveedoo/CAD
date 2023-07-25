@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\ScreenPosition.h"
-#include "..\objects\Components\Dirty.h"
 #include <glm\gtc\type_ptr.hpp>
 #include "..\objects\Components\TorusComponent.h"
 #include "..\objects\Components\ScaleRotation.h"
@@ -31,11 +30,6 @@ unsigned int GUISystem::GetSelectedEntitiesCount()
 	}
 
 	return count;
-}
-
-void GUISystem::SetDirty(entt::entity entity)
-{
-	this->registry->emplace_or_replace<Dirty>(entity);
 }
 
 void GUISystem::RenderWindowOnLeft(std::string windowName, GUIElement& guiElement)
@@ -122,13 +116,11 @@ void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& pos3d, glm::v
 		{
 			if (ImGui::DragFloat3("3D Position", glm::value_ptr(pos3d), 0.01f))
 			{
-				SetDirty(entity);
 				this->registry->patch<Position>(entity);
 			}
 			if (ImGui::DragFloat2("Screen Position", glm::value_ptr(screenPos), 0.1f))
 			{
 				this->registry->patch<ScreenPosition>(entity);
-				SetDirty(entity);
 			}
 		});
 }
@@ -253,8 +245,6 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 			if (scaleRotChanged)
 				this->registry->patch<ScaleRotation>(entity);
 		}
-		if (positionChanged || scaleRotChanged)
-			SetDirty(entity);
 
 		ImGui::TreePop();
 	}

@@ -175,7 +175,6 @@
     <ClInclude Include="src\renderer\objects\Components\AdditionalTransformation.h" />
     <ClInclude Include="src\renderer\objects\Components\BezierC0.h" />
     <ClInclude Include="src\renderer\objects\Components\Cursor.h" />
-    <ClInclude Include="src\renderer\objects\Components\Dirty.h" />
     <ClInclude Include="src\renderer\objects\Components\Mesh.h" />
     <ClInclude Include="src\renderer\objects\Components\Point.h" />
     <ClInclude Include="src\renderer\objects\Components\Position.h" />

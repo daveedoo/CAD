@@ -34,7 +34,6 @@ public:
 
 private:
 	unsigned int GetSelectedEntitiesCount();
-	void SetDirty(entt::entity entity);
 
 	void RenderWindowOnLeft(std::string windowName, GUIElement& guiElement);
 	void RenderWindowOnLeft(std::string windowName, const std::function<void()>& inside);

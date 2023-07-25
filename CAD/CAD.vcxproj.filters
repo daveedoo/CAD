@@ -287,9 +287,6 @@
     <ClInclude Include="src\renderer\objects\Components\Transformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\objects\Components\Dirty.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\renderer\objects\Components\AdditionalTransformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>

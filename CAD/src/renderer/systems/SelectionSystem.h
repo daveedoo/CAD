@@ -20,8 +20,4 @@ public:
 	virtual void Render(const Camera& camera) override;
 	void UpdateCursor();
 	std::optional<glm::vec3> GetCursorPosition();
-
-private:
-	void SetSelectionCursor(glm::vec3 position);
-	void HideSelectionCursor();
 };
