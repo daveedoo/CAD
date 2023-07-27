@@ -1,6 +1,8 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "src\renderer\objects\Components\AdditionalTransformation.h"
+#include "src\renderer\objects\Components\ScaleRotation.h"
+#include "src\renderer\objects\Components\Position.h"
 
 static class Matrix
 {
@@ -17,4 +19,8 @@ public:
 
 	static glm::mat4 Rotation(const ScaleRotation& scaleRotation);
 	static glm::mat4 RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition);
+
+	static glm::mat4 GetResultingTransformationMatrix(const Position& position, const ScaleRotation* scaleRot, const AdditionalTransformation* addTransf);
+
+	static void Decompose(const glm::mat4& mat, glm::vec3& scale, glm::quat& rotation, glm::vec3& translation);
 };

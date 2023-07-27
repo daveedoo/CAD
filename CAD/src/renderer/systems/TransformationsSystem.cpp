@@ -15,32 +15,6 @@ TransformationsSystem::TransformationsSystem(std::shared_ptr<entt::registry> reg
 	this->registry->on_update<ScaleRotation>().connect<&TransformationsSystem::UpdateTransformationComponent>(*this);
 }
 
-glm::mat4 GetTransformation(const Position& position, const ScaleRotation* scaleRot, const AdditionalTransformation* addTransf)
-{
-	glm::mat4 worldMtx = glm::mat4(1.f);
-	
-	// apply translation resulting from scale
-	glm::vec3 resPosition = addTransf == nullptr ?
-		position.position :
-		addTransf->scaleRotation.scale * (position.position - addTransf->centerPoint) + addTransf->centerPoint;
-	worldMtx *= Matrix::Translation(resPosition);
-
-	if (addTransf != nullptr)
-		worldMtx *= Matrix::RotationAroundPoint(*addTransf, position.position);
-	
-	if (scaleRot != nullptr)
-	{
-		// scale
-		glm::vec3 resScale = scaleRot->scale;
-		if (addTransf != nullptr)
-			resScale *= addTransf->scaleRotation.scale;
-
-		worldMtx *= Matrix::Rotation(*scaleRot) * Matrix::Scale(resScale);
-	}
-
-	return worldMtx;
-}
-
 void TransformationsSystem::Update(const Camera& camera)
 {
 }
@@ -90,6 +64,6 @@ void TransformationsSystem::UpdateTransformationComponent(entt::registry& regist
 
 	this->registry->patch<Transformation>(entity, [&](Transformation& transformation) -> void
 		{
-			transformation.worldMatrix = GetTransformation(position, scaleRot, addTransf);
+			transformation.worldMatrix = Matrix::GetResultingTransformationMatrix(position, scaleRot, addTransf);
 		});
 }

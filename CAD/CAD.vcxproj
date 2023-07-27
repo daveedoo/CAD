@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\maths\RotationRepresentationsConverter.cpp" />
+    <ClCompile Include="src\renderer\commands\ApplyGroupTransformation.cpp" />
     <ClCompile Include="src\renderer\objects\Components\Mesh.cpp" />
     <ClCompile Include="src\renderer\systems\MouseSelectionSystem.cpp" />
     <ClCompile Include="src\ScreenSizeChangePublisher.cpp" />
@@ -172,6 +174,8 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\maths\RotationRepresentationsConverter.h" />
+    <ClInclude Include="src\renderer\commands\ApplyGroupTransformation.h" />
     <ClInclude Include="src\renderer\objects\Components\AdditionalTransformation.h" />
     <ClInclude Include="src\renderer\objects\Components\BezierC0.h" />
     <ClInclude Include="src\renderer\objects\Components\Cursor.h" />

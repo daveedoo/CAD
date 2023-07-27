@@ -30,6 +30,7 @@
 #include "objects\Components\Cursor.h"
 #include "systems/MouseSelectionSystem.h"
 #include "..\Window\input\events\modded\KeyEvent.h"
+#include "commands\ApplyGroupTransformation.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window) :
@@ -50,8 +51,9 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	auto groupScaleRoation = std::make_shared<ScaleRotation>();
 	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupScaleRoation);
 	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupScaleRoation);
+	auto apply = std::make_shared<ApplyGroupTransformation>(registry, groupScaleRoation);
 	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupScaleRoation);
-	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, cancel, cancel);
+	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, apply, cancel);
 	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
 	// systems
@@ -83,6 +85,8 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	const auto& point2 = this->entitiesFactory->CreatePoint(1.f, 7.f, 1.f);
 	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
 	const auto& point4 = this->entitiesFactory->CreatePoint(3.f, 4.f, 8.f);
+
+	this->entitiesFactory->CreateTorus(1.f, 5.f, 10, 10, glm::vec3(0.f, 12.f, -2.f));
 
 	//auto bezierPoints = std::vector<entt::entity>{
 	//	point1, point2, point3, point4

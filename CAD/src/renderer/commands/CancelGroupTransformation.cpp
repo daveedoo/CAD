@@ -12,4 +12,11 @@ void CancelGroupTransformation::execute()
 {
 	this->registry->ctx().erase<AdditionalTransformation>();
 	*this->scaleRotation = ScaleRotation();
+
+	auto view = this->registry->view<Selectable>();
+	for (auto [entity, selectable] : view.each())
+	{
+		if (selectable.selected)
+			this->registry->patch<Position>(entity);
+	}
 }
