@@ -3,12 +3,12 @@
 #include <glm\gtc\type_ptr.hpp>
 #include "..\..\maths\RotationRepresentationsConverter.h"
 
-GroupTransformationWindow::GroupTransformationWindow(std::shared_ptr<ScaleRotation> scaleRotation,
+GroupTransformationWindow::GroupTransformationWindow(std::shared_ptr<AdditionalTransformation> additionalTransformation,
 	std::shared_ptr<Command> startCommand,
 	std::shared_ptr<Command> changeCommand,
 	std::shared_ptr<Command> applyCommand,
 	std::shared_ptr<Command> cancelCommand)
-	: GUIElement(), scaleRotation(scaleRotation),
+	: GUIElement(), additionalTransformation(additionalTransformation),
 	startCommand(std::move(startCommand)),
 	changeCommand(std::move(changeCommand)),
 	applyCommand(std::move(applyCommand)),
@@ -29,14 +29,10 @@ void GroupTransformationWindow::Draw()
 	else
 	{
 		bool transfChanged = false;
-		if (ImGui::DragFloat("Scale", &scaleRotation->scale.x, 0.01f))
-		{
-			scaleRotation->scale.y = scaleRotation->scale.z = scaleRotation->scale.x;
-			transfChanged = true;
-		}
-		if (ImGui::DragFloat("Axis Lambda", &scaleRotation->axisLambda, 0.1f)) transfChanged = true;
-		if (ImGui::DragFloat("Axis Fi", &scaleRotation->axisFi, 0.1f)) transfChanged = true;
-		if (ImGui::DragFloat("Angle", &scaleRotation->angle, 0.1f)) transfChanged = true;
+		if (ImGui::DragFloat("Scale", &additionalTransformation->scale, 0.01f)) transfChanged = true;
+		if (ImGui::DragFloat("Axis Lambda", &additionalTransformation->rotation.axisLambda, 0.1f)) transfChanged = true;
+		if (ImGui::DragFloat("Axis Fi", &additionalTransformation->rotation.axisFi, 0.1f)) transfChanged = true;
+		if (ImGui::DragFloat("Angle", &additionalTransformation->rotation.angle, 0.1f)) transfChanged = true;
 		
 		static glm::vec3 axisRotation = glm::vec3(0.f);
 		bool axisRotationChanged = false;
@@ -45,7 +41,8 @@ void GroupTransformationWindow::Draw()
 		if (ImGui::DragFloat("Z", &axisRotation.z, 0.1f)) axisRotationChanged = true;
 		if (axisRotationChanged)
 		{
-			*scaleRotation = RotationRepresentationsConverter::ConvertToAxisAngle(axisRotation);
+			auto temp = RotationRepresentationsConverter::ConvertToAxisAngle(axisRotation);
+			additionalTransformation->rotation = Rotation(temp.axisFi, temp.axisLambda, temp.angle);
 			changeCommand->execute();
 		}
 		

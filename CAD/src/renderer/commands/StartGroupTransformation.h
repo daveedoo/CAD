@@ -9,10 +9,12 @@ class StartGroupTransformation : public Command
 private:
 	std::shared_ptr<entt::registry> registry;
 	std::shared_ptr<SelectionSystem> selectionSystem;
-	std::shared_ptr<ScaleRotation> scaleRotation;
+	std::shared_ptr<AdditionalTransformation> additionalTransformation;
 
 public:
-	StartGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<SelectionSystem> selectionSystem, std::shared_ptr<ScaleRotation> scaleRotation);
+	StartGroupTransformation(std::shared_ptr<entt::registry> registry,
+		std::shared_ptr<SelectionSystem> selectionSystem,
+		std::shared_ptr<AdditionalTransformation> scaleRotation);
 
 	virtual void execute() override;
 };

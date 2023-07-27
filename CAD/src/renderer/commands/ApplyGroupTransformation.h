@@ -2,16 +2,16 @@
 #include "Command.h"
 #include <memory>
 #include <entt/entt.hpp>
-#include "..\objects\Components\ScaleRotation.h"
+#include "..\objects\Components\AdditionalTransformation.h"
 
 class ApplyGroupTransformation : public Command
 {
 private:
 	std::shared_ptr<entt::registry> registry;
-	std::shared_ptr<ScaleRotation> scaleRotation;
+	std::shared_ptr<AdditionalTransformation> additionalTransformation;
 
 public:
-	ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<ScaleRotation> scaleRotation);
+	ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<AdditionalTransformation> additionalTransformation);
 
 	// Inherited via Command
 	virtual void execute() override;

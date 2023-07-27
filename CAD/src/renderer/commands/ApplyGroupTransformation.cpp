@@ -6,9 +6,9 @@
 #include <glm\gtx\matrix_decompose.hpp>
 #include "..\..\maths\RotationRepresentationsConverter.h"
 
-ApplyGroupTransformation::ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<ScaleRotation> scaleRotation)
+ApplyGroupTransformation::ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<AdditionalTransformation> additionalTransformation)
 	: registry(registry),
-	scaleRotation(scaleRotation)
+	additionalTransformation(additionalTransformation)
 {
 }
 
@@ -40,5 +40,5 @@ void ApplyGroupTransformation::execute()
 		}
 	}
 
-	*this->scaleRotation = ScaleRotation();
+	*this->additionalTransformation = AdditionalTransformation(glm::vec3(0.f), 1.f);
 }

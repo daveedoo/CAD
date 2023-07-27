@@ -48,12 +48,12 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
 	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
 
-	auto groupScaleRoation = std::make_shared<ScaleRotation>();
-	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupScaleRoation);
-	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupScaleRoation);
-	auto apply = std::make_shared<ApplyGroupTransformation>(registry, groupScaleRoation);
-	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupScaleRoation);
-	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupScaleRoation, start, change, apply, cancel);
+	auto groupTransformation = std::make_shared<AdditionalTransformation>(glm::vec3(0.f), 1.f);
+	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupTransformation);
+	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupTransformation);
+	auto apply = std::make_shared<ApplyGroupTransformation>(registry, groupTransformation);
+	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupTransformation);
+	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupTransformation, start, change, apply, cancel);
 	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
 	// systems

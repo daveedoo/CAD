@@ -1,5 +1,6 @@
 #include "Matrix.h"
 #include <glm\gtx\matrix_decompose.hpp>
+#include "src\renderer\objects\Components\Rotation.h"
 
 glm::mat4 Matrix::PerspectiveProjection(float fov, float aspect, float n, float f)
 {
@@ -92,7 +93,7 @@ glm::mat4 Matrix::Translation(glm::vec3 v)
 	return mat;
 }
 
-glm::mat4 Matrix::Rotation(const ScaleRotation& sr)
+glm::mat4 Matrix::Rotate(const Rotation& sr)
 {
 	float lambda = glm::radians(sr.axisLambda);
 	float fi = glm::radians(sr.axisFi);
@@ -116,10 +117,10 @@ glm::mat4 Matrix::Rotation(const ScaleRotation& sr)
 glm::mat4 Matrix::RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition)
 {
 	glm::vec3 T = addTransf.centerPoint - objectPosition;
-	return Matrix::Translation(T) * Matrix::Rotation(addTransf.scaleRotation) * Matrix::Translation(-T);
+	return Matrix::Translation(T) * Matrix::Rotate(addTransf.rotation) * Matrix::Translation(-T);
 }
 
-glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, const ScaleRotation* scaleRot, const AdditionalTransformation* addTransf)
+glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, const Scaling* scale, const Rotation* scaleRot, const AdditionalTransformation* addTransf)
 {
 	glm::mat4 worldMtx = glm::mat4(1.f);
 
@@ -129,24 +130,23 @@ glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, con
 		glm::vec3 resPosition = position.position;
 		worldMtx *= Matrix::Translation(resPosition);
 
-		if (scaleRot != nullptr)
+		if (scale != nullptr && scaleRot != nullptr)
 		{
-			glm::vec3 resScale = scaleRot->scale;
-			worldMtx *= Matrix::Rotation(*scaleRot) * Matrix::Scale(resScale);
+			worldMtx *= Matrix::Rotate(*scaleRot) * Matrix::Scale(*scale);
 		}
 	}
 	else
 	{
 		// 1. Scale (self + addit.),	2. Rotate (self),	3. Rotate (around addit. point),	4. Translate (self + resulting from scaling)
-		glm::vec3 resPosition = addTransf->scaleRotation.scale * (position.position - addTransf->centerPoint) + addTransf->centerPoint;
+		glm::vec3 resPosition = addTransf->scale * (position.position - addTransf->centerPoint) + addTransf->centerPoint;
 		worldMtx *= Matrix::Translation(resPosition);
 		worldMtx *= Matrix::RotationAroundPoint(*addTransf, position.position);
 
-		if (scaleRot != nullptr)
+		if (scale != nullptr && scaleRot != nullptr)
 		{
-			glm::vec3 resScale = scaleRot->scale;
-			resScale *= addTransf->scaleRotation.scale.x;
-			worldMtx *= Matrix::Rotation(*scaleRot) * Matrix::Scale(resScale);
+			glm::vec3 resScale = *scale;
+			resScale *= addTransf->scale;
+			worldMtx *= Matrix::Rotate(*scaleRot) * Matrix::Scale(resScale);
 		}
 	}
 	return worldMtx;

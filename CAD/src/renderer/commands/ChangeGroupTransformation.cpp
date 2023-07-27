@@ -4,9 +4,9 @@
 
 ChangeGroupTransformation::ChangeGroupTransformation(std::shared_ptr<entt::registry> registry,
 	std::shared_ptr<SelectionSystem> selectionSystem,
-	std::shared_ptr<ScaleRotation> scaleRotation)
+	std::shared_ptr<AdditionalTransformation> additionalTransformation)
 	: Command(),
-	registry(registry), selectionSystem(selectionSystem), scaleRotation(scaleRotation)
+	registry(registry), selectionSystem(selectionSystem), additionalTransformation(additionalTransformation)
 {
 }
 
@@ -14,7 +14,7 @@ void ChangeGroupTransformation::execute()
 {
 	auto cursorPos = selectionSystem->GetCursorPosition();
 	if (cursorPos.has_value())
-		this->registry->ctx().insert_or_assign<AdditionalTransformation>(AdditionalTransformation(cursorPos.value(), *scaleRotation));
+		this->registry->ctx().insert_or_assign<AdditionalTransformation>(AdditionalTransformation(*additionalTransformation));
 
 	auto view = this->registry->view<Selectable>();
 	for (auto [entity, selectable] : view.each())

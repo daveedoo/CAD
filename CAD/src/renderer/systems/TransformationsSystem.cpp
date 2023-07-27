@@ -3,6 +3,8 @@
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Transformation.h"
 #include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Rotation.h"
+#include "..\objects\Components\Scaling.h"
 
 TransformationsSystem::TransformationsSystem(std::shared_ptr<entt::registry> registry) : System(registry)
 {
@@ -64,6 +66,10 @@ void TransformationsSystem::UpdateTransformationComponent(entt::registry& regist
 
 	this->registry->patch<Transformation>(entity, [&](Transformation& transformation) -> void
 		{
-			transformation.worldMatrix = Matrix::GetResultingTransformationMatrix(position, scaleRot, addTransf);
+			Scaling* scaling = scaleRot == nullptr ? nullptr : new Scaling(scaleRot->scale);
+			Rotation* rotation = scaleRot == nullptr ? nullptr : new Rotation(scaleRot->axisFi, scaleRot->axisLambda, scaleRot->angle);
+			transformation.worldMatrix = Matrix::GetResultingTransformationMatrix(position, scaling, rotation, addTransf);
+			delete scaling;
+			delete rotation;
 		});
 }

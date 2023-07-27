@@ -1,12 +1,13 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "ScaleRotation.h"
+#include "Rotation.h"
 
 struct AdditionalTransformation
 {
 	glm::vec3 centerPoint;
-	ScaleRotation scaleRotation;
+	float scale;
+	Rotation rotation;
 
-	AdditionalTransformation(glm::vec3 centerPoint, ScaleRotation sr = ScaleRotation())
-		: centerPoint(centerPoint), scaleRotation(sr) {}
+	AdditionalTransformation(glm::vec3 centerPoint, float scale, Rotation rotation = Rotation())
+		: centerPoint(centerPoint), scale(scale), rotation(rotation) {}
 };
