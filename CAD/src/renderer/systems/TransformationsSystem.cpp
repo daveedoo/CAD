@@ -34,10 +34,13 @@ void TransformationsSystem::FixTransfomationComponent(entt::entity entity,
 	const Position* position, const Scaling* scaling, const Rotation* rotation, const Transformation* transformation)
 {
 	if (position == nullptr && scaling == nullptr && rotation == nullptr && transformation != nullptr)
+	{
 		this->registry->remove<Transformation>(entity);
-	else if ((position != nullptr || scaling != nullptr || rotation != nullptr) && transformation == nullptr)
+		return;
+	}
+	
+	if ((position != nullptr || scaling != nullptr || rotation != nullptr) && transformation == nullptr)
 		this->registry->emplace<Transformation>(entity);
-
 	UpdateTransformationComponent(*this->registry, entity);
 }
 

@@ -38,11 +38,13 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	cameraMovementHandler(std::make_shared<CameraMovementInputHandler>(*this->camera)),
 	floor(std::make_unique<Floor>(50, 50)),
 	registry(std::make_shared<entt::registry>()),
-	entitiesFactory(std::make_shared<EntitiesFactory>(this->registry)),
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
-	selectionSystem(std::make_shared<SelectionSystem>(registry, entitiesFactory)),
 	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera, window))
 {
+	auto transformationsSystem = std::make_shared<TransformationsSystem>(registry);
+	entitiesFactory = std::make_shared<EntitiesFactory>(this->registry);	// after transformationsSystem
+	selectionSystem = std::make_shared<SelectionSystem>(registry, entitiesFactory);
+
 	// build GUI
 	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
 	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
@@ -65,11 +67,11 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	this->systems.push_back(std::make_shared<TorusSystem>(registry));
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
 	this->systems.push_back(std::make_shared<CursorSystem>(registry));
-	this->systems.push_back(std::make_shared<TransformationsSystem>(registry));
+	this->systems.push_back(transformationsSystem);
 	this->systems.push_back(screenPositionSystem);
-	this->systems.push_back(this->selectionSystem);
 	this->systems.push_back(bezierC0System);
 	this->systems.push_back(guiSystem);
+	this->systems.push_back(this->selectionSystem);
 
 	// camera and movement
 	this->camera->Scale(1.f / 10.f);
