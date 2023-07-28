@@ -7,6 +7,8 @@
 class GroupTransformationWindow : public GUIElement
 {
 private:
+	glm::vec3 xyzRotation;
+
 	bool groupTransformationStarted = false;
 	std::shared_ptr<AdditionalTransformation> additionalTransformation;
 	std::shared_ptr<Command> startCommand;

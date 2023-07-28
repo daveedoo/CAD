@@ -120,7 +120,7 @@ glm::mat4 Matrix::RotationAroundPoint(const AdditionalTransformation& addTransf,
 	return Matrix::Translation(T) * Matrix::Rotate(addTransf.rotation) * Matrix::Translation(-T);
 }
 
-glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, const Scaling* scale, const Rotation* scaleRot, const AdditionalTransformation* addTransf)
+glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, const Scaling* scale, const Rotation* rotation, const AdditionalTransformation* addTransf)
 {
 	glm::mat4 worldMtx = glm::mat4(1.f);
 
@@ -130,9 +130,9 @@ glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, con
 		glm::vec3 resPosition = position.position;
 		worldMtx *= Matrix::Translation(resPosition);
 
-		if (scale != nullptr && scaleRot != nullptr)
+		if (scale != nullptr && rotation != nullptr)
 		{
-			worldMtx *= Matrix::Rotate(*scaleRot) * Matrix::Scale(*scale);
+			worldMtx *= Matrix::Rotate(*rotation) * Matrix::Scale(*scale);
 		}
 	}
 	else
@@ -142,11 +142,11 @@ glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, con
 		worldMtx *= Matrix::Translation(resPosition);
 		worldMtx *= Matrix::RotationAroundPoint(*addTransf, position.position);
 
-		if (scale != nullptr && scaleRot != nullptr)
+		if (scale != nullptr && rotation != nullptr)
 		{
 			glm::vec3 resScale = *scale;
 			resScale *= addTransf->scale;
-			worldMtx *= Matrix::Rotate(*scaleRot) * Matrix::Scale(resScale);
+			worldMtx *= Matrix::Rotate(*rotation) * Matrix::Scale(resScale);
 		}
 	}
 	return worldMtx;
