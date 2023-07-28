@@ -26,7 +26,6 @@
 #include "systems/SortingSystem.h"
 #include "systems/ScreenPositionSystem.h"
 #include "objects\Components\Position.h"
-#include "objects\Components\ScaleRotation.h"
 #include "objects\Components\Cursor.h"
 #include "systems/MouseSelectionSystem.h"
 #include "..\Window\input\events\modded\KeyEvent.h"

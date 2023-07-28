@@ -184,7 +184,6 @@
     <ClInclude Include="src\renderer\objects\Components\Point.h" />
     <ClInclude Include="src\renderer\objects\Components\Position.h" />
     <ClInclude Include="src\renderer\objects\Components\Scaling.h" />
-    <ClInclude Include="src\renderer\objects\Components\ScaleRotation.h" />
     <ClInclude Include="src\renderer\objects\Components\ScreenPosition.h" />
     <ClInclude Include="src\renderer\objects\Components\Selectable.h" />
     <ClInclude Include="src\renderer\objects\Components\TorusComponent.h" />

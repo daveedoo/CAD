@@ -1,16 +1,16 @@
 #include "RotationRepresentationsConverter.h"
 #include "..\..\Matrix.h"
 
-ScaleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::quat& q)
+Rotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::quat& q)
 {
 	float th = 2.f * glm::acos(q.w);
 	glm::vec3 n = glm::vec3(q.x, q.y, q.z) / glm::sin(th / 2.f);
 	auto [lambda, fi] = ConvertToSphericalCoordinates(n);
 
-	return ScaleRotation(glm::vec3(1.f), glm::degrees(fi), glm::degrees(lambda), glm::degrees(th));
+	return Rotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(th));
 }
 
-ScaleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::vec3 axesRotation)
+Rotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::vec3 axesRotation)
 {
 	// TODO: no need to make a matrix?
 	glm::mat4 M =
@@ -27,7 +27,7 @@ ScaleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::ve
 
 	auto [lambda, fi] = ConvertToSphericalCoordinates(dir);
 
-	return ScaleRotation(glm::vec3(1.f), glm::degrees(fi), glm::degrees(lambda), glm::degrees(theta));
+	return Rotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(theta));
 }
 
 std::tuple<float, float> RotationRepresentationsConverter::ConvertToSphericalCoordinates(const glm::vec3& v)

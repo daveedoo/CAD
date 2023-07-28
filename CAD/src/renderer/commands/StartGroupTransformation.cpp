@@ -2,8 +2,8 @@
 
 StartGroupTransformation::StartGroupTransformation(std::shared_ptr<entt::registry> registry,
 	std::shared_ptr<SelectionSystem> selectionSystem,
-	std::shared_ptr<AdditionalTransformation> scaleRotation)
-	: Command(), registry(registry), selectionSystem(selectionSystem), additionalTransformation(scaleRotation)
+	std::shared_ptr<AdditionalTransformation> additionalTransformation)
+	: Command(), registry(registry), selectionSystem(selectionSystem), additionalTransformation(additionalTransformation)
 {
 }
 

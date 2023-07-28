@@ -7,7 +7,8 @@
 #include "..\objects\Components\ScreenPosition.h"
 #include <glm\gtc\type_ptr.hpp>
 #include "..\objects\Components\TorusComponent.h"
-#include "..\objects\Components\ScaleRotation.h"
+#include "..\objects\Components\Rotation.h"
+#include "..\objects\Components\Scaling.h"
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Point.h"
 
@@ -190,15 +191,15 @@ void GUISystem::RenderEntitiesDetailsWindow()
 				if (!selectable.selected)
 					continue;
 
-				if (this->registry->any_of<TorusComponent, Position, ScaleRotation, BezierC0>(entity))
+				if (this->registry->any_of<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity))
 				{
 					if (ImGui::TreeNodeEx(selectable.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						auto [torusComp, position, scaleRot, bezier_c0] = this->registry->try_get<TorusComponent, Position, ScaleRotation, BezierC0>(entity);	// TODO: duplicated type parameters
+						auto [torusComp, position, scaling, rotation, bezier_c0] = this->registry->try_get<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity);	// TODO: duplicated type parameters
 						if (torusComp != nullptr)
 							RenderTorusTreeNode(entity, *torusComp);
-						if (position != nullptr || scaleRot != nullptr)
-							RenderTransformationsTreeNode(entity, position, scaleRot);
+						if (position != nullptr || scaling != nullptr || rotation != nullptr)
+							RenderTransformationsTreeNode(entity, position, scaling, rotation);
 						if (bezier_c0 != nullptr)
 							RenderBezierC0TreeNode(entity, *bezier_c0);
 						ImGui::TreePop();
@@ -224,26 +225,30 @@ void GUISystem::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusCo
 	}
 }
 
-void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* position, ScaleRotation* sr)
+void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* position, Scaling* scaling, Rotation* rotation)
 {
 	if (ImGui::TreeNodeEx("Local transformations", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		bool positionChanged = false;
-		bool scaleRotChanged = false;
 		if (position != nullptr)
 		{
+			bool positionChanged = false;
 			if (ImGui::DragFloat3("Position", glm::value_ptr(position->position), 0.01f)) positionChanged = true;
 			if (positionChanged)
 				this->registry->patch<Position>(entity);
 		}
-		if (sr != nullptr)
+		if (scaling != nullptr)
 		{
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(sr->scale), 0.01f)) scaleRotChanged = true;
-			if (ImGui::DragFloat("Axis Lambda", &sr->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
-			if (ImGui::DragFloat("Axis Fi", &sr->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
-			if (ImGui::DragFloat("Angle", &sr->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) scaleRotChanged = true;
-			if (scaleRotChanged)
-				this->registry->patch<ScaleRotation>(entity);
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(scaling->scale), 0.01f))
+				this->registry->patch<Scaling>(entity);
+		}
+		if (rotation != nullptr)
+		{
+			bool rotationChanged = false;
+			if (ImGui::DragFloat("Axis Lambda", &rotation->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
+			if (ImGui::DragFloat("Axis Fi", &rotation->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
+			if (ImGui::DragFloat("Angle", &rotation->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
+			if (rotationChanged)
+				this->registry->patch<Rotation>(entity);
 		}
 
 		ImGui::TreePop();

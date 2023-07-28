@@ -4,7 +4,8 @@
 #include "..\objects\Components\Mesh.h"
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Position.h"
-#include "..\objects\Components\ScaleRotation.h"
+#include "..\objects\Components\Rotation.h"
+#include "..\objects\Components\Scaling.h"
 #include "..\objects\Components\Transformation.h"
 
 
@@ -38,8 +39,8 @@ void TorusSystem::Render(const Camera& camera)
 	this->torusProgram->SetMat4("projMatrix", camera.GetProjectionMatrix());
 	glLineWidth(1.f);
 
-	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, ScaleRotation, Transformation>();
-	for (auto [entt, torusComp, mesh, selectable, position, sr, transf] : view.each())
+	auto view = this->registry->view<TorusComponent, Mesh, Selectable, Position, Scaling, Rotation, Transformation>();
+	for (auto [entt, torusComp, mesh, selectable, position, scaling, rotation, transf] : view.each())
 	{
 		glm::mat4 worldMtx = transf.worldMatrix;
 

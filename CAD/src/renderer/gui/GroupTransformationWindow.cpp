@@ -1,5 +1,4 @@
 #include "GroupTransformationWindow.h"
-#include "..\objects\Components\ScaleRotation.h"
 #include <glm\gtc\type_ptr.hpp>
 #include "..\..\maths\RotationRepresentationsConverter.h"
 

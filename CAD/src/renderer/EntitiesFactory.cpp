@@ -25,7 +25,8 @@ entt::entity EntitiesFactory::CreateTorus(float minorR, float majorR, int minorS
 	this->registry->emplace<TorusComponent>(entity, values);
 	this->registry->emplace<Selectable>(entity, name);
 	this->registry->emplace<Position>(entity, position);
-	this->registry->emplace<ScaleRotation>(entity);
+	this->registry->emplace<Scaling>(entity);
+	this->registry->emplace<Rotation>(entity);
 	this->registry->emplace<Mesh>(entity, std::move(mesh));
 	return entity;
 }

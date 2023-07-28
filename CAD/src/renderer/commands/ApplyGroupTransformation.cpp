@@ -29,12 +29,18 @@ void ApplyGroupTransformation::execute()
 					position.position = translation;
 				});
 
-			if (this->registry->all_of<ScaleRotation>(entity))
+			if (this->registry->all_of<Scaling>(entity))
 			{
-				this->registry->patch<ScaleRotation>(entity, [&](ScaleRotation& scaleRot) -> void
+				this->registry->patch<Scaling>(entity, [&](Scaling& scaling) -> void
+					{
+						scaling.scale = scale;
+					});
+			}
+			if (this->registry->all_of<Rotation>(entity))
+			{
+				this->registry->patch<Rotation>(entity, [&](Rotation& scaleRot) -> void
 					{
 						scaleRot = RotationRepresentationsConverter::ConvertToAxisAngle(q);
-						scaleRot.scale = scale;
 					});
 			}
 		}

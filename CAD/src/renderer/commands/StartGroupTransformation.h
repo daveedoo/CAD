@@ -14,7 +14,7 @@ private:
 public:
 	StartGroupTransformation(std::shared_ptr<entt::registry> registry,
 		std::shared_ptr<SelectionSystem> selectionSystem,
-		std::shared_ptr<AdditionalTransformation> scaleRotation);
+		std::shared_ptr<AdditionalTransformation> additionalTransformation);
 
 	virtual void execute() override;
 };

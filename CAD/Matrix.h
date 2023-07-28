@@ -1,7 +1,6 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "src\renderer\objects\Components\AdditionalTransformation.h"
-#include "src\renderer\objects\Components\ScaleRotation.h"
 #include "src\renderer\objects\Components\Rotation.h"
 #include "src\renderer\objects\Components\Scaling.h"
 #include "src\renderer\objects\Components\Position.h"
