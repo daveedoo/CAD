@@ -10,7 +10,6 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include <imgui_stdlib.h>
 #include <glm/gtc/type_ptr.hpp>
-#include "../../Matrix.h"
 #include "../gl/ProgramFactory.h"
 #include "systems/TorusSystem.h"
 #include "systems/PointSystem.h"

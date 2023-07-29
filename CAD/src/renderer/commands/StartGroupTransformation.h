@@ -3,6 +3,7 @@
 #include <memory>
 #include <entt/entt.hpp>
 #include "../systems/SelectionSystem.h"
+#include "..\objects\Components\AdditionalTransformation.h"
 
 class StartGroupTransformation : public Command
 {

@@ -1,9 +1,9 @@
 #pragma once
 #include <glm/glm.hpp>
-#include "src\renderer\objects\Components\AdditionalTransformation.h"
-#include "src\renderer\objects\Components\Rotation.h"
-#include "src\renderer\objects\Components\Scaling.h"
-#include "src\renderer\objects\Components\Position.h"
+#include "..\renderer\objects\Components\AdditionalTransformation.h"
+#include "..\renderer\objects\Components\Rotation.h"
+#include "..\renderer\objects\Components\Scaling.h"
+#include "..\renderer\objects\Components\Position.h"
 
 static class Matrix
 {

@@ -60,7 +60,7 @@
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Matrix.cpp">
+    <ClCompile Include="src\maths\Matrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\objects\Floor\Floor.cpp">
@@ -212,7 +212,7 @@
     <ClInclude Include="src\gl\wrappers\textures\Texture2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix.h">
+    <ClInclude Include="src\maths\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\objects\Floor\Floor.h">

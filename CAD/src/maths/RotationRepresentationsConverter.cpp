@@ -1,5 +1,5 @@
 #include "RotationRepresentationsConverter.h"
-#include "..\..\Matrix.h"
+#include "Matrix.h"
 #include <numbers>
 
 AxisAngleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::quat& q)

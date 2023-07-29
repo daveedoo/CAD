@@ -2,9 +2,9 @@
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Transformation.h"
-#include "..\..\..\Matrix.h"
 #include <glm\gtx\matrix_decompose.hpp>
 #include "..\..\maths\RotationRepresentationsConverter.h"
+#include "..\..\maths\Matrix.h"
 
 ApplyGroupTransformation::ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<AdditionalTransformation> additionalTransformation)
 	: registry(registry),

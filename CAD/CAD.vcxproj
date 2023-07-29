@@ -152,7 +152,7 @@
     <ClCompile Include="src\renderer\systems\GUISystem.cpp" />
     <ClCompile Include="src\gl\ProgramFactory.cpp" />
     <ClCompile Include="src\renderer\EntitiesFactory.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="src\maths\Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\gl\wrappers\EBO.cpp" />
@@ -212,7 +212,7 @@
     <ClInclude Include="src\renderer\systems\GUISystem.h" />
     <ClInclude Include="src\gl\ProgramFactory.h" />
     <ClInclude Include="src\renderer\EntitiesFactory.h" />
-    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="src\maths\Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Config.h" />

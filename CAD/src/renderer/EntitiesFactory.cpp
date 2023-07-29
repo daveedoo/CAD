@@ -8,6 +8,8 @@
 #include "objects\Components\Point.h"
 #include "objects\Components\Cursor.h"
 #include "objects\Components\BezierC0.h"
+#include "objects\Components\Scaling.h"
+#include "objects\Components\Rotation.h"
 
 EntitiesFactory::EntitiesFactory(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
