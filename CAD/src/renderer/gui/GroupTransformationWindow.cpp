@@ -1,6 +1,7 @@
 #include "GroupTransformationWindow.h"
 #include <glm\gtc\type_ptr.hpp>
 #include "..\..\maths\RotationRepresentationsConverter.h"
+#include "widgets\Widgets.h"
 
 GroupTransformationWindow::GroupTransformationWindow(std::shared_ptr<AdditionalTransformation> additionalTransformation,
 	std::shared_ptr<Command> startCommand,
@@ -45,26 +46,7 @@ void GroupTransformationWindow::Draw()
 		
 		static bool transfChanged = false;
 		if (ImGui::DragFloat("Scale", &additionalTransformation->scale, 0.01f)) transfChanged = true;
-		if (representations[idx] == "X-Y-Z basis axes")
-		{
-			bool axisRotationChanged = false;
-			if (ImGui::DragFloat("X", &this->xyzRotation.x, 0.1f)) axisRotationChanged = true;
-			if (ImGui::DragFloat("Y", &this->xyzRotation.y, 0.1f)) axisRotationChanged = true;
-			if (ImGui::DragFloat("Z", &this->xyzRotation.z, 0.1f)) axisRotationChanged = true;
-
-			if (axisRotationChanged)
-			{
-				auto temp = RotationRepresentationsConverter::ConvertToAxisAngle(this->xyzRotation);
-				additionalTransformation->rotation = Rotation(temp.axisFi, temp.axisLambda, temp.angle);
-				changeCommand->execute();
-			}
-		}
-		else
-		{
-			if (ImGui::DragFloat("Axis Lambda", &additionalTransformation->rotation.axisLambda, 0.1f)) transfChanged = true;
-			if (ImGui::DragFloat("Axis Fi", &additionalTransformation->rotation.axisFi, 0.1f)) transfChanged = true;
-			if (ImGui::DragFloat("Angle", &additionalTransformation->rotation.angle, 0.1f)) transfChanged = true;
-		}
+		if (ImGui::RotationRPY(additionalTransformation->rotation)) transfChanged = true;
 
 		if (transfChanged)
 		{

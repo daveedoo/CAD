@@ -40,7 +40,8 @@ void ApplyGroupTransformation::execute()
 			{
 				this->registry->patch<Rotation>(entity, [&](Rotation& scaleRot) -> void
 					{
-						scaleRot = RotationRepresentationsConverter::ConvertToAxisAngle(q);
+						auto angles = RotationRepresentationsConverter::ConvertToRPY(q);
+						scaleRot = Rotation(glm::degrees(angles.roll), glm::degrees(angles.pitch), glm::degrees(angles.yaw));
 					});
 			}
 		}

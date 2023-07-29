@@ -2,14 +2,17 @@
 #include <glm\glm.hpp>
 #include <glm\gtc\quaternion.hpp>
 #include <tuple>
-#include "../renderer/objects/Components/Rotation.h"
+#include "EulerAngles.h"
+#include "AxisAngleRotation.h"
 
 static class RotationRepresentationsConverter
 {
 public:
-	static Rotation ConvertToAxisAngle(const glm::quat& q);
+	static AxisAngleRotation ConvertToAxisAngle(const glm::quat& q);
 	// All three angles are in degrees
-	static Rotation ConvertToAxisAngle(const glm::vec3 basisAxesRotation);
+	static AxisAngleRotation ConvertToAxisAngle(const glm::vec3 basisAxesRotation);
+
+	static EulerAngles ConvertToRPY(const glm::quat& q);
 
 private:
 	// TODO: naming to be the other way
@@ -17,4 +20,3 @@ private:
 	// Second tuple component is fi - angle from XZ plane to +Y
 	static std::tuple<float, float> ConvertToSphericalCoordinates(const glm::vec3& direction);
 };
-

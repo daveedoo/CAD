@@ -2,10 +2,11 @@
 
 struct Rotation
 {
-	float axisFi;
-	float axisLambda;
-	float angle;
+	float roll;		// around X
+	float pitch;	// around Z
+	float yaw;		// around Y
 
-	Rotation(float axisFi = 0.f, float axisLambda = 0.f, float angle = 0.f)
-		: axisFi(axisFi), axisLambda(axisLambda), angle(angle) {}
+	Rotation() = default;
+	Rotation(float roll, float pitch, float yaw)
+		: roll(roll), pitch(pitch), yaw(yaw) {}
 };

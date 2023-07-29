@@ -38,9 +38,10 @@ void TransformationsSystem::FixTransfomationComponent(entt::entity entity,
 		this->registry->remove<Transformation>(entity);
 		return;
 	}
-	
+
 	if ((position != nullptr || scaling != nullptr || rotation != nullptr) && transformation == nullptr)
 		this->registry->emplace<Transformation>(entity);
+
 	UpdateTransformationComponent(*this->registry, entity);
 }
 

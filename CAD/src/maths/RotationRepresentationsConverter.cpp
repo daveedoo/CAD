@@ -1,16 +1,17 @@
 #include "RotationRepresentationsConverter.h"
 #include "..\..\Matrix.h"
+#include <numbers>
 
-Rotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::quat& q)
+AxisAngleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::quat& q)
 {
 	float th = 2.f * glm::acos(q.w);
-	glm::vec3 n = glm::vec3(q.x, q.y, q.z) / glm::sin(th / 2.f);
-	auto [lambda, fi] = ConvertToSphericalCoordinates(n);
+	glm::vec3 axis = glm::vec3(q.x, q.y, q.z) / glm::sin(th / 2.f);
+	auto [lambda, fi] = ConvertToSphericalCoordinates(axis);
 
-	return Rotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(th));
+	return AxisAngleRotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(th));
 }
 
-Rotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::vec3 axesRotation)
+AxisAngleRotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::vec3 axesRotation)
 {
 	// TODO: no need to make a matrix?
 	glm::mat4 M =
@@ -27,7 +28,31 @@ Rotation RotationRepresentationsConverter::ConvertToAxisAngle(const glm::vec3 ax
 
 	auto [lambda, fi] = ConvertToSphericalCoordinates(dir);
 
-	return Rotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(theta));
+	return AxisAngleRotation(glm::degrees(fi), glm::degrees(lambda), glm::degrees(theta));
+}
+
+EulerAngles RotationRepresentationsConverter::ConvertToRPY(const glm::quat& q)
+{
+	// this implementation assumes normalized quaternion
+	// converts to Euler angles in 3-2-1 sequence
+	EulerAngles angles;
+
+	// roll
+	double sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
+	double cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+	angles.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+	// pitch
+	double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
+	double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+	angles.pitch = std::atan2(siny_cosp, cosy_cosp);
+
+	// yaw
+	double sinp = std::sqrt(1 + 2 * (q.w * q.y - q.x * q.z));
+	double cosp = std::sqrt(1 - 2 * (q.w * q.y - q.x * q.z));
+	angles.yaw = 2 * std::atan2(sinp, cosp) - std::numbers::pi / 2;
+
+	return angles;
 }
 
 std::tuple<float, float> RotationRepresentationsConverter::ConvertToSphericalCoordinates(const glm::vec3& v)

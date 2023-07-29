@@ -11,6 +11,7 @@
 #include "..\objects\Components\Scaling.h"
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Point.h"
+#include "..\gui\widgets\Widgets.h"
 
 GUISystem::GUISystem(std::shared_ptr<entt::registry> registry,
 	std::unique_ptr<GUIElement> mainMenuBar, 
@@ -243,11 +244,7 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 		}
 		if (rotation != nullptr)
 		{
-			bool rotationChanged = false;
-			if (ImGui::DragFloat("Axis Lambda", &rotation->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
-			if (ImGui::DragFloat("Axis Fi", &rotation->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
-			if (ImGui::DragFloat("Angle", &rotation->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) rotationChanged = true;
-			if (rotationChanged)
+			if (ImGui::RotationRPY(*rotation))
 				this->registry->patch<Rotation>(entity);
 		}
 
