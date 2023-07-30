@@ -33,15 +33,15 @@ void TransformationsSystem::Render(const Camera& camera)
 void TransformationsSystem::FixTransfomationComponent(entt::entity entity,
 	const Position* position, const Scaling* scaling, const Rotation* rotation, const Transformation* transformation)
 {
-	if (position == nullptr && scaling == nullptr && rotation == nullptr && transformation != nullptr)
+	if (position == nullptr && scaling == nullptr && rotation == nullptr)
 	{
-		this->registry->remove<Transformation>(entity);
+		if (transformation != nullptr)
+			this->registry->remove<Transformation>(entity);
 		return;
 	}
 
-	if ((position != nullptr || scaling != nullptr || rotation != nullptr) && transformation == nullptr)
+	if (transformation == nullptr)
 		this->registry->emplace<Transformation>(entity);
-
 	UpdateTransformationComponent(*this->registry, entity);
 }
 

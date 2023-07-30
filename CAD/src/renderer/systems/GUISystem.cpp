@@ -266,7 +266,6 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 			});
 	};
 
-
 	if (ImGui::BeginListBox("Curve points", ImVec2(-FLT_MIN, 0.f)))
 	{
 		ImGui::SeparatorText(std::format("{} curve points:", bezier.points.size()).c_str());
