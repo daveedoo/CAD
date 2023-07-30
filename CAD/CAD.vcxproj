@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\renderer\commands\AddPointCommand.cpp" />
     <ClCompile Include="src\maths\RotationRepresentationsConverter.cpp" />
     <ClCompile Include="src\renderer\commands\GroupTransformationCommands\ApplyGroupTransformationCommand.cpp" />
     <ClCompile Include="src\renderer\gui\widgets\Widgets.cpp" />
@@ -175,6 +176,7 @@
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\renderer\commands\AddPointCommand.h" />
     <ClInclude Include="src\maths\EulerAngles.h" />
     <ClInclude Include="src\renderer\gui\widgets\Widgets.h" />
     <ClInclude Include="src\maths\AxisAngleRotation.h" />

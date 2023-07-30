@@ -11,10 +11,11 @@ class MainMenuBar : public GUIElement
 {
 private:
 	std::shared_ptr<entt::registry> registry;
+	std::shared_ptr<Command> addPointCommand;
 	Scene& scene;
 
 public:
-	MainMenuBar(Scene& scene, std::shared_ptr<entt::registry> registry);
+	MainMenuBar(Scene& scene, std::shared_ptr<entt::registry> registry, std::shared_ptr<Command> addPointCommand);
 
 	//void AddMenuItem(std::string label, std::shared_ptr<Command> command);
 	virtual void Draw() override;

@@ -29,6 +29,7 @@
 #include "objects\Components\Cursor.h"
 #include "systems/MouseSelectionSystem.h"
 #include "..\Window\input\events\modded\KeyEvent.h"
+#include "commands\AddPointCommand.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window) :
@@ -40,26 +41,16 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
 	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera, window))
 {
-	auto transformationsSystem = std::make_shared<TransformationsSystem>(registry);
 	entitiesFactory = std::make_shared<EntitiesFactory>(this->registry);	// after transformationsSystem
-	selectionSystem = std::make_shared<SelectionSystem>(registry, entitiesFactory);
 
-	// build GUI
-	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry);
-	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
-
-	auto groupTransformation = std::make_shared<AdditionalTransformation>(glm::vec3(0.f), 1.f);
-	auto start = std::make_shared<StartGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
-	auto change = std::make_shared<ChangeGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
-	auto apply = std::make_shared<ApplyGroupTransformationCommand>(registry, groupTransformation);
-	auto cancel = std::make_shared<CancelGroupTransformationCommand>(registry, groupTransformation);
-	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupTransformation, start, change, apply, cancel);
-	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
 	// systems
-	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
 	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera);
 	this->AddSubscriber(screenPositionSystem);
+	
+	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
+	auto transformationsSystem = std::make_shared<TransformationsSystem>(registry);
+	selectionSystem = std::make_shared<SelectionSystem>(registry, entitiesFactory);
 
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
 	this->systems.push_back(std::make_shared<SortingSystem>(registry));
@@ -69,7 +60,6 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	this->systems.push_back(transformationsSystem);
 	this->systems.push_back(screenPositionSystem);
 	this->systems.push_back(bezierC0System);
-	this->systems.push_back(guiSystem);
 	this->systems.push_back(this->selectionSystem);
 
 	// camera and movement
@@ -77,10 +67,25 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	this->cameraMovementHandler->AddSubscriber(bezierC0System);
 	this->cameraMovementHandler->AddSubscriber(screenPositionSystem);
 
-
-	// create starting scene entities
+	// main cursor
 	this->mainCursor = entitiesFactory->CreateCursor(glm::vec3(0.f), 3.f, 1.f);
 
+	// build GUI
+	auto addPointCommand = std::make_shared<AddPointCommand>(this->registry, this->entitiesFactory, this->mainCursor);
+	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry, addPointCommand);
+	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
+
+	auto groupTransformation = std::make_shared<AdditionalTransformation>(glm::vec3(0.f), 1.f);
+	auto start = std::make_shared<StartGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
+	auto change = std::make_shared<ChangeGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
+	auto apply = std::make_shared<ApplyGroupTransformationCommand>(registry, groupTransformation);
+	auto cancel = std::make_shared<CancelGroupTransformationCommand>(registry, groupTransformation);
+	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupTransformation, start, change, apply, cancel);
+	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
+	this->systems.push_back(guiSystem);
+
+
+	// create starting scene entities
 	const auto& point1 = this->entitiesFactory->CreatePoint(0.f, 1.f, 0.f);
 	const auto& point2 = this->entitiesFactory->CreatePoint(1.f, 7.f, 1.f);
 	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
