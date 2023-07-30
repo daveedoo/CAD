@@ -1,18 +1,18 @@
-#include "ApplyGroupTransformation.h"
-#include "..\objects\Components\Selectable.h"
-#include "..\objects\Components\Position.h"
-#include "..\objects\Components\Transformation.h"
+#include "ApplyGroupTransformationCommand.h"
+#include "..\..\objects\Components\Selectable.h"
+#include "..\..\objects\Components\Position.h"
+#include "..\..\objects\Components\Transformation.h"
 #include <glm\gtx\matrix_decompose.hpp>
-#include "..\..\maths\RotationRepresentationsConverter.h"
-#include "..\..\maths\Matrix.h"
+#include "..\..\..\maths\RotationRepresentationsConverter.h"
+#include "..\..\..\maths\Matrix.h"
 
-ApplyGroupTransformation::ApplyGroupTransformation(std::shared_ptr<entt::registry> registry, std::shared_ptr<AdditionalTransformation> additionalTransformation)
+ApplyGroupTransformationCommand::ApplyGroupTransformationCommand(std::shared_ptr<entt::registry> registry, std::shared_ptr<AdditionalTransformation> additionalTransformation)
 	: registry(registry),
 	additionalTransformation(additionalTransformation)
 {
 }
 
-void ApplyGroupTransformation::execute()
+void ApplyGroupTransformationCommand::execute()
 {
 	this->registry->ctx().erase<AdditionalTransformation>();
 

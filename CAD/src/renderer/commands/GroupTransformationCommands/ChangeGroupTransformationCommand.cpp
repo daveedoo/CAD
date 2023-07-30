@@ -1,8 +1,8 @@
-#include "ChangeGroupTransformation.h"
-#include "..\objects\Components\Selectable.h"
-#include "..\objects\Components\Position.h"
+#include "ChangeGroupTransformationCommand.h"
+#include "..\..\objects\Components\Selectable.h"
+#include "..\..\objects\Components\Position.h"
 
-ChangeGroupTransformation::ChangeGroupTransformation(std::shared_ptr<entt::registry> registry,
+ChangeGroupTransformationCommand::ChangeGroupTransformationCommand(std::shared_ptr<entt::registry> registry,
 	std::shared_ptr<SelectionSystem> selectionSystem,
 	std::shared_ptr<AdditionalTransformation> additionalTransformation)
 	: Command(),
@@ -10,7 +10,7 @@ ChangeGroupTransformation::ChangeGroupTransformation(std::shared_ptr<entt::regis
 {
 }
 
-void ChangeGroupTransformation::execute()
+void ChangeGroupTransformationCommand::execute()
 {
 	auto cursorPos = selectionSystem->GetCursorPosition();
 	if (cursorPos.has_value())

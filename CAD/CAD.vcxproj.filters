@@ -87,16 +87,16 @@
     <ClCompile Include="src\renderer\systems\SelectionSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp">
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\StartGroupTransformationCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\gui\GroupTransformationWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\commands\ChangeGroupTransformation.cpp">
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\ChangeGroupTransformationCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\commands\CancelGroupTransformation.cpp">
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\CancelGroupTransformationCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\renderer\systems\BezierC0System.cpp">
@@ -132,7 +132,7 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\renderer\commands\ApplyGroupTransformation.cpp">
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\ApplyGroupTransformationCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\maths\RotationRepresentationsConverter.cpp">
@@ -245,7 +245,7 @@
     <ClInclude Include="src\renderer\commands\Command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\commands\StartGroupTransformation.h">
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\StartGroupTransformationCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\gui\GroupTransformationWindow.h">
@@ -254,10 +254,10 @@
     <ClInclude Include="src\renderer\gui\GUIElement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\commands\ChangeGroupTransformation.h">
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\ChangeGroupTransformationCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\commands\CancelGroupTransformation.h">
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\CancelGroupTransformationCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\renderer\systems\BezierC0System.h">
@@ -323,7 +323,7 @@
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\renderer\commands\ApplyGroupTransformation.h">
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\ApplyGroupTransformationCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\maths\RotationRepresentationsConverter.h">

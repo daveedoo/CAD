@@ -16,10 +16,11 @@
 #include "systems/CursorSystem.h"
 #include "systems/GUISystem.h"
 #include "commands/Command.h"
-#include "commands/StartGroupTransformation.h"
 #include "gui/GroupTransformationWindow.h"
-#include "commands/ChangeGroupTransformation.h"
-#include "commands/CancelGroupTransformation.h"
+#include "commands/GroupTransformationCommands/StartGroupTransformationCommand.h"
+#include "commands/GroupTransformationCommands/ChangeGroupTransformationCommand.h"
+#include "commands/GroupTransformationCommands/CancelGroupTransformationCommand.h"
+#include "commands/GroupTransformationCommands/ApplyGroupTransformationCommand.h"
 #include "systems/BezierC0System.h"
 #include "gui/MainMenuBar.h"
 #include "systems/SortingSystem.h"
@@ -28,7 +29,6 @@
 #include "objects\Components\Cursor.h"
 #include "systems/MouseSelectionSystem.h"
 #include "..\Window\input\events\modded\KeyEvent.h"
-#include "commands\ApplyGroupTransformation.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window) :
@@ -49,10 +49,10 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
 
 	auto groupTransformation = std::make_shared<AdditionalTransformation>(glm::vec3(0.f), 1.f);
-	auto start = std::make_shared<StartGroupTransformation>(registry, selectionSystem, groupTransformation);
-	auto change = std::make_shared<ChangeGroupTransformation>(registry, selectionSystem, groupTransformation);
-	auto apply = std::make_shared<ApplyGroupTransformation>(registry, groupTransformation);
-	auto cancel = std::make_shared<CancelGroupTransformation>(registry, groupTransformation);
+	auto start = std::make_shared<StartGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
+	auto change = std::make_shared<ChangeGroupTransformationCommand>(registry, selectionSystem, groupTransformation);
+	auto apply = std::make_shared<ApplyGroupTransformationCommand>(registry, groupTransformation);
+	auto cancel = std::make_shared<CancelGroupTransformationCommand>(registry, groupTransformation);
 	auto groupTransformationGUI = std::make_unique<GroupTransformationWindow>(groupTransformation, start, change, apply, cancel);
 	guiSystem->AddGroupWindow(std::move(groupTransformationGUI));
 
