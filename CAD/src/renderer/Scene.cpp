@@ -86,12 +86,12 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	const auto& point3 = this->entitiesFactory->CreatePoint(2.f, 3.f, 3.f);
 	const auto& point4 = this->entitiesFactory->CreatePoint(3.f, 4.f, 8.f);
 
-	this->entitiesFactory->CreateTorus(1.f, 5.f, 10, 10, glm::vec3(0.f, 12.f, -2.f));
+	//this->entitiesFactory->CreateTorus(1.f, 5.f, 10, 10, glm::vec3(0.f, 12.f, -2.f));
 
-	//auto bezierPoints = std::vector<entt::entity>{
-	//	point1, point2, point3, point4
-	//};
-	//this->entitiesFactory->CreateBezierC0(bezierPoints);
+	auto bezierPoints = std::vector<entt::entity>{
+		point1, point2, point3, point4
+	};
+	this->entitiesFactory->CreateBezierC0(bezierPoints);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent

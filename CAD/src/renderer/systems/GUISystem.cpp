@@ -286,7 +286,8 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 		for (auto it = bezier.points.begin(); it != bezier.points.end(); it++)
 		{
 			// TODO: this bool may be removed if using std::list<> instead of std::vector<>
-			// also, continuous dragging might be possible to implement then
+			// also, continuous dragging might be possible to implement then.
+			// However, due to the component constness, efficiency wouldn't be much better
 			bool iteratorInvalid = false;
 
 			const auto& selectable = this->registry->get<Selectable>(*it);
@@ -319,6 +320,7 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 					{
 						replaceValues(currentIdx, (size_t)currentIdx - 1);
 						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
 					}
 				}
 				if (bezier.points.end() - it > 1)
@@ -327,6 +329,7 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 					{
 						replaceValues(currentIdx, static_cast<size_t>(currentIdx) + 1);
 						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
 					}
 				}
 				if (ImGui::Button("Remove from curve"))
