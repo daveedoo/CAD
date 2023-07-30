@@ -60,6 +60,7 @@ void GroupTransformationWindow::Draw()
 			this->xyzRotation = glm::vec3(0.f);
 			applyCommand->execute();
 		}
+		ImGui::SameLine();
 		if (ImGui::Button("Cancel"))
 		{
 			groupTransformationStarted = false;
