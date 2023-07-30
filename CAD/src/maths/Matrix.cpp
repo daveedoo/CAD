@@ -141,3 +141,8 @@ void Matrix::Decompose(const glm::mat4& mat, glm::vec3& scale, glm::quat& rotati
 	glm::vec4 _persp;
 	glm::decompose(mat, scale, rotation, translation, _skew, _persp);
 }
+
+glm::vec3 Matrix::ExtractTranslation(const glm::mat4& mat)
+{
+	return mat[3] / mat[3][3];
+}

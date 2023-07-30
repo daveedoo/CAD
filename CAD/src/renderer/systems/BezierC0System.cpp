@@ -1,10 +1,11 @@
 #include "BezierC0System.h"
 #include "../../gl/ProgramFactory.h"
-#include <iostream>
 #include <algorithm>
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Point.h"
 #include "..\objects\Components\Mesh.h"
+#include "..\objects\Components\Transformation.h"
+#include "..\..\maths\Matrix.h"
 
 BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics)
 	: System(std::move(registry)),
@@ -62,13 +63,18 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 
 	size_t size = bezier.points.size();
 	if (size > 3)
-		for (size_t i = 0; i < size - 3; i+=3)
+	{
+		for (size_t i = 0; i < size - 3; i += 3)
 		{
 			// TODO: ensure its a Point
-			auto b0 = this->registry->get<Position>(bezier.points[i + 0]).position;
-			auto b1 = this->registry->get<Position>(bezier.points[i + 1]).position;
-			auto b2 = this->registry->get<Position>(bezier.points[i + 2]).position;
-			auto b3 = this->registry->get<Position>(bezier.points[i + 3]).position;
+			auto& b0_transf = this->registry->get<Transformation>(bezier.points[i + 0]);
+			auto& b1_transf = this->registry->get<Transformation>(bezier.points[i + 1]);
+			auto& b2_transf = this->registry->get<Transformation>(bezier.points[i + 2]);
+			auto& b3_transf = this->registry->get<Transformation>(bezier.points[i + 3]);
+			auto b0 = Matrix::ExtractTranslation(b0_transf.worldMatrix);
+			auto b1 = Matrix::ExtractTranslation(b1_transf.worldMatrix);
+			auto b2 = Matrix::ExtractTranslation(b2_transf.worldMatrix);
+			auto b3 = Matrix::ExtractTranslation(b3_transf.worldMatrix);
 			auto arr = std::array<glm::vec3, 4>{ b0, b1, b2, b3 };
 
 			unsigned int segments = curveSegmentsMetrics->CalculateSegmentsCount(arr);
@@ -77,6 +83,7 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 				points.push_back(BezierC0System::CalculateBezierValue(b0, b1, b2, b3, static_cast<float>(j) / segments));
 			}
 		}
+	}
 
 	return points;
 }

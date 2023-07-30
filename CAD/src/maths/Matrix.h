@@ -24,4 +24,5 @@ public:
 	static glm::mat4 GetResultingTransformationMatrix(const Position& position, const Scaling* scale, const Rotation* scaleRot, const AdditionalTransformation* addTransf);
 
 	static void Decompose(const glm::mat4& mat, glm::vec3& scale, glm::quat& rotation, glm::vec3& translation);
+	static glm::vec3 ExtractTranslation(const glm::mat4& mat);
 };
