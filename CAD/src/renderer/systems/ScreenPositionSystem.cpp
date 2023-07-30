@@ -31,16 +31,15 @@ void ScreenPositionSystem::Render(const Camera& camera)
 // Unselected entities don't show their screen coordinates, so there's no need to update it.
 void ScreenPositionSystem::SetPosition_ScreenBasedOn3D(entt::registry& registry, entt::entity entity)
 {
-	const auto& selectable = registry.try_get<Selectable>(entity);
-	if (selectable != nullptr && selectable->selected == false)
+	const auto& [selectable, pos3d] = registry.try_get<Selectable, Position>(entity);
+	if (pos3d == nullptr || (selectable != nullptr && selectable->selected == false))
 		return;
 
 	this->registry->on_update<ScreenPosition>().disconnect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);
 
-	const auto& pos3d = registry.get<Position>(entity);
 	registry.patch<ScreenPosition>(entity, [&](ScreenPosition& screenPosition) -> void
 		{
-			screenPosition.position = Utils::GetScreenPositionFrom3DCoordinates(pos3d.position, this->camera);
+			screenPosition.position = Utils::GetScreenPositionFrom3DCoordinates(pos3d->position, this->camera);
 		});
 
 	this->registry->on_update<ScreenPosition>().connect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);
