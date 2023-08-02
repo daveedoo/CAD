@@ -118,7 +118,7 @@ void BezierC0System::SetCurveMesh(entt::registry& registry, entt::entity bezierE
 	auto [points, idx] = GetCurveMeshData(bezier);
 
 	auto vao = std::make_unique<GL::VAO>();
-	auto ebo = std::make_unique<GL::EBO>();
+	auto ebo = std::make_unique<GL::EBO>(*vao);
 	auto vbo = std::make_unique<GL::VBO>(points.data(), points.size() * sizeof(glm::vec3));
 	ebo->SetBufferData(idx.data(), GL::EBO::DataType::UINT, idx.size());
 	vao->DefineFloatAttribute(*vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
@@ -133,8 +133,6 @@ void BezierC0System::UpdateCurveMesh(entt::registry& registry, entt::entity bezi
 
 	this->registry->patch<Mesh>(bezierEntity, [&](Mesh& mesh) -> void
 		{
-			// TODO: remove line woth vao. EBO should be a part of VAO
-			mesh.vao->Bind();
 			mesh.vbo->SetBufferData(points.data(), points.size() * sizeof(glm::vec3));
 			mesh.ebo->SetBufferData(idx.data(), GL::EBO::DataType::UINT, idx.size());
 		});

@@ -1,6 +1,5 @@
 #pragma once
 #include <gl/glew.h>
-//#include <gl/gl.h>
 #include "VBO.h"
 
 namespace GL
@@ -31,7 +30,7 @@ namespace GL
 
 		GLuint GetID() { return this->ID; }
 
-		void Bind();
+		void Bind() const;
 		static void Unbind();
 
 		void DefineFloatAttribute(VBO& vbo,

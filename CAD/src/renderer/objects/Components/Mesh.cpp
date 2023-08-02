@@ -27,7 +27,7 @@ Mesh Mesh::Torus(TorusComponent val)
 		}
 	}
 	std::unique_ptr<GL::VAO> vao = std::make_unique<GL::VAO>();
-	std::unique_ptr<GL::EBO> ebo = std::make_unique<GL::EBO>();
+	std::unique_ptr<GL::EBO> ebo = std::make_unique<GL::EBO>(*vao);
 	ebo->SetBufferData(indices.data(), GL::EBO::DataType::UINT, 4 * vertsCount);
 	std::unique_ptr<GL::VBO> vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);	// TODO: resize buffer if is already used
 	vao->DefineFloatAttribute(*vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
