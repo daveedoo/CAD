@@ -6,6 +6,7 @@
 #include "..\objects\Components\Mesh.h"
 #include "..\objects\Components\Transformation.h"
 #include "..\..\maths\Matrix.h"
+#include "..\..\maths\Bernstein.h"
 
 BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics)
 	: System(std::move(registry)),
@@ -40,23 +41,6 @@ void BezierC0System::Render(const Camera& camera)
 	}
 }
 
-glm::vec3 BezierC0System::CalculateBezierValue(const glm::vec3& b0, const glm::vec3& b1, const glm::vec3& b2, const glm::vec3& b3, float t)
-{
-	if (t < 0 || t > 1)
-		throw std::invalid_argument("BezierC0System::CalculateBezierValue - invalid 't' arg");
-	
-	glm::vec3 b1_0 = b1 * t + b0 * (1 - t);
-	glm::vec3 b1_1 = b2 * t + b1 * (1 - t);
-	glm::vec3 b1_2 = b3 * t + b2 * (1 - t);
-
-	glm::vec3 b2_0 = b1_1 * t + b1_0 * (1 - t);
-	glm::vec3 b2_1 = b1_2 * t + b1_1 * (1 - t);
-
-	glm::vec3 b3_0 = b2_1 * t + b2_0 * (1 - t);
-
-	return b3_0;
-}
-
 std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bezier)
 {
 	std::vector<glm::vec3> points;
@@ -80,7 +64,7 @@ std::vector<glm::vec3> BezierC0System::CalculateBezierValues(const BezierC0& bez
 			unsigned int segments = curveSegmentsMetrics->CalculateSegmentsCount(arr);
 			for (size_t j = 0; j <= segments; j++)
 			{
-				points.push_back(BezierC0System::CalculateBezierValue(b0, b1, b2, b3, static_cast<float>(j) / segments));
+				points.push_back(Bernstein::CalculateBernsteinValue(b0, b1, b2, b3, static_cast<float>(j) / segments));
 			}
 		}
 	}
@@ -93,12 +77,37 @@ std::tuple<std::vector<glm::vec3>, std::vector<unsigned int>> BezierC0System::Ge
 	auto points = CalculateBezierValues(bezier);
 
 	std::vector<unsigned int> idx;
+	size_t i = 0;
 	if (points.size() > 0)
-		for (size_t i = 0; i < points.size() - 1; i++)
+	{
+		for (; i < points.size() - 1; i++)
 		{
 			idx.push_back(i);
 			idx.push_back(i + 1);
 		}
+	}
+
+	size_t size = bezier.points.size();
+	if (size > 3)
+	{
+		for (size_t j = 0; j < size - 3; j += 3)
+		{
+			auto pos0 = this->registry->get<Position>(bezier.points[j + 0]).position;
+			auto pos1 = this->registry->get<Position>(bezier.points[j + 1]).position;
+			auto pos2 = this->registry->get<Position>(bezier.points[j + 2]).position;
+			auto pos3 = this->registry->get<Position>(bezier.points[j + 3]).position;
+			points.push_back(pos0);
+			points.push_back(pos1);
+			points.push_back(pos2);
+			points.push_back(pos3);
+			idx.push_back(i + 0);
+			idx.push_back(i + 1);
+			idx.push_back(i + 1);
+			idx.push_back(i + 2);
+			idx.push_back(i + 2);
+			idx.push_back(i + 3);
+		}
+	}
 
 	return std::make_tuple(points, idx);
 }
