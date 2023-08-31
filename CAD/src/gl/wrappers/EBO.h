@@ -21,7 +21,6 @@ namespace GL
 		DataType dataType;
 		size_t nrOfElements;
 
-		static size_t GetSizeOf(DataType dataType);
 
 	public:
 		EBO(const GL::VAO& vao);
@@ -31,5 +30,7 @@ namespace GL
 
 		DataType GetDataType() const { return this->dataType; }
 		size_t GetNrOfElements() const { return this->nrOfElements; }
+		
+		static size_t GetSizeOf(DataType dataType);
 	};
 }

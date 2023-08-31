@@ -7,6 +7,8 @@
 #include "..\objects\Components\Transformation.h"
 #include "..\..\maths\Matrix.h"
 #include "..\..\maths\Bernstein.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\..\..\Utils.h"
 
 BezierC0System::BezierC0System(std::shared_ptr<entt::registry> registry, std::shared_ptr<CameraMovementInputHandler> cameraHandler, std::shared_ptr<ICurveSegmentsMetrics> curveSegmentsMetrics)
 	: System(std::move(registry)),
@@ -30,14 +32,25 @@ void BezierC0System::Render(const Camera& camera)
 	this->program->SetMat4("worldMatrix", glm::mat4(1.f));
 	this->program->SetMat4("viewMatrix", camera.GetViewMatrix());
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
-	this->program->SetVec3("color", glm::vec3(1.f));
 	glLineWidth(1.f);
 	
-	auto view = this->registry->view<BezierC0, Mesh>();
-	for (auto [entity, bezier, mesh] : view.each())
+	auto view = this->registry->view<BezierC0, Mesh, Selectable>();
+	for (auto [entity, bezier, mesh, selectable] : view.each())
 	{
+		this->program->SetVec3("color", glm::vec3(1.f));
 		mesh.vao->Bind();
-		glDrawElements(GL_LINES, mesh.ebo->GetNrOfElements(), static_cast<GLenum>(mesh.ebo->GetDataType()), static_cast<void*>(0));
+		
+		size_t curvePointsCount = mesh.ebo->GetNrOfElements() - bezier.points.size() + 1;
+		auto dataType = mesh.ebo->GetDataType();
+		glDrawElements(GL_LINE_STRIP, curvePointsCount, static_cast<GLenum>(dataType), (void*)(0));
+
+		if (bezier.polylineVisible)
+		{
+			if (selectable.selected)
+				this->program->SetVec3("color", Utils::GetObjectColor(true));
+			glDrawElements(GL_LINE_STRIP, bezier.points.size(), static_cast<GLenum>(dataType),
+				(void*)((curvePointsCount - 1) * GL::EBO::GetSizeOf(dataType)));
+		}
 	}
 }
 
@@ -83,29 +96,25 @@ std::tuple<std::vector<glm::vec3>, std::vector<unsigned int>> BezierC0System::Ge
 		for (; i < points.size() - 1; i++)
 		{
 			idx.push_back(i);
-			idx.push_back(i + 1);
 		}
 	}
 
 	size_t size = bezier.points.size();
 	if (size > 3)
 	{
-		for (size_t j = 0; j < size - 3; j += 3)
+		for (size_t j = ((size - 1) / 3) * 3; j > 2; j -= 3)
 		{
-			auto pos0 = this->registry->get<Position>(bezier.points[j + 0]).position;
-			auto pos1 = this->registry->get<Position>(bezier.points[j + 1]).position;
-			auto pos2 = this->registry->get<Position>(bezier.points[j + 2]).position;
-			auto pos3 = this->registry->get<Position>(bezier.points[j + 3]).position;
-			points.push_back(pos0);
+			//auto pos0 = this->registry->get<Position>(bezier.points[j - 0]).position;	// first point is already calculated
+			auto pos1 = this->registry->get<Position>(bezier.points[j - 1]).position;
+			auto pos2 = this->registry->get<Position>(bezier.points[j - 2]).position;
+			auto pos3 = this->registry->get<Position>(bezier.points[j - 3]).position;
 			points.push_back(pos1);
 			points.push_back(pos2);
 			points.push_back(pos3);
-			idx.push_back(i + 0);
 			idx.push_back(i + 1);
-			idx.push_back(i + 1);
-			idx.push_back(i + 2);
 			idx.push_back(i + 2);
 			idx.push_back(i + 3);
+			i += 3;
 		}
 	}
 
