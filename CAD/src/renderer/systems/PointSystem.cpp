@@ -5,6 +5,7 @@
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Transformation.h"
+#include "..\..\..\Utils.h"
 
 PointSystem::PointSystem(std::shared_ptr<entt::registry> registry) : System(registry),
 	vao(std::make_unique<GL::VAO>()),
@@ -31,12 +32,7 @@ void PointSystem::Render(const Camera& camera)
 	for (auto [entity, selectable, position, transf] : view.each())
 	{
 		this->program->SetMat4("worldMatrix", transf.worldMatrix);
-		this->program->SetVec3("color", GetObjectColor(selectable.selected));
+		this->program->SetVec3("color", Utils::GetObjectColor(selectable.selected));
 		glDrawArrays(GL_POINTS, 0, 1);
 	}
-}
-
-glm::vec3 PointSystem::GetObjectColor(bool isSelected)
-{
-	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
 }
