@@ -15,25 +15,24 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <iostream>
 #include "../Window/input/events/modded/MouseClickEvent.h"
 
 constexpr unsigned int adaptiveShadingTextureUnitIdx = 0;
 
-Renderer::Renderer(Window& window) : window(window)
+Renderer::Renderer(std::shared_ptr<Window> window) : window(window)
 {
-	this->window.MakeContextCurrent();
+	this->window->MakeContextCurrent();
 
 	if (glewInit() != GLEW_OK)
 		throw std::exception("glewInit failed");
 
-	this->window.GetFramebufferSize(this->framebufferWidth, this->framebufferHeight);
-	this->window.SetInputEventHandler([&](const InputEvent& inputEvent)
+	this->window->GetFramebufferSize(this->framebufferWidth, this->framebufferHeight);
+	this->window->SetInputEventHandler([&](const InputEvent& inputEvent)
 		{
 			if (!ImGui::GetIO().WantCaptureMouse)
 				this->scene->HandleEvent(inputEvent);
 		});
-	this->window.SetFramebufferSizeEventHandler([&](const ResizeEvent& ev)
+	this->window->SetFramebufferSizeEventHandler([&](const ResizeEvent& ev)
 		{
 			this->framebufferWidth = ev.width;
 			this->framebufferHeight= ev.height;
@@ -42,7 +41,7 @@ Renderer::Renderer(Window& window) : window(window)
 			this->UpdateSceneFramebufferSize();
 		});
 
-	this->scene = std::make_unique<Scene>(this->framebufferWidth, this->framebufferHeight);
+	this->scene = std::make_unique<Scene>(this->framebufferWidth, this->framebufferHeight, this->window);
 
 	this->SetupGUI();
 	this->SetupAdaptiveShading();
@@ -52,7 +51,8 @@ void Renderer::SetupGUI()
 {
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
-	ImGui_ImplGlfw_InitForOpenGL(this->window.GetRawWindow(), true);
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+	ImGui_ImplGlfw_InitForOpenGL(this->window->GetRawWindow(), true);
 	ImGui_ImplOpenGL3_Init("#version 450");
 }
 

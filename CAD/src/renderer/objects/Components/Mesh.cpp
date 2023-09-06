@@ -1,4 +1,4 @@
-#include "Component.h"
+#include "Mesh.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include <memory>
 #include <vector>
@@ -27,7 +27,7 @@ Mesh Mesh::Torus(TorusComponent val)
 		}
 	}
 	std::unique_ptr<GL::VAO> vao = std::make_unique<GL::VAO>();
-	std::unique_ptr<GL::EBO> ebo = std::make_unique<GL::EBO>();
+	std::unique_ptr<GL::EBO> ebo = std::make_unique<GL::EBO>(*vao);
 	ebo->SetBufferData(indices.data(), GL::EBO::DataType::UINT, 4 * vertsCount);
 	std::unique_ptr<GL::VBO> vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * vertsCount);	// TODO: resize buffer if is already used
 	vao->DefineFloatAttribute(*vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
@@ -37,13 +37,13 @@ Mesh Mesh::Torus(TorusComponent val)
 
 Mesh Mesh::Cursor(float lineLength)
 {
-	std::array<glm::vec3, 12> vertices ={
+	std::array<glm::vec3, 12> vertices = {
 		glm::vec3(0.f),										glm::vec3(1.f, 0.f, 0.f),
-		glm::vec3(0.f)+ glm::vec3(lineLength, 0.f, 0.f),	glm::vec3(1.f, 0.f, 0.f),
+		glm::vec3(0.f) + glm::vec3(lineLength, 0.f, 0.f),	glm::vec3(1.f, 0.f, 0.f),
 		glm::vec3(0.f),										glm::vec3(0.f, 1.f, 0.f),
-		glm::vec3(0.f)+ glm::vec3(0.f, lineLength, 0.f),	glm::vec3(0.f, 1.f, 0.f),
+		glm::vec3(0.f) + glm::vec3(0.f, lineLength, 0.f),	glm::vec3(0.f, 1.f, 0.f),
 		glm::vec3(0.f),										glm::vec3(0.f, 0.f, 1.f),
-		glm::vec3(0.f)+ glm::vec3(0.f, 0.f, lineLength),	glm::vec3(0.f, 0.f, 1.f)
+		glm::vec3(0.f) + glm::vec3(0.f, 0.f, lineLength),	glm::vec3(0.f, 0.f, 1.f)
 	};
 
 	auto vao = std::make_unique<GL::VAO>();

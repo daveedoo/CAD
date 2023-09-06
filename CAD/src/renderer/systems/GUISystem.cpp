@@ -2,9 +2,23 @@
 #include <imgui_stdlib.h>
 #include <iostream>
 #include "../Scene.h"
+#include <algorithm>
+#include "..\objects\Components\Position.h"
+#include "..\objects\Components\ScreenPosition.h"
+#include <glm\gtc\type_ptr.hpp>
+#include "..\objects\Components\TorusComponent.h"
+#include "..\objects\Components\Rotation.h"
+#include "..\objects\Components\Scaling.h"
+#include "..\objects\Components\Selectable.h"
+#include "..\objects\Components\Point.h"
+#include "..\gui\widgets\Widgets.h"
 
-GUISystem::GUISystem(std::shared_ptr<entt::registry> registry, Scene& scene) : System(registry),
-	scene(scene)
+GUISystem::GUISystem(std::shared_ptr<entt::registry> registry,
+	std::unique_ptr<GUIElement> mainMenuBar, 
+	Scene& scene)
+	: System(registry),
+	  mainMenuBar(std::move(mainMenuBar)),
+	  scene(scene)
 {}
 
 unsigned int GUISystem::GetSelectedEntitiesCount()
@@ -18,11 +32,6 @@ unsigned int GUISystem::GetSelectedEntitiesCount()
 	}
 
 	return count;
-}
-
-void GUISystem::SetDirty(entt::entity entity)
-{
-	this->registry->emplace_or_replace<Dirty>(entity);
 }
 
 void GUISystem::RenderWindowOnLeft(std::string windowName, GUIElement& guiElement)
@@ -51,8 +60,8 @@ void GUISystem::Render(const Camera& camera)
 		
 	// main cursor
 	auto mainCursor = scene.GetMainCursor();
-	auto& position = this->registry->get<Position>(mainCursor);
-	RenderCursorWindow(mainCursor, position.position);
+	auto [pos3d, screenPos] = this->registry->get<Position, ScreenPosition>(mainCursor);
+	RenderCursorWindow(mainCursor, pos3d.position, screenPos.position);
 
 	RenderEntitiesList();
 	if (GetSelectedEntitiesCount() > 1)
@@ -93,46 +102,28 @@ void GUISystem::RenderWindowOnRight(std::string windowName, const std::function<
 	ImGui::End();
 }
 
-void GUISystem::PopupCentered(std::string windowName, const std::function<void()>& inside)
-{
-	auto disp = ImGui::GetIO().DisplaySize;
-	ImGui::SetNextWindowPos({disp.x * 0.5f, disp.y * 0.5f}, ImGuiCond_Appearing, {0.5f, 0.5f});
-	if (ImGui::BeginPopupModal(windowName.c_str(), (bool*)0, ImGuiWindowFlags_AlwaysAutoResize))
-	{
-		inside();
-		ImGui::EndPopup();
-	}
-
-}
-
 void GUISystem::RenderMainMenuBar()
 {
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("Add"))
-		{
-			if (ImGui::MenuItem("Point"))
-				scene.AddPoint();
-			if (ImGui::MenuItem("Torus"))
-				scene.AddTorus();
-			ImGui::EndMenu();
-		}
-		ImGui::Text(std::format("entities: {}", this->registry->size()).c_str());
+	this->mainMenuBar->Draw();
 
-		ImGui::EndMainMenuBar();
-	}
 	this->leftPanelHeight += 20;
 	this->rightPanelHeight += 20;
 }
 
 
 
-void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& position)
+void GUISystem::RenderCursorWindow(entt::entity entity, glm::vec3& pos3d, glm::vec3& screenPos)
 {
-	RenderWindowOnLeft("Cursor", [&]() -> void
+	RenderWindowOnLeft("3D Cursor", [&]() -> void
 		{
-			if (ImGui::DragFloat3("Position", glm::value_ptr(position), 0.01f))
-				SetDirty(entity);
+			if (ImGui::DragFloat3("3D Position", glm::value_ptr(pos3d), 0.01f))
+			{
+				this->registry->patch<Position>(entity);
+			}
+			if (ImGui::DragFloat2("Screen Position", glm::value_ptr(screenPos), 0.1f))
+			{
+				this->registry->patch<ScreenPosition>(entity);
+			}
 		});
 }
 
@@ -144,66 +135,49 @@ void GUISystem::RenderEntitiesList()
 	{
 		for (auto [entity, selectable] : selectablesView.each())
 		{
-			if (entity != ent)
-				selectable.selected = false;
+			if (entity != ent && selectable.selected == true)
+			{
+				this->registry->patch<Selectable>(entity, [](Selectable& selectbl) -> void
+					{
+						selectbl.selected = false;
+					});
+			}
 		}
 	};
 
-	// TODO: all selection logic to be in one system
-	static std::function<void()> selectionChanged = [&]() -> void
+	auto beziersView = this->registry->view<BezierC0, Selectable>();
+	for (auto [entity, bezier, bezierSelect] : beziersView.each())
 	{
-		int count = 0;
-		auto cursorPos = glm::vec3(0.f);
-
-		auto view = this->registry->view<Selectable, Position>();
-		for (auto [entity, selectable, position] : view.each())
-		{
-			if (selectable.selected)
-			{
-				scene.SetSelected(entity);
-
-				cursorPos += position.position;
-				count++;
-			}
-			else
-			{
-				scene.SetUnselected(entity);
-			}
-		}
-	};
+		//if (bezierSelect.selected)
+	}
 
 	RenderWindowOnRight("Entity list", [&]() -> void
 		{
 			for (auto [entity, selectable] : selectablesView.each())
 			{
-				std::string renamePopup = std::format("Rename {}", selectable.name);
 				if (ImGui::Selectable(selectable.name.c_str(), &selectable.selected, ImGuiSelectableFlags_AllowDoubleClick))
 				{
 					if (!ImGui::GetIO().KeyCtrl)
 						unselectAllExcept(entity);
-
-					if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
-						ImGui::OpenPopup(renamePopup.c_str());
-
-					selectionChanged();
+					this->registry->patch<Selectable>(entity);
 				}
-
-				PopupCentered(renamePopup, [&]() -> void
+				if (ImGui::BeginPopupContextItem())
+				{
+					std::string newName = selectable.name;
+					ImGui::InputText("Name", &newName, ImGuiInputTextFlags_EnterReturnsTrue);
+					if (ImGui::IsItemDeactivatedAfterEdit())
 					{
-						std::string newName = selectable.name;
-						ImGui::InputText("Name", &newName, ImGuiInputTextFlags_EnterReturnsTrue);
-						if (ImGui::IsItemDeactivatedAfterEdit())
-						{
-							selectable.name = newName;
-							ImGui::CloseCurrentPopup();
-						}
+						selectable.name = newName;
+						ImGui::CloseCurrentPopup();
+					}
 
-						if (ImGui::Button("Remove"))
-							scene.RemoveEntity(entity);
+					if (ImGui::Button("Remove"))
+						scene.RemoveEntity(entity);
 
-						if (ImGui::IsKeyPressed(ImGuiKey_Escape))
-							ImGui::CloseCurrentPopup();
-					});
+					if (ImGui::IsKeyPressed(ImGuiKey_Escape))
+						ImGui::CloseCurrentPopup();
+					ImGui::EndPopup();
+				}
 			}
 		});
 }
@@ -218,15 +192,17 @@ void GUISystem::RenderEntitiesDetailsWindow()
 				if (!selectable.selected)
 					continue;
 
-				if (this->registry->any_of<TorusComponent, Position, ScaleRotation>(entity))
+				if (this->registry->any_of<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity))
 				{
 					if (ImGui::TreeNodeEx(selectable.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						auto [torusComp, position, scaleRot] = this->registry->try_get<TorusComponent, Position, ScaleRotation>(entity);
+						auto [torusComp, position, scaling, rotation, bezier_c0] = this->registry->try_get<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity);	// TODO: duplicated type parameters
 						if (torusComp != nullptr)
 							RenderTorusTreeNode(entity, *torusComp);
-						if (position != nullptr || scaleRot != nullptr)
-							RenderTransformationsTreeNode(entity, position, scaleRot);
+						if (position != nullptr || scaling != nullptr || rotation != nullptr)
+							RenderTransformationsTreeNode(entity, position, scaling, rotation);
+						if (bezier_c0 != nullptr)
+							RenderBezierC0TreeNode(entity, *bezier_c0);
 						ImGui::TreePop();
 					}
 				}
@@ -250,23 +226,168 @@ void GUISystem::RenderTorusTreeNode(entt::entity entity, TorusComponent& torusCo
 	}
 }
 
-void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* position, ScaleRotation* sr)
+void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* position, Scaling* scaling, Rotation* rotation)
 {
 	if (ImGui::TreeNodeEx("Local transformations", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		bool transformChanged = false;
 		if (position != nullptr)
-			if (ImGui::DragFloat3("Position", glm::value_ptr(position->position), 0.01f)) transformChanged = true;
-		if (sr != nullptr)
 		{
-			if (ImGui::DragFloat3("Scale", glm::value_ptr(sr->scale), 0.01f)) transformChanged = true;
-			if (ImGui::DragFloat("Axis Lambda", &sr->axisLambda, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (ImGui::DragFloat("Axis Fi", &sr->axisFi, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (ImGui::DragFloat("Angle", &sr->angle, 0.1f, -360.f, 360.f, "%.3f", ImGuiSliderFlags_AlwaysClamp)) transformChanged = true;
-			if (transformChanged)
-				SetDirty(entity);
+			bool positionChanged = false;
+			if (ImGui::DragFloat3("Position", glm::value_ptr(position->position), 0.01f)) positionChanged = true;
+			if (positionChanged)
+				this->registry->patch<Position>(entity);
+		}
+		if (scaling != nullptr)
+		{
+			if (ImGui::DragFloat3("Scale", glm::value_ptr(scaling->scale), 0.01f))
+				this->registry->patch<Scaling>(entity);
+		}
+		if (rotation != nullptr)
+		{
+			if (ImGui::RotationRPY(*rotation))
+				this->registry->patch<Rotation>(entity);
 		}
 
 		ImGui::TreePop();
+	}
+}
+
+void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier)
+{
+	static const std::string NEW_BEZIER_POINT_PayloadID = "BEZIER_C0_NEW_POINT_ID";
+	// helper function
+	std::function<void(size_t, size_t)> replaceValues = [&](size_t idx1, size_t idx2) -> void
+	{
+		this->registry->patch<BezierC0>(entity, [&](BezierC0& patchBezier)
+			{
+				auto val1 = patchBezier.points[idx1];
+				patchBezier.points[idx1] = patchBezier.points[idx2];
+				patchBezier.points[idx2] = val1;
+			});
+	};
+
+	bool polylineVisible = bezier.polylineVisible;
+	if (ImGui::Checkbox("Render polyline", &polylineVisible))
+	{
+		this->registry->patch<BezierC0>(entity, [&](BezierC0& bezierEntity) -> void
+			{
+				bezierEntity.polylineVisible = polylineVisible;
+			});
+	}
+
+	if (ImGui::BeginListBox("Curve points", ImVec2(-FLT_MIN, 0.f)))
+	{
+		ImGui::SeparatorText(std::format("{} curve points:", bezier.points.size()).c_str());
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str()))
+			{
+				entt::entity movedPointEntity = *static_cast<entt::entity*>(payload->Data);
+				this->registry->patch<BezierC0>(entity, [&](BezierC0& bezierToAddPoint) -> void
+					{
+						bezierToAddPoint.points.push_back(movedPointEntity);
+					});
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		for (auto it = bezier.points.begin(); it != bezier.points.end(); it++)
+		{
+			// TODO: this bool may be removed if using std::list<> instead of std::vector<>
+			// also, continuous dragging might be possible to implement then.
+			// However, due to the component constness, efficiency wouldn't be much better
+			bool iteratorInvalid = false;
+
+			const auto& selectable = this->registry->get<Selectable>(*it);
+			ImGui::PushID(&(*it));
+			ImGui::Selectable(selectable.name.c_str());
+
+			// reordering drag and drop inside "Points" list
+			if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+			{
+				int it_advance = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).y < 0.f ? -1 : 1;
+				if (it != bezier.points.begin() || it_advance > 0)
+				{
+					auto it2 = it + it_advance;
+					if (it2 >= bezier.points.begin() && it2 < bezier.points.end())
+					{
+						int it1_idx = std::distance(bezier.points.begin(), it);
+						int it2_idx = std::distance(bezier.points.begin(), it2);
+						replaceValues(it1_idx, it2_idx);
+						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+					}
+				}
+			}
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				int currentIdx = it - bezier.points.begin();
+				if (currentIdx > 0)
+				{
+					if (ImGui::Button("Up", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, (size_t)currentIdx - 1);
+						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
+					}
+				}
+				if (bezier.points.end() - it > 1)
+				{
+					if (ImGui::Button("Down", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, static_cast<size_t>(currentIdx) + 1);
+						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
+					}
+				}
+				if (ImGui::Button("Remove from curve"))
+				{
+					this->registry->patch<BezierC0>(entity, [&](BezierC0& patchBezier) -> void
+						{
+							patchBezier.points.erase(it);
+						});
+					ImGui::CloseCurrentPopup();
+					iteratorInvalid = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+			if (iteratorInvalid) break;
+		}
+
+		ImGui::EndListBox();
+	}
+
+	if (ImGui::BeginListBox("All points", ImVec2(-FLT_MIN, 0.f)))
+	{
+		ImGui::SeparatorText("All points:");
+		if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal))
+			ImGui::SetTooltip("Double click to add to the list above");
+
+		auto view = this->registry->view<Point, Selectable>();
+		for (auto [pointEntity, selectable] : view.each())
+		{
+			if (ImGui::Selectable(selectable.name.c_str(), false, ImGuiSelectableFlags_AllowDoubleClick))
+			{
+				if (ImGui::IsMouseDoubleClicked(ImGuiMouseButton_Left))
+				{
+					this->registry->patch<BezierC0>(entity, [&](BezierC0& bezier) -> void
+						{
+							bezier.points.push_back(pointEntity);
+						});
+				}
+			}
+
+			if (ImGui::BeginDragDropSource())
+			{
+				ImGui::SetDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str(), &pointEntity, sizeof(pointEntity));
+				ImGui::Text(selectable.name.c_str());
+
+				ImGui::EndDragDropSource();
+			}
+		}
+		ImGui::EndListBox();
 	}
 }

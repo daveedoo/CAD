@@ -1,4 +1,5 @@
 #include "Matrix.h"
+#include <glm\gtx\matrix_decompose.hpp>
 
 glm::mat4 Matrix::PerspectiveProjection(float fov, float aspect, float n, float f)
 {
@@ -91,35 +92,57 @@ glm::mat4 Matrix::Translation(glm::vec3 v)
 	return mat;
 }
 
-glm::mat4 Matrix::Rotation(const ScaleRotation& sr)
+glm::mat4 Matrix::Rotate(const Rotation& rot)
 {
-	//const float& X = sr.axisFi;
-	//const float& Y = sr.axisLambda;
-	//const float& Z = sr.axisZ;
-
-	//float lambda = glm::atan(X / Y);
-	//float fi = glm::atan(Z / Y * glm::sin(lambda));
-	float lambda = glm::radians(sr.axisLambda);
-	float fi = glm::radians(sr.axisFi);
-	float a = glm::radians(sr.angle);
-
-	float x = glm::cos(fi) * glm::cos(lambda);
-	float z = glm::cos(fi) * glm::sin(lambda);
-	float y = glm::sin(fi);
-	float s = glm::sin(a);
-	float c = glm::cos(a);
-	float t = 1 - c;
-
-	return glm::mat4{
-		t*x*x + c,		t*x*y + s*z,	t*x*z - s*y,	0,
-		t*x*y - s*z,	t*y*y + c,		t*y*z + s*x,	0,
-		t*x*z + s*y,	t*y*z - s*x,	t*z*z + c,		0,
-		0,				0,				0,				1
-	};
+	return RotationZ(glm::radians(rot.pitch)) * RotationY(glm::radians(rot.yaw)) * RotationX(glm::radians(rot.roll));
 }
 
 glm::mat4 Matrix::RotationAroundPoint(const AdditionalTransformation& addTransf, glm::vec3 objectPosition)
 {
 	glm::vec3 T = addTransf.centerPoint - objectPosition;
-	return Matrix::Translation(T) * Matrix::Rotation(addTransf.scaleRotation) * Matrix::Translation(-T);
+	return Matrix::Translation(T) * Matrix::Rotate(addTransf.rotation) * Matrix::Translation(-T);
+}
+
+glm::mat4 Matrix::GetResultingTransformationMatrix(const Position& position, const Scaling* scale, const Rotation* rotation, const AdditionalTransformation* addTransf)
+{
+	glm::mat4 worldMtx = glm::mat4(1.f);
+
+	if (addTransf == nullptr)
+	{
+		// 1. Scale,	2. Rotate,	3. Translate
+		glm::vec3 resPosition = position.position;
+		worldMtx *= Matrix::Translation(resPosition);
+
+		if (scale != nullptr && rotation != nullptr)
+		{
+			worldMtx *= Matrix::Rotate(*rotation) * Matrix::Scale(*scale);
+		}
+	}
+	else
+	{
+		// 1. Scale (self + addit.),	2. Rotate (self),	3. Rotate (around addit. point),	4. Translate (self + resulting from scaling)
+		glm::vec3 resPosition = addTransf->scale * (position.position - addTransf->centerPoint) + addTransf->centerPoint;
+		worldMtx *= Matrix::Translation(resPosition);
+		worldMtx *= Matrix::RotationAroundPoint(*addTransf, position.position);
+
+		if (scale != nullptr && rotation != nullptr)
+		{
+			glm::vec3 resScale = *scale;
+			resScale *= addTransf->scale;
+			worldMtx *= Matrix::Rotate(*rotation) * Matrix::Scale(resScale);
+		}
+	}
+	return worldMtx;
+}
+
+void Matrix::Decompose(const glm::mat4& mat, glm::vec3& scale, glm::quat& rotation, glm::vec3& translation)
+{
+	glm::vec3 _skew;
+	glm::vec4 _persp;
+	glm::decompose(mat, scale, rotation, translation, _skew, _persp);
+}
+
+glm::vec3 Matrix::ExtractTranslation(const glm::mat4& mat)
+{
+	return mat[3] / mat[3][3];
 }

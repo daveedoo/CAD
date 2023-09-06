@@ -4,7 +4,6 @@
 #include "Scene.h"
 #include "../gl/wrappers/FBO.h"
 #include "../gl/wrappers/textures/Texture2D.h"
-//#include "GUI.h"
 
 /// <summary>
 /// Class responsible for rendering everything (scene and the GUI) and handling the input.
@@ -12,7 +11,7 @@
 class Renderer
 {
 private:
-	Window& window;
+	std::shared_ptr<Window> window;
 	int framebufferWidth;
 	int framebufferHeight;
 
@@ -34,7 +33,7 @@ private:
 	bool ShouldBeRenderedAdaptively() const;
 
 public:
-	Renderer(Window& window);
+	Renderer(std::shared_ptr<Window> window);
 	~Renderer();
 
 	void Update();

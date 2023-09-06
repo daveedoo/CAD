@@ -11,7 +11,7 @@ namespace GL
 		this->Bind();
 	}
 
-	void VAO::Bind()
+	void VAO::Bind() const
 	{
 		if (currentlyBoundVaoID != this->ID)
 		{

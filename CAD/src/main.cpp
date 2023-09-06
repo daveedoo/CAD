@@ -6,16 +6,16 @@
 
 int main()
 {
-	Window window = Window(SCR_WIDTH, SCR_HEIGHT, "CAD");
+	auto window = std::make_shared<Window>(SCR_WIDTH, SCR_HEIGHT, "CAD");
 	Renderer renderer = Renderer(window);
 
-	while (!window.ShouldClose())
+	while (!window->ShouldClose())
 	{
 		renderer.Update();
 		renderer.Render();
 
-		window.SwapBuffers();
-		window.PollEvents();
+		window->SwapBuffers();
+		window->PollEvents();
 	}
 
 	return 0;

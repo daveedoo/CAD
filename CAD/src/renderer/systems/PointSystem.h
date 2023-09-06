@@ -15,8 +15,5 @@ public:
 
 	virtual void Update(const Camera& camera) override;
 	virtual void Render(const Camera& camera) override;
-
-private:
-	glm::vec3 GetObjectColor(bool isSelected);
 };
 

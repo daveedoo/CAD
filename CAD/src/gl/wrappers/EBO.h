@@ -3,6 +3,8 @@
 
 namespace GL
 {
+	class VAO;
+
 	class EBO
 	{
 	public:
@@ -14,20 +16,21 @@ namespace GL
 		};
 
 	private:
-		static GLuint currentlyBoundEboID;
+		const GL::VAO& vao;
 		GLuint ID;
 		DataType dataType;
 		size_t nrOfElements;
 
-		size_t GetSizeof(DataType dataType);
 
 	public:
-		EBO();
-		void Bind();
-		void Unbind();
+		EBO(const GL::VAO& vao);
+		void Bind() const;
+		void Unbind() const;
 		void SetBufferData(const void* const data, DataType dataType, size_t nrOfElements);
 
 		DataType GetDataType() const { return this->dataType; }
 		size_t GetNrOfElements() const { return this->nrOfElements; }
+		
+		static size_t GetSizeOf(DataType dataType);
 	};
 }

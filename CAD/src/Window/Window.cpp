@@ -9,6 +9,9 @@
 #include "input/events/MouseScrollEvent.h"
 #include "input/events/ResizeEvent.h"
 #include <iostream>
+#include <exception>
+#include <format>
+
 
 #define MIN_WIDTH 800
 #define MIN_HEIGHT 600
@@ -37,6 +40,10 @@ Window::Window(int width, int height, std::string title)
 			std::cerr << std::format("GLFW Error {}: {}\n", error, description);
 		});
 	glfwSetWindowSizeLimits(this->window, MIN_WIDTH, MIN_HEIGHT, GLFW_DONT_CARE, GLFW_DONT_CARE);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	this->handCursor = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
+	//glfwSetCursor(this->window, this->handCursor);
 }
 
 Window::~Window()
@@ -76,7 +83,9 @@ void Window::SetInputEventHandler(std::function<void(const InputEvent&)> callbac
 	glfwSetMouseButtonCallback(this->window, [](GLFWwindow* window, int button, int action, int mods)
 		{
 			Window* thisWindow = static_cast<Window*>(glfwGetWindowUserPointer(window));
-			const MouseClickEvent inputEvent = MouseClickEvent(button, action, mods);
+			double xpos, ypos;
+			glfwGetCursorPos(window, &xpos, &ypos);
+			const MouseClickEvent inputEvent = MouseClickEvent(button, action, mods, xpos, ypos);
 			thisWindow->onInputEvent(inputEvent);
 		});
 	glfwSetCursorPosCallback(this->window, [](GLFWwindow* window, double xpos, double ypos)
@@ -99,6 +108,22 @@ void Window::SetInputEventHandler(std::function<void(const InputEvent&)> callbac
 		});
 
 	this->onInputEvent = callback;
+}
+
+void Window::SetCursor(CursorType type)
+{
+	switch (type)
+	{
+	case Window::Normal:
+		glfwSetCursor(this->window, nullptr);
+		break;
+	case Window::Hand:
+		glfwSetCursor(this->window, this->handCursor);
+		break;
+	default:
+		throw new std::invalid_argument(std::format("Unknown CursorType: {}", static_cast<int>(type)));
+	}
+	this->currentCursor = type;
 }
 
 bool Window::ShouldClose() const

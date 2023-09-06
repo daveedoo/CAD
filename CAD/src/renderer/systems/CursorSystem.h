@@ -1,6 +1,7 @@
 #pragma once
 #include "System.h"
 #include "../../gl/wrappers/Program.h"
+#include "..\objects\Components\Mesh.h"
 
 class CursorSystem : public System
 {

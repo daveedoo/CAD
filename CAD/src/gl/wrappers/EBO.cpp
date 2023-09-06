@@ -1,44 +1,39 @@
 #include "EBO.h"
 #include <stdexcept>
 #include <format>
+#include "VAO.h"
 
 namespace GL
 {
-	GLuint EBO::currentlyBoundEboID = 0;
-
-	EBO::EBO()
-		: nrOfElements(0)
+	EBO::EBO(const GL::VAO& vao)
+		: nrOfElements(0),
+		vao(vao)
 	{
+		this->vao.Bind();
 		glGenBuffers(1, &this->ID);
 	}
 
-	void EBO::Bind()
+	void EBO::Bind() const
 	{
-		if (currentlyBoundEboID != this->ID)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ID);
-			currentlyBoundEboID = this->ID;
-		}
+		this->vao.Bind();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->ID);
 	}
 
-	void EBO::Unbind()
+	void EBO::Unbind() const
 	{
-		if (currentlyBoundEboID != 0)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-			currentlyBoundEboID = 0;
-		}
+		this->vao.Bind();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	void EBO::SetBufferData(const void* const data, DataType dataType, size_t nrOfElements)
 	{
 		this->Bind();
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, nrOfElements * GetSizeof(dataType), data, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, nrOfElements * GetSizeOf(dataType), data, GL_STATIC_DRAW);
 		this->dataType = dataType;
 		this->nrOfElements = nrOfElements;
 	}
 
-	size_t EBO::GetSizeof(DataType dataType)
+	size_t EBO::GetSizeOf(DataType dataType)
 	{
 		switch (dataType)
 		{

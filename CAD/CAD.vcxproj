@@ -131,18 +131,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\renderer\commands\CancelGroupTransformation.cpp" />
-    <ClCompile Include="src\renderer\commands\ChangeGroupTransformation.cpp" />
+    <ClCompile Include="src\maths\Bernstein.cpp" />
+    <ClCompile Include="src\renderer\commands\AddPointCommand.cpp" />
+    <ClCompile Include="src\maths\RotationRepresentationsConverter.cpp" />
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\ApplyGroupTransformationCommand.cpp" />
+    <ClCompile Include="src\renderer\gui\widgets\Widgets.cpp" />
+    <ClCompile Include="src\renderer\objects\Components\Mesh.cpp" />
+    <ClCompile Include="src\renderer\systems\MouseSelectionSystem.cpp" />
+    <ClCompile Include="src\ScreenSizeChangePublisher.cpp" />
+    <ClCompile Include="src\renderer\systems\ScreenPositionSystem.cpp" />
+    <ClCompile Include="src\renderer\systems\SortingSystem.cpp" />
+    <ClCompile Include="src\renderer\gui\MainMenuBar.cpp" />
+    <ClCompile Include="src\CameraSubscriber.h" />
+    <ClCompile Include="src\renderer\systems\CurveSegmentsMetrics\BernsteinPolygonMetrics.cpp" />
+    <ClCompile Include="src\renderer\systems\BezierC0System.cpp" />
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\CancelGroupTransformationCommand.cpp" />
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\ChangeGroupTransformationCommand.cpp" />
     <ClCompile Include="src\renderer\gui\GroupTransformationWindow.cpp" />
     <ClCompile Include="src\renderer\systems\SelectionSystem.cpp" />
     <ClCompile Include="src\renderer\systems\CursorSystem.cpp" />
     <ClCompile Include="src\renderer\systems\PointSystem.cpp" />
     <ClCompile Include="src\renderer\systems\GUISystem.cpp" />
     <ClCompile Include="src\gl\ProgramFactory.cpp" />
-    <ClCompile Include="src\renderer\ObjectsFactory.cpp" />
-    <ClCompile Include="src\renderer\ObjectsManager.cpp" />
-    <ClCompile Include="src\renderer\objects\Component.cpp" />
-    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="src\renderer\EntitiesFactory.cpp" />
+    <ClCompile Include="src\maths\Matrix.cpp" />
     <ClCompile Include="src\gl\wrappers\FBO.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\gl\wrappers\EBO.cpp" />
@@ -161,11 +173,40 @@
     <ClCompile Include="src\gl\wrappers\textures\Texture2D.cpp" />
     <ClCompile Include="src\renderer\systems\TorusSystem.cpp" />
     <ClCompile Include="src\renderer\systems\TransformationsSystem.cpp" />
-    <ClCompile Include="src\renderer\commands\StartGroupTransformation.cpp" />
+    <ClCompile Include="src\renderer\commands\GroupTransformationCommands\StartGroupTransformationCommand.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\renderer\commands\CancelGroupTransformation.h" />
-    <ClInclude Include="src\renderer\commands\ChangeGroupTransformation.h" />
+    <ClInclude Include="src\maths\Bernstein.h" />
+    <ClInclude Include="src\renderer\commands\AddPointCommand.h" />
+    <ClInclude Include="src\maths\EulerAngles.h" />
+    <ClInclude Include="src\renderer\gui\widgets\Widgets.h" />
+    <ClInclude Include="src\maths\AxisAngleRotation.h" />
+    <ClInclude Include="src\renderer\objects\Components\Rotation.h" />
+    <ClInclude Include="src\maths\RotationRepresentationsConverter.h" />
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\ApplyGroupTransformationCommand.h" />
+    <ClInclude Include="src\renderer\objects\Components\AdditionalTransformation.h" />
+    <ClInclude Include="src\renderer\objects\Components\BezierC0.h" />
+    <ClInclude Include="src\renderer\objects\Components\Cursor.h" />
+    <ClInclude Include="src\renderer\objects\Components\Mesh.h" />
+    <ClInclude Include="src\renderer\objects\Components\Point.h" />
+    <ClInclude Include="src\renderer\objects\Components\Position.h" />
+    <ClInclude Include="src\renderer\objects\Components\Scaling.h" />
+    <ClInclude Include="src\renderer\objects\Components\ScreenPosition.h" />
+    <ClInclude Include="src\renderer\objects\Components\Selectable.h" />
+    <ClInclude Include="src\renderer\objects\Components\TorusComponent.h" />
+    <ClInclude Include="src\renderer\objects\Components\Transformation.h" />
+    <ClInclude Include="src\renderer\systems\MouseSelectionSystem.h" />
+    <ClInclude Include="src\ScreenSizeChangePublisher.h" />
+    <ClInclude Include="src\ScreenSizeChangeSubscriber.h" />
+    <ClInclude Include="src\renderer\systems\ScreenPositionSystem.h" />
+    <ClInclude Include="src\renderer\systems\SortingSystem.h" />
+    <ClInclude Include="src\renderer\gui\MainMenuBar.h" />
+    <ClInclude Include="src\renderer\systems\CurveSegmentsMetrics\BernsteinPolygonMetrics.h" />
+    <ClInclude Include="src\renderer\systems\CurveSegmentsMetrics\ICurveSegmentsMetrics.h" />
+    <ClInclude Include="src\renderer\systems\BezierC0System.h" />
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\CancelGroupTransformationCommand.h" />
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\ChangeGroupTransformationCommand.h" />
     <ClInclude Include="src\renderer\gui\GUIElement.h" />
     <ClInclude Include="src\renderer\gui\GroupTransformationWindow.h" />
     <ClInclude Include="src\renderer\commands\Command.h" />
@@ -174,10 +215,8 @@
     <ClInclude Include="src\renderer\systems\PointSystem.h" />
     <ClInclude Include="src\renderer\systems\GUISystem.h" />
     <ClInclude Include="src\gl\ProgramFactory.h" />
-    <ClInclude Include="src\renderer\ObjectsFactory.h" />
-    <ClInclude Include="src\renderer\ObjectsManager.h" />
-    <ClInclude Include="src\renderer\objects\Component.h" />
-    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="src\renderer\EntitiesFactory.h" />
+    <ClInclude Include="src\maths\Matrix.h" />
     <ClInclude Include="src\gl\wrappers\FBO.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Config.h" />
@@ -205,7 +244,8 @@
     <ClInclude Include="src\renderer\systems\TorusSystem.h" />
     <ClInclude Include="src\renderer\systems\System.h" />
     <ClInclude Include="src\renderer\systems\TransformationsSystem.h" />
-    <ClInclude Include="src\renderer\commands\StartGroupTransformation.h" />
+    <ClInclude Include="src\renderer\commands\GroupTransformationCommands\StartGroupTransformationCommand.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\gl\shaders\coloredVertices.frag" />

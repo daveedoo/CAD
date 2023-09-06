@@ -19,11 +19,11 @@ private:
 	float fov = 90;
 	float near = 0.1f;
 	float far = 100.f;
-	float aspect;
+	int viewportWidth, viewportHeight;
 	void UpdatePerspective();
 
 public:
-	Camera(float fov, float aspect, float near, float far);
+	Camera(float fov, int viewportWidth, int viewportHeight, float near, float far);
 
 	glm::mat4 GetViewMatrix() const { return this->view; }
 	glm::mat4 GetProjectionMatrix() const { return this->projection; }
@@ -37,9 +37,10 @@ public:
 
 	//void SetOrthogonalProjection(float left, float right, float bottom, float top, float near, float far);
 	/// <param name="fov">Field of view in degrees</param>
-	void SetPerspectiveProjection(float fov, float aspect, float near, float far);
+	void SetPerspectiveProjection(float fov, int viewportWidth, int viewportHeight, float near, float far);
 	void SetFov(float fov);
-	void SetAspect(float aspect);
+	void SetViewportSize(int viewportWidth, int viewportHeight);
+	void GetViewportSize(int& viewportWidth, int& viewportHeight) const;
 	void SetNear(float near);
 	void SetFar(float far);
 };

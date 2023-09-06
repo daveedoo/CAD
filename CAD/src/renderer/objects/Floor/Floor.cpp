@@ -39,7 +39,7 @@ Floor::Floor(int xUnits, int zUnits) : xUnits(xUnits), zUnits(zUnits)
 	
 	this->vao = std::make_unique<GL::VAO>();
 	this->vbo = std::make_unique<GL::VBO>(vertices.data(), sizeof(glm::vec3) * verticesCount);
-	this->ebo = std::make_unique<GL::EBO>();
+	this->ebo = std::make_unique<GL::EBO>(*vao);
 	this->ebo->SetBufferData(edges.data(), GL::EBO::DataType::UINT, 2 * edgesCount);
 	this->vao->DefineFloatAttribute(*this->vbo, 0, 3, GL::VAO::FloatAttribute::FLOAT, sizeof(glm::vec3), 0);
 }

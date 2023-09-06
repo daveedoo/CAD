@@ -2,7 +2,6 @@
 #include <memory>
 #include <entt/entt.hpp>
 #include "../../Camera.h"
-#include "../objects/Component.h"
 
 class System
 {

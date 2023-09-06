@@ -20,6 +20,11 @@ void CameraMovementInputHandler::ProcessInput(const InputEvent& e)
 	}
 }
 
+void CameraMovementInputHandler::AddSubscriber(std::shared_ptr<CameraSubscriber> subscriber)
+{
+	this->cameraMoveSubscribers.push_back(subscriber);
+}
+
 void CameraMovementInputHandler::HandleMouseClickEvent(const MouseClickEvent& event)
 {
 	if (event.button == MouseClickEvent::Button::LEFT)
@@ -67,6 +72,7 @@ void CameraMovementInputHandler::HandleMouseMoveEvent(const MouseMoveEvent& even
 			// negative, because we are translating the camera, not scene
 			this->camera.Translate(glm::vec3(-(mouseOffset.x * MOUSE_TRANSLATION_SENSITIVITY), 0, -(mouseOffset.y * MOUSE_TRANSLATION_SENSITIVITY)));
 		}
+		this->NotifySubscribers();
 	}
 }
 
@@ -78,4 +84,16 @@ void CameraMovementInputHandler::HandleScrollEvent(const MouseScrollEvent& event
 		this->camera.Scale(1.f + MOUSE_SCROLL_SENSITIVITY * event.yoffset);
 	else
 		this->camera.Scale(1.f/(1.f - MOUSE_SCROLL_SENSITIVITY * event.yoffset));
+
+	this->NotifySubscribers();
+}
+
+void CameraMovementInputHandler::NotifySubscribers()
+{
+	for (auto& subscriber : cameraMoveSubscribers)
+	{
+		auto shared_sub = subscriber.lock();
+		if (shared_sub)
+			shared_sub->OnCameraMove();
+	}
 }
