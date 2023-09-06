@@ -266,6 +266,15 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 			});
 	};
 
+	bool polylineVisible = bezier.polylineVisible;
+	if (ImGui::Checkbox("Render polyline", &polylineVisible))
+	{
+		this->registry->patch<BezierC0>(entity, [&](BezierC0& bezierEntity) -> void
+			{
+				bezierEntity.polylineVisible = polylineVisible;
+			});
+	}
+
 	if (ImGui::BeginListBox("Curve points", ImVec2(-FLT_MIN, 0.f)))
 	{
 		ImGui::SeparatorText(std::format("{} curve points:", bezier.points.size()).c_str());
