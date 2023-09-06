@@ -1,6 +1,6 @@
 #include "ScreenSizeChangePublisher.h"
 
-void ScreenSizeChangePublisher::AddSubscriber(std::shared_ptr<ScreenSizeChangeSubscriber> subscriber)
+void ScreenSizeChangePublisher::AddScreenSizeSubscriber(std::shared_ptr<ScreenSizeChangeSubscriber> subscriber)
 {
 	subscribers.push_back(subscriber);
 }

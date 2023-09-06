@@ -5,12 +5,6 @@ BernsteinPolygonMetrics::BernsteinPolygonMetrics(std::shared_ptr<Camera> camera,
 {
 }
 
-void BernsteinPolygonMetrics::UpdateScreenSize(int scrWidth, int scrHeight)
-{
-	this->scrWidth = scrWidth;
-	this->scrHeight = scrHeight;
-}
-
 unsigned int BernsteinPolygonMetrics::CalculateSegmentsCount(std::array<glm::vec3, 4> curveCoefficients)
 {
 	auto viewProj = this->camera->GetProjectionMatrix() * this->camera->GetViewMatrix();
@@ -36,4 +30,10 @@ unsigned int BernsteinPolygonMetrics::CalculateSegmentsCount(std::array<glm::vec
 		length += sqrt(w * w + h * h);
 	}
 	return glm::max(256.0, length);
+}
+
+void BernsteinPolygonMetrics::OnScreenSizeChanged(unsigned int width, unsigned int height)
+{
+	this->scrWidth = width;
+	this->scrHeight = height;
 }

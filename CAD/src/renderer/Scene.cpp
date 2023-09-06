@@ -41,12 +41,14 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	curveSegmentsMetrics(std::make_shared<BernsteinPolygonMetrics>(camera, frame_width, frame_height)),
 	mouseSelectionSystem(std::make_shared<MouseSelectionSystem>(registry, camera, window))
 {
+	this->AddScreenSizeSubscriber(this->curveSegmentsMetrics);
+
 	entitiesFactory = std::make_shared<EntitiesFactory>(this->registry);	// after transformationsSystem
 
 
 	// systems
 	auto screenPositionSystem = std::make_shared<ScreenPositionSystem>(registry, *camera);
-	this->AddSubscriber(screenPositionSystem);
+	this->AddScreenSizeSubscriber(screenPositionSystem);
 	
 	auto bezierC0System = std::make_shared<BezierC0System>(registry, cameraMovementHandler, curveSegmentsMetrics);
 	auto transformationsSystem = std::make_shared<TransformationsSystem>(registry);
@@ -125,7 +127,6 @@ void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type
 void Scene::SetFramebufferSize(unsigned int width, unsigned int height)
 {
 	this->camera->SetViewportSize(width, height);
-	this->curveSegmentsMetrics->UpdateScreenSize(width, height);
 	
 	this->NotifySubscribers(width, height);
 }

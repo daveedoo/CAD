@@ -9,6 +9,6 @@ private:
 	std::vector<std::shared_ptr<ScreenSizeChangeSubscriber>> subscribers;
 
 public:
-	void AddSubscriber(std::shared_ptr<ScreenSizeChangeSubscriber> subscriber);
+	void AddScreenSizeSubscriber(std::shared_ptr<ScreenSizeChangeSubscriber> subscriber);
 	void NotifySubscribers(unsigned int width, unsigned int height);
 };
