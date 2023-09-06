@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+const glm::vec3 Utils::PolylineColor = glm::vec3(0.039f, 0.729f, 0.710f);
+
 glm::vec3 Utils::GetScreenPositionFrom3DCoordinates(const glm::vec3& position, const Camera& camera)
 {
 	int scrWidth, scrHeight;

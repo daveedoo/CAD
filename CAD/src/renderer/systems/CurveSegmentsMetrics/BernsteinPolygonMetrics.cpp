@@ -29,7 +29,7 @@ unsigned int BernsteinPolygonMetrics::CalculateSegmentsCount(std::array<glm::vec
 		float h = ((p1.y - p2.y) / 2) * scrHeight;
 		length += sqrt(w * w + h * h);
 	}
-	return glm::max(256.0, length);
+	return glm::min(256.0, length);
 }
 
 void BernsteinPolygonMetrics::OnScreenSizeChanged(unsigned int width, unsigned int height)

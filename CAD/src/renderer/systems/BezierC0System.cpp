@@ -37,7 +37,7 @@ void BezierC0System::Render(const Camera& camera)
 	auto view = this->registry->view<BezierC0, Mesh, Selectable>();
 	for (auto [entity, bezier, mesh, selectable] : view.each())
 	{
-		this->program->SetVec3("color", glm::vec3(1.f));
+		this->program->SetVec3("color", Utils::GetObjectColor(selectable.selected));
 		mesh.vao->Bind();
 		
 		size_t curvePointsCount = mesh.ebo->GetNrOfElements() - bezier.points.size() + 1;
@@ -46,8 +46,8 @@ void BezierC0System::Render(const Camera& camera)
 
 		if (bezier.polylineVisible)
 		{
-			if (selectable.selected)
-				this->program->SetVec3("color", Utils::GetObjectColor(true));
+			this->program->SetVec3("color", Utils::PolylineColor);
+
 			glDrawElements(GL_LINE_STRIP, bezier.points.size(), static_cast<GLenum>(dataType),
 				(void*)((curvePointsCount - 1) * GL::EBO::GetSizeOf(dataType)));
 		}
