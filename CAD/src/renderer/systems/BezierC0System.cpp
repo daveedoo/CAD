@@ -105,9 +105,12 @@ std::tuple<std::vector<glm::vec3>, std::vector<unsigned int>> BezierC0System::Ge
 		for (size_t j = ((size - 1) / 3) * 3; j > 2; j -= 3)
 		{
 			//auto pos0 = this->registry->get<Position>(bezier.points[j - 0]).position;	// first point is already calculated
-			auto pos1 = this->registry->get<Position>(bezier.points[j - 1]).position;
-			auto pos2 = this->registry->get<Position>(bezier.points[j - 2]).position;
-			auto pos3 = this->registry->get<Position>(bezier.points[j - 3]).position;
+			const auto& transf1 = this->registry->get<Transformation>(bezier.points[j - 1]);
+			const auto& transf2 = this->registry->get<Transformation>(bezier.points[j - 2]);
+			const auto& transf3 = this->registry->get<Transformation>(bezier.points[j - 3]);
+			auto pos1 = Matrix::ExtractTranslation(transf1.worldMatrix);
+			auto pos2 = Matrix::ExtractTranslation(transf2.worldMatrix);
+			auto pos3 = Matrix::ExtractTranslation(transf3.worldMatrix);
 			points.push_back(pos1);
 			points.push_back(pos2);
 			points.push_back(pos3);
