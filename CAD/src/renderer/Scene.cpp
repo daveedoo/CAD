@@ -74,7 +74,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 
 	// build GUI
 	auto addPointCommand = std::make_shared<AddPointCommand>(this->registry, this->entitiesFactory, this->mainCursor);
-	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry, addPointCommand);
+	auto mainMenuBar = std::make_unique<MainMenuBar>(*this, registry, this->entitiesFactory, addPointCommand);
 	auto guiSystem = std::make_shared<GUISystem>(registry, std::move(mainMenuBar), *this);
 
 	auto groupTransformation = std::make_shared<AdditionalTransformation>(glm::vec3(0.f), 1.f);
@@ -164,11 +164,6 @@ entt::entity Scene::AddPoint()
 {
 	auto& cursorPos = this->registry->get<Position>(this->mainCursor).position;
 	return entitiesFactory->CreatePoint(cursorPos);
-}
-
-entt::entity Scene::AddBezierC0(const std::vector<entt::entity>& points)
-{
-	return entitiesFactory->CreateBezierC0(points);
 }
 
 void Scene::RemoveEntity(entt::entity entity)

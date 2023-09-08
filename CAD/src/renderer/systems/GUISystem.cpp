@@ -12,6 +12,7 @@
 #include "..\objects\Components\Selectable.h"
 #include "..\objects\Components\Point.h"
 #include "..\gui\widgets\Widgets.h"
+#include "..\objects\Components\BezierC2.h"
 
 GUISystem::GUISystem(std::shared_ptr<entt::registry> registry,
 	std::unique_ptr<GUIElement> mainMenuBar, 
@@ -192,17 +193,20 @@ void GUISystem::RenderEntitiesDetailsWindow()
 				if (!selectable.selected)
 					continue;
 
-				if (this->registry->any_of<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity))
+				if (this->registry->any_of<TorusComponent, Position, Scaling, Rotation, BezierC0, BezierC2>(entity))
 				{
 					if (ImGui::TreeNodeEx(selectable.name.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 					{
-						auto [torusComp, position, scaling, rotation, bezier_c0] = this->registry->try_get<TorusComponent, Position, Scaling, Rotation, BezierC0>(entity);	// TODO: duplicated type parameters
+						auto [torusComp, position, scaling, rotation, bezier_c0, bezier_c2] = 
+							this->registry->try_get<TorusComponent, Position, Scaling, Rotation, BezierC0, BezierC2>(entity);	// TODO: duplicated type parameters
 						if (torusComp != nullptr)
 							RenderTorusTreeNode(entity, *torusComp);
 						if (position != nullptr || scaling != nullptr || rotation != nullptr)
 							RenderTransformationsTreeNode(entity, position, scaling, rotation);
 						if (bezier_c0 != nullptr)
 							RenderBezierC0TreeNode(entity, *bezier_c0);
+						if (bezier_c2 != nullptr)
+							RenderBezierC2TreeNode(entity, *bezier_c2);
 						ImGui::TreePop();
 					}
 				}
@@ -275,9 +279,9 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 			});
 	}
 
-	if (ImGui::BeginListBox("Curve points", ImVec2(-FLT_MIN, 0.f)))
+	if (ImGui::BeginListBox("Bernstein points", ImVec2(-FLT_MIN, 0.f)))
 	{
-		ImGui::SeparatorText(std::format("{} curve points:", bezier.points.size()).c_str());
+		ImGui::SeparatorText(std::format("{} Bernstein points:", bezier.points.size()).c_str());
 		if (ImGui::BeginDragDropTarget())
 		{
 			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str()))
@@ -388,6 +392,16 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 				ImGui::EndDragDropSource();
 			}
 		}
+		ImGui::EndListBox();
+	}
+}
+
+void GUISystem::RenderBezierC2TreeNode(entt::entity entity, const BezierC2& bezier)
+{
+	if (ImGui::BeginListBox("De Boor points", ImVec2(-FLT_MIN, 0.f)))
+	{
+		ImGui::SeparatorText(std::format("{} de Boor points:", bezier.deBoorPoints.size()).c_str());
+
 		ImGui::EndListBox();
 	}
 }

@@ -3,8 +3,12 @@
 #include "../../renderer/objects/Components/Selectable.h"
 #include "../../renderer/objects/Components/Point.h"
 
-MainMenuBar::MainMenuBar(Scene& scene, std::shared_ptr<entt::registry> registry, std::shared_ptr<Command> addPointCommand) : GUIElement(),
-	scene(scene), registry(registry), addPointCommand(addPointCommand)
+MainMenuBar::MainMenuBar(Scene& scene,
+	std::shared_ptr<entt::registry> registry,
+	std::shared_ptr<EntitiesFactory> entitiesFactory,
+	std::shared_ptr<Command> addPointCommand)
+	: GUIElement(),
+	scene(scene), registry(registry), entitiesFactory(entitiesFactory), addPointCommand(addPointCommand)
 {
 }
 
@@ -36,8 +40,10 @@ void MainMenuBar::Draw()
 			scene.AddTorus();
 
 		auto selectedPoints = GetSelectedPoints();
-		if (ImGui::MenuItem("Bezier C0", nullptr, nullptr, selectedPoints.size() > 0))
-			scene.AddBezierC0(selectedPoints);
+		if (ImGui::MenuItem("Bezier C0", nullptr, nullptr, true))
+			this->entitiesFactory->CreateBezierC0(selectedPoints);
+		if (ImGui::MenuItem("Bezier C2", nullptr, nullptr, true))
+			this->entitiesFactory->CreateBezierC2(selectedPoints);
 
 		ImGui::EndMainMenuBar();
 	}

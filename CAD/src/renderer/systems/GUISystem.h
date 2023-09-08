@@ -4,6 +4,7 @@
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\TorusComponent.h"
 #include "..\objects\Components\BezierC0.h"
+#include "..\objects\Components\BezierC2.h"
 #include "..\objects\Components\Position.h"
 #include "..\objects\Components\Rotation.h"
 #include "..\objects\Components\Scaling.h"
@@ -47,4 +48,5 @@ private:
 	void RenderTorusTreeNode(entt::entity entity, TorusComponent& torusComp);
 	void RenderTransformationsTreeNode(entt::entity entity, Position* position, Scaling* scaling, Rotation* rotation);
 	void RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier);
+	void RenderBezierC2TreeNode(entt::entity entity, const BezierC2& bezier);
 };
