@@ -5,6 +5,7 @@
 #include "..\..\maths\Matrix.h"
 #include "..\..\..\Utils.h"
 #include "..\objects\Components\Point.h"
+#include "BezierC0System.h"
 
 BezierC2System::BezierC2System(std::shared_ptr<entt::registry> registry, std::shared_ptr<EntitiesFactory> entitiesFactory) : System(registry),
 	entitiesFactory(entitiesFactory)
@@ -46,7 +47,20 @@ void BezierC2System::ReinitializeBernsteinPoints(entt::registry& registry, entt:
 				std::vector<entt::entity> bernstEntitiesCopy = bezC0.points;
 				for (size_t i = pointsToPatchCount; i < bernstEntitiesCopy.size(); i++)
 				{
-					registry.destroy(bernstEntitiesCopy[i]);
+					// TODO: may be improved, just get the first BezierC0 different than 'bezC0'
+					// assumption: each bernstein point belongs to the list only once
+					if (Utils::GetListOfBeziersContainingPoint(registry, bernstEntitiesCopy[i]).size() > 1)
+					{
+						auto newEnd = std::remove(bezC0.points.begin(), bezC0.points.end(), bernstEntitiesCopy[i]);
+						if (newEnd != bezC0.points.end())
+						{
+							bezC0.points.erase(newEnd, bezC0.points.end());
+						}
+					}
+					else
+					{
+						registry.destroy(bernstEntitiesCopy[i]);
+					}
 				}
 			}
 			// some new de Boor points added (possibly)

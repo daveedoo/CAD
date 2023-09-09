@@ -10,4 +10,5 @@ public:
 	static glm::vec3 GetObjectColor(bool isSelected);
 	static const glm::vec3 PolylineColor;
 	static glm::vec3 GetTranslation(const entt::registry& registry, entt::entity pointEntity);
+	static std::vector<entt::entity> GetListOfBeziersContainingPoint(entt::registry& registry, entt::entity pointEntity);
 };
