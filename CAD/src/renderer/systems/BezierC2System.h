@@ -15,5 +15,5 @@ public:
 
 private:
 	void SetBernsteinPoints(entt::registry& registry, entt::entity bezierc2Entity);
-	void UpdateAllBeziersContainingPoint(entt::registry& registry, entt::entity positionEntity);
+	void UpdateAllBeziersContainingDeBoorPoint(entt::registry& registry, entt::entity positionEntity);
 };
