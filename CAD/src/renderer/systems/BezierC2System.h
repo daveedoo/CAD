@@ -20,4 +20,6 @@ private:
 	void ReinitializeBernsteinPoints(entt::registry& registry, entt::entity bezierc2Entity);
 	void UpdateAllBeziersContainingDeBoorPoint(entt::registry& registry, entt::entity positionEntity);
 	void RemovePointFromDeBoorPoints(entt::registry& registry, entt::entity pointEntity);
+
+	void AdjustDeBoorPointsOnBernsteinChange(entt::registry& registry, entt::entity bezierC0Entity);
 };

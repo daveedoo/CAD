@@ -6,6 +6,7 @@
 #include "..\..\..\Utils.h"
 #include "..\objects\Components\Point.h"
 #include "BezierC0System.h"
+#include "..\objects\Components\Selectable.h"
 
 BezierC2System::BezierC2System(std::shared_ptr<entt::registry> registry, std::shared_ptr<EntitiesFactory> entitiesFactory) : System(registry),
 	entitiesFactory(entitiesFactory)
@@ -14,6 +15,8 @@ BezierC2System::BezierC2System(std::shared_ptr<entt::registry> registry, std::sh
 	this->registry->on_update<BezierC2>().connect<&BezierC2System::ReinitializeBernsteinPoints>(*this);
 	this->registry->on_update<Position>().connect<&BezierC2System::UpdateAllBeziersContainingDeBoorPoint>(*this);
 	this->registry->on_destroy<Point>().connect<&BezierC2System::RemovePointFromDeBoorPoints>(*this);
+	
+	this->registry->on_update<Position>().connect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
 }
 
 void BezierC2System::Update(const Camera& camera)
@@ -30,6 +33,8 @@ void BezierC2System::ReinitializeBernsteinPoints(entt::registry& registry, entt:
 
 	std::vector<glm::vec3> deBoorPositions = GetDeBoorPositions(registry, bezC2.deBoorPoints);
 	std::vector<glm::vec3> bernstPositions = CalulateBernsteinPositions(deBoorPositions);
+
+	this->registry->on_update<Position>().disconnect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
 	registry.patch<BezierC0>(bezierc2Entity, [&](BezierC0& bezC0) -> void
 		{
 			size_t pointsToPatchCount = std::min(bernstPositions.size(), bezC0.points.size());
@@ -59,6 +64,7 @@ void BezierC2System::ReinitializeBernsteinPoints(entt::registry& registry, entt:
 				}
 			}
 		});
+	this->registry->on_update<Position>().connect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
 }
 
 std::vector<glm::vec3> BezierC2System::GetDeBoorPositions(entt::registry& registry, std::vector<entt::entity> deBoorPointEntities)
@@ -129,11 +135,46 @@ void BezierC2System::RemovePointFromDeBoorPoints(entt::registry& registry, entt:
 	}
 }
 
-void OnBezierC0Update(entt::registry& registry, entt::entity bezierC0Entity)
+// returns [BezierC0 entity, index of the point]
+std::optional<std::tuple<entt::entity, size_t>> FindBezierC0EntityContainingPoint(entt::registry& registry, entt::entity pointEntity)
 {
+	auto view = registry.view<BezierC0>();
+	for (auto [bezierEntity, bezier] : view.each())
+	{
+		auto it = std::find(bezier.points.begin(), bezier.points.end(), pointEntity);
+		if (it != bezier.points.end())
+			return std::make_tuple(bezierEntity, std::distance(bezier.points.begin(), it));
+	}
+	return std::nullopt;
+}
+
+void BezierC2System::AdjustDeBoorPointsOnBernsteinChange(entt::registry& registry, entt::entity positionEntity)
+{
+	if (!registry.all_of<Point>(positionEntity) || registry.all_of<Selectable>(positionEntity))
+		return;
+	
+	auto foundIdx = FindBezierC0EntityContainingPoint(registry, positionEntity);
+	if (!foundIdx.has_value())
+		return;
+
+	auto& [bezierC0Entity, idx] = foundIdx.value();
 	if (!registry.all_of<BezierC2>(bezierC0Entity))
 		return;
 
+	auto& pointPos = registry.get<Position>(positionEntity);
 	auto [bezC0, bezC2] = registry.get<BezierC0, BezierC2>(bezierC0Entity);
+	if (idx % 3 == 0)
+	{
+		auto& centerPoint = pointPos.position;
+		auto deBoorPoint = bezC2.deBoorPoints[idx / 3 + 1];
+		auto& deBoorPrev = registry.get<Position>(bezC2.deBoorPoints[idx / 3 + 0]).position;
+		auto& deBoorNext = registry.get<Position>(bezC2.deBoorPoints[idx / 3 + 2]).position;
 
+		this->registry->on_update<Position>().disconnect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
+		registry.patch<Position>(deBoorPoint, [&](Position& position) -> void
+			{
+				position.position = (6.f * centerPoint - deBoorPrev - deBoorNext) / 4.f;
+			});
+		this->registry->on_update<Position>().connect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
+	}
 }
