@@ -256,9 +256,9 @@ void GUISystem::RenderTransformationsTreeNode(entt::entity entity, Position* pos
 	}
 }
 
+static const std::string NEW_BEZIER_POINT_PayloadID = "BEZIER_NEW_POINT";
 void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezier)
 {
-	static const std::string NEW_BEZIER_POINT_PayloadID = "BEZIER_C0_NEW_POINT_ID";
 	// helper function
 	std::function<void(size_t, size_t)> replaceValues = [&](size_t idx1, size_t idx2) -> void
 	{
@@ -412,6 +412,18 @@ void GUISystem::RenderBezierC2TreeNode(entt::entity entity, const BezierC2& bezi
 	if (ImGui::BeginListBox("De Boor points", ImVec2(-FLT_MIN, 0.f)))
 	{
 		ImGui::SeparatorText(std::format("{} de Boor points:", bezier.deBoorPoints.size()).c_str());
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(NEW_BEZIER_POINT_PayloadID.c_str()))
+			{
+				entt::entity movedPointEntity = *static_cast<entt::entity*>(payload->Data);
+				this->registry->patch<BezierC2>(entity, [&](BezierC2& bezierToAddPoint) -> void
+					{
+						bezierToAddPoint.deBoorPoints.push_back(movedPointEntity);
+					});
+			}
+			ImGui::EndDragDropTarget();
+		}
 
 		for (auto it = bezier.deBoorPoints.begin(); it != bezier.deBoorPoints.end(); it++)
 		{
