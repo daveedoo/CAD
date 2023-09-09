@@ -68,7 +68,7 @@ void BezierC2System::ReinitializeBernsteinPoints(entt::registry& registry, entt:
 			{
 				for (size_t i = pointsToPatchCount; i < bernstPositions.size(); i++)
 				{
-					bezC0.points.push_back(this->entitiesFactory->CreatePoint(bernstPositions[i]));
+					bezC0.points.push_back(this->entitiesFactory->CreatePoint(bernstPositions[i], true));
 				}
 			}
 		});

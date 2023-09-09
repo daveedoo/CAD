@@ -42,8 +42,8 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 		else
 		{
 			bool hoveringOverEntity = false;
-			auto view = this->registry->view<Position, Selectable>();
-			for (auto [entity, position, selectable] : view.each())
+			auto view = this->registry->view<Position>();
+			for (auto [entity, position] : view.each())
 			{
 				glm::vec3 screenPos = Utils::GetScreenPositionFrom3DCoordinates(position.position, *this->camera);
 				if (glm::distance(glm::vec2(mouseEvent.xpos, mouseEvent.ypos), glm::vec2(screenPos.x, screenPos.y)) < MAX_SCREEN_DIFFERENCE)
@@ -68,8 +68,8 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 			{
 				std::vector<std::tuple<entt::entity, float>> entities;
 
-				auto view = this->registry->view<Position, Selectable>();
-				for (auto [entity, position, selectable] : view.each())
+				auto view = this->registry->view<Position>();
+				for (auto [entity, position] : view.each())
 				{
 					glm::vec3 screenPos = Utils::GetScreenPositionFrom3DCoordinates(position.position, *this->camera);
 					if (glm::distance(glm::vec2(mouseEvent.xpos, mouseEvent.ypos), glm::vec2(screenPos.x, screenPos.y)) < MAX_SCREEN_DIFFERENCE)
@@ -88,22 +88,29 @@ void MouseSelectionSystem::ProcessInput(const InputEvent& event)
 							return z1 < z2;
 						});
 
-					this->registry->patch<Selectable>(minZEntity, [](Selectable& selectable) -> void
-						{
-							selectable.selected = !selectable.selected;
-						});
+					if (mouseEvent.mods.IsShiftDown() && this->registry->all_of<Selectable>(minZEntity))
+					{
+						this->registry->patch<Selectable>(minZEntity, [](Selectable& selectable) -> void
+							{
+								selectable.selected = !selectable.selected;
+							});
+					}
 					this->movedEntity = minZEntity;
 				}
 				else
 				{
-					for (auto [entity, position, selectable] : view.each())
+					if (mouseEvent.mods.IsShiftDown())
 					{
-						if (selectable.selected)
+						auto view2 = this->registry->view<Position, Selectable>();
+						for (auto [entity, position, selectable] : view2.each())
 						{
-							this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
-								{
-									selectable.selected = false;
-								});
+							if (selectable.selected)
+							{
+								this->registry->patch<Selectable>(entity, [](Selectable& selectable) -> void
+									{
+										selectable.selected = false;
+									});
+							}
 						}
 					}
 				}

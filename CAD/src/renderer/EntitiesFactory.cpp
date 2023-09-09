@@ -34,15 +34,18 @@ entt::entity EntitiesFactory::CreateTorus(float minorR, float majorR, int minorS
 	return entity;
 }
 
-entt::entity EntitiesFactory::CreatePoint(glm::vec3 position)
+entt::entity EntitiesFactory::CreatePoint(glm::vec3 position, bool isVirtual)
 {
 	static unsigned int counter = 0;
-	std::string name = std::format("Point {}", ++counter);
 
 	const auto entity = registry->create();
 	this->registry->emplace<Point>(entity);
-	this->registry->emplace<Selectable>(entity, name);
 	this->registry->emplace<Position>(entity, position);
+	if (!isVirtual)
+	{
+		std::string name = std::format("Point {}", ++counter);
+		this->registry->emplace<Selectable>(entity, name);
+	}
 	return entity;
 }
 
