@@ -14,6 +14,10 @@ public:
 	void Render(const Camera& camera) override;
 
 private:
-	void SetBernsteinPoints(entt::registry& registry, entt::entity bezierc2Entity);
+	std::vector<glm::vec3> GetDeBoorPositions(entt::registry& registry, std::vector<entt::entity> deBoorPointEntities);
+	std::vector<glm::vec3> CalulateBernsteinPositions(std::vector<glm::vec3> deBoorPoints);
+
+	void ReinitializeBernsteinPoints(entt::registry& registry, entt::entity bezierc2Entity);
 	void UpdateAllBeziersContainingDeBoorPoint(entt::registry& registry, entt::entity positionEntity);
+	void RemovePointFromDeBoorPoints(entt::registry& registry, entt::entity pointEntity);
 };
