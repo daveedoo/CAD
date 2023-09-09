@@ -1,4 +1,6 @@
 #include "Utils.h"
+#include "src\renderer\objects\Components\Transformation.h"
+#include "src\maths\Matrix.h"
 
 const glm::vec3 Utils::PolylineColor = glm::vec3(0.039f, 0.729f, 0.710f);
 
@@ -17,4 +19,10 @@ glm::vec3 Utils::GetScreenPositionFrom3DCoordinates(const glm::vec3& position, c
 glm::vec3 Utils::GetObjectColor(bool isSelected)
 {
 	return isSelected ? glm::vec3(1.f, 0.65f, 0.f) : glm::vec3(1.f, 1.f, 1.f);
+}
+
+glm::vec3 Utils::GetTranslation(const entt::registry& registry, entt::entity pointEntity)
+{
+	auto& transf = registry.get<Transformation>(pointEntity);
+	return Matrix::ExtractTranslation(transf.worldMatrix);
 }

@@ -398,9 +398,86 @@ void GUISystem::RenderBezierC0TreeNode(entt::entity entity, const BezierC0& bezi
 
 void GUISystem::RenderBezierC2TreeNode(entt::entity entity, const BezierC2& bezier)
 {
+	// helper function
+	std::function<void(size_t, size_t)> replaceValues = [&](size_t idx1, size_t idx2) -> void
+		{
+			this->registry->patch<BezierC2>(entity, [&](BezierC2& patchBezier)
+				{
+					auto val1 = patchBezier.deBoorPoints[idx1];
+					patchBezier.deBoorPoints[idx1] = patchBezier.deBoorPoints[idx2];
+					patchBezier.deBoorPoints[idx2] = val1;
+				});
+		};
+
 	if (ImGui::BeginListBox("De Boor points", ImVec2(-FLT_MIN, 0.f)))
 	{
 		ImGui::SeparatorText(std::format("{} de Boor points:", bezier.deBoorPoints.size()).c_str());
+
+		for (auto it = bezier.deBoorPoints.begin(); it != bezier.deBoorPoints.end(); it++)
+		{
+			// TODO: this bool may be removed if using std::list<> instead of std::vector<>
+			// also, continuous dragging might be possible to implement then.
+			// However, due to the component constness, efficiency wouldn't be much better
+			bool iteratorInvalid = false;
+
+			const auto& selectable = this->registry->get<Selectable>(*it);
+			ImGui::PushID(&(*it));
+			ImGui::Selectable(selectable.name.c_str());
+
+			// reordering drag and drop inside "Points" list
+			if (ImGui::IsItemActive() && !ImGui::IsItemHovered())
+			{
+				int it_advance = ImGui::GetMouseDragDelta(ImGuiMouseButton_Left).y < 0.f ? -1 : 1;
+				if (it != bezier.deBoorPoints.begin() || it_advance > 0)
+				{
+					auto it2 = it + it_advance;
+					if (it2 >= bezier.deBoorPoints.begin() && it2 < bezier.deBoorPoints.end())
+					{
+						int it1_idx = std::distance(bezier.deBoorPoints.begin(), it);
+						int it2_idx = std::distance(bezier.deBoorPoints.begin(), it2);
+						replaceValues(it1_idx, it2_idx);
+						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Left);
+					}
+				}
+			}
+
+			if (ImGui::BeginPopupContextItem())
+			{
+				int currentIdx = it - bezier.deBoorPoints.begin();
+				if (currentIdx > 0)
+				{
+					if (ImGui::Button("Up", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, (size_t)currentIdx - 1);
+						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
+					}
+				}
+				if (bezier.deBoorPoints.end() - it > 1)
+				{
+					if (ImGui::Button("Down", ImVec2(-FLT_MIN, 0.f)))
+					{
+						replaceValues(currentIdx, static_cast<size_t>(currentIdx) + 1);
+						ImGui::CloseCurrentPopup();
+						iteratorInvalid = true;
+					}
+				}
+				if (ImGui::Button("Remove from curve"))
+				{
+					this->registry->patch<BezierC2>(entity, [&](BezierC2& patchBezier) -> void
+						{
+							patchBezier.deBoorPoints.erase(it);
+						});
+					ImGui::CloseCurrentPopup();
+					iteratorInvalid = true;
+				}
+
+				ImGui::EndPopup();
+			}
+
+			ImGui::PopID();
+			if (iteratorInvalid) break;
+		}
 
 		ImGui::EndListBox();
 	}

@@ -30,6 +30,7 @@
 #include "systems/MouseSelectionSystem.h"
 #include "..\Window\input\events\modded\KeyEvent.h"
 #include "commands\AddPointCommand.h"
+#include "systems\BezierC2System.h"
 
 
 Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_ptr<Window> window) :
@@ -59,6 +60,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	this->systems.push_back(std::make_shared<TorusSystem>(registry));
 	this->systems.push_back(std::make_shared<PointSystem>(registry));
 	this->systems.push_back(std::make_shared<CursorSystem>(registry));
+	this->systems.push_back(std::make_shared<BezierC2System>(registry, entitiesFactory));
 	this->systems.push_back(transformationsSystem);
 	this->systems.push_back(screenPositionSystem);
 	this->systems.push_back(bezierC0System);
@@ -98,7 +100,7 @@ Scene::Scene(unsigned int frame_width, unsigned int frame_height, std::shared_pt
 	auto bezierPoints = std::vector<entt::entity>{
 		point1, point2, point3, point4
 	};
-	this->entitiesFactory->CreateBezierC0(bezierPoints);
+	this->entitiesFactory->CreateBezierC2(bezierPoints);
 }
 
 void Scene::HandleEvent(const InputEvent& inputEvent)	// TODO: change event type to be not ResizeEvent
