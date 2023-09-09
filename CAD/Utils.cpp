@@ -28,28 +28,3 @@ glm::vec3 Utils::GetTranslation(const entt::registry& registry, entt::entity poi
 	auto& transf = registry.get<Transformation>(pointEntity);
 	return Matrix::ExtractTranslation(transf.worldMatrix);
 }
-
-std::vector<entt::entity> Utils::GetListOfBeziersContainingPoint(entt::registry& registry, entt::entity pointEntity)
-{
-	std::vector<entt::entity> beziers;
-
-	auto view = registry.view<BezierC0>();
-	for (auto [bezierEntity, bezier] : view.each())
-	{
-		if (std::find(bezier.points.begin(), bezier.points.end(), pointEntity) != bezier.points.end())
-		{
-			beziers.push_back(bezierEntity);
-		}
-		else
-		{
-			const auto* const bezC2 = registry.try_get<BezierC2>(bezierEntity);
-			if (bezC2 != nullptr &&
-				std::find(bezC2->deBoorPoints.begin(), bezC2->deBoorPoints.end(), pointEntity) != bezC2->deBoorPoints.end())
-			{
-				beziers.push_back(bezierEntity);
-			}
-		}
-	}
-
-	return beziers;
-}

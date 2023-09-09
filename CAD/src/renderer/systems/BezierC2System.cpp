@@ -47,20 +47,7 @@ void BezierC2System::ReinitializeBernsteinPoints(entt::registry& registry, entt:
 				std::vector<entt::entity> bernstEntitiesCopy = bezC0.points;
 				for (size_t i = pointsToPatchCount; i < bernstEntitiesCopy.size(); i++)
 				{
-					// TODO: may be improved, just get the first BezierC0 different than 'bezC0'
-					// assumption: each bernstein point belongs to the list only once
-					if (Utils::GetListOfBeziersContainingPoint(registry, bernstEntitiesCopy[i]).size() > 1)
-					{
-						auto newEnd = std::remove(bezC0.points.begin(), bezC0.points.end(), bernstEntitiesCopy[i]);
-						if (newEnd != bezC0.points.end())
-						{
-							bezC0.points.erase(newEnd, bezC0.points.end());
-						}
-					}
-					else
-					{
-						registry.destroy(bernstEntitiesCopy[i]);
-					}
+					registry.destroy(bernstEntitiesCopy[i]);
 				}
 			}
 			// some new de Boor points added (possibly)
@@ -140,4 +127,13 @@ void BezierC2System::RemovePointFromDeBoorPoints(entt::registry& registry, entt:
 			ReinitializeBernsteinPoints(registry, bezierEntity);
 		}
 	}
+}
+
+void OnBezierC0Update(entt::registry& registry, entt::entity bezierC0Entity)
+{
+	if (!registry.all_of<BezierC2>(bezierC0Entity))
+		return;
+
+	auto [bezC0, bezC2] = registry.get<BezierC0, BezierC2>(bezierC0Entity);
+
 }
