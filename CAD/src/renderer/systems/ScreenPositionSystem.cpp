@@ -14,7 +14,6 @@ ScreenPositionSystem::ScreenPositionSystem(std::shared_ptr<entt::registry> regis
 	this->registry->on_destroy<Position>().connect<&ScreenPositionSystem::RemoveScreenPositionComponent>(*this);
 	
 	this->registry->on_update<Position>().connect<&ScreenPositionSystem::SetPosition_ScreenBasedOn3D>(*this);
-	this->registry->on_update<Selectable>().connect<&ScreenPositionSystem::SetPosition_ScreenBasedOn3D>(*this);
 
 	this->registry->on_update<ScreenPosition>().connect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);
 }
@@ -27,19 +26,15 @@ void ScreenPositionSystem::Render(const Camera& camera)
 {
 }
 
-// Updates only selected OR unselectable entities (like main cursor)
-// Unselected entities don't show their screen coordinates, so there's no need to update it.
 void ScreenPositionSystem::SetPosition_ScreenBasedOn3D(entt::registry& registry, entt::entity entity)
 {
-	const auto& [selectable, pos3d] = registry.try_get<Selectable, Position>(entity);
-	if (pos3d == nullptr || (selectable != nullptr && selectable->selected == false))
-		return;
+	const auto& pos3d = registry.get<Position>(entity);
 
 	this->registry->on_update<ScreenPosition>().disconnect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);
 
 	registry.patch<ScreenPosition>(entity, [&](ScreenPosition& screenPosition) -> void
 		{
-			screenPosition.position = Utils::GetScreenPositionFrom3DCoordinates(pos3d->position, this->camera);
+			screenPosition.position = Utils::GetScreenPositionFrom3DCoordinates(pos3d.position, this->camera);
 		});
 
 	this->registry->on_update<ScreenPosition>().connect<&ScreenPositionSystem::SetPosition_3DBasedOnScreen>(*this);
@@ -70,6 +65,7 @@ void ScreenPositionSystem::SetPosition_3DBasedOnScreen(entt::registry& registry,
 void ScreenPositionSystem::AddScreenPositionComponent(entt::registry& registry, entt::entity entity)
 {
 	registry.emplace<ScreenPosition>(entity);
+	SetPosition_ScreenBasedOn3D(registry, entity);
 }
 
 void ScreenPositionSystem::RemoveScreenPositionComponent(entt::registry& registry, entt::entity entity)

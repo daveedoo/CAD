@@ -2,12 +2,14 @@
 #include "System.h"
 #include "../../Window/input/handlers/InputHandler.h"
 #include "..\..\Window\Window.h"
+#include <optional>
 
 class MouseSelectionSystem : public System, public InputHandler
 {
 private:
 	std::shared_ptr<Camera> camera;
 	std::shared_ptr<Window> window;
+	std::optional<entt::entity> movedEntity;
 
 public:
 	MouseSelectionSystem(std::shared_ptr<entt::registry> registry, std::shared_ptr<Camera> camera, std::shared_ptr<Window> window);

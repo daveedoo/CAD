@@ -10,6 +10,7 @@
 #include "objects\Components\BezierC0.h"
 #include "objects\Components\Scaling.h"
 #include "objects\Components\Rotation.h"
+#include "objects\Components\BezierC2.h"
 
 EntitiesFactory::EntitiesFactory(std::shared_ptr<entt::registry> registry)
 	: registry(registry)
@@ -33,15 +34,18 @@ entt::entity EntitiesFactory::CreateTorus(float minorR, float majorR, int minorS
 	return entity;
 }
 
-entt::entity EntitiesFactory::CreatePoint(glm::vec3 position)
+entt::entity EntitiesFactory::CreatePoint(glm::vec3 position, bool isVirtual)
 {
 	static unsigned int counter = 0;
-	std::string name = std::format("Point {}", ++counter);
 
 	const auto entity = registry->create();
 	this->registry->emplace<Point>(entity);
-	this->registry->emplace<Selectable>(entity, name);
 	this->registry->emplace<Position>(entity, position);
+	if (!isVirtual)
+	{
+		std::string name = std::format("Point {}", ++counter);
+		this->registry->emplace<Selectable>(entity, name);
+	}
 	return entity;
 }
 
@@ -70,5 +74,18 @@ entt::entity EntitiesFactory::CreateBezierC0(const std::vector<entt::entity>& po
 	this->registry->emplace<Selectable>(entity, name);
 	this->registry->emplace<BezierC0>(entity, points);
 
-	return entt::entity();
+	return entity;
+}
+
+entt::entity EntitiesFactory::CreateBezierC2(const std::vector<entt::entity>& deBoorPoints)
+{
+	static unsigned int counter = 0;
+	std::string name = std::format("BezierC2 {}", ++counter);
+
+	const auto& entity = registry->create();
+	this->registry->emplace<Selectable>(entity, name);
+	this->registry->emplace<BezierC0>(entity, std::vector<entt::entity>());
+	this->registry->emplace<BezierC2>(entity, deBoorPoints);
+
+	return entity;
 }

@@ -28,11 +28,14 @@ void PointSystem::Render(const Camera& camera)
 	this->program->SetMat4("projMatrix", camera.GetProjectionMatrix());
 	glPointSize(5.f);
 
-	auto view = this->registry->view<Point, Selectable, Position, Transformation>();
-	for (auto [entity, selectable, position, transf] : view.each())
+	auto view = this->registry->view<Point, Position, Transformation>();
+	for (auto [entity, position, transf] : view.each())
 	{
+		auto selectable = this->registry->try_get<Selectable>(entity);
+		glm::vec3 color = selectable == nullptr ? glm::vec3(0.7f) : Utils::GetObjectColor(selectable->selected);
+
 		this->program->SetMat4("worldMatrix", transf.worldMatrix);
-		this->program->SetVec3("color", Utils::GetObjectColor(selectable.selected));
+		this->program->SetVec3("color", color);
 		glDrawArrays(GL_POINTS, 0, 1);
 	}
 }

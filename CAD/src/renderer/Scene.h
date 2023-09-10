@@ -55,6 +55,5 @@ public:
 
 	entt::entity AddTorus();
 	entt::entity AddPoint();
-	entt::entity AddBezierC0(const std::vector<entt::entity>& points);
 	void RemoveEntity(entt::entity entity);
 };
