@@ -157,24 +157,62 @@ void BezierC2System::AdjustDeBoorPointsOnBernsteinChange(entt::registry& registr
 	if (!foundIdx.has_value())
 		return;
 
-	auto& [bezierC0Entity, idx] = foundIdx.value();
-	if (!registry.all_of<BezierC2>(bezierC0Entity))
+	auto& [bezC0Entity, idxInC0] = foundIdx.value();
+	if (!registry.all_of<BezierC2>(bezC0Entity))
 		return;
 
-	auto& pointPos = registry.get<Position>(positionEntity);
-	auto [bezC0, bezC2] = registry.get<BezierC0, BezierC2>(bezierC0Entity);
-	if (idx % 3 == 0)
-	{
-		auto& centerPoint = pointPos.position;
-		auto deBoorPoint = bezC2.deBoorPoints[idx / 3 + 1];
-		auto& deBoorPrev = registry.get<Position>(bezC2.deBoorPoints[idx / 3 + 0]).position;
-		auto& deBoorNext = registry.get<Position>(bezC2.deBoorPoints[idx / 3 + 2]).position;
 
-		this->registry->on_update<Position>().disconnect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
-		registry.patch<Position>(deBoorPoint, [&](Position& position) -> void
+	auto& pointPos = registry.get<Position>(positionEntity);
+	auto [bezC0, bezC2] = registry.get<BezierC0, BezierC2>(bezC0Entity);
+
+	registry.on_update<Position>().disconnect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
+	if (idxInC0 % 3 == 0)
+	{
+		auto& B1 = pointPos.position;
+		auto deB1 = bezC2.deBoorPoints[idxInC0 / 3 + 1];
+		auto& deB0Pos = registry.get<Position>(bezC2.deBoorPoints[idxInC0 / 3 + 0]).position;
+		auto& deB2Pos = registry.get<Position>(bezC2.deBoorPoints[idxInC0 / 3 + 2]).position;
+
+		registry.patch<Position>(deB1, [&](Position& deB1Pos) -> void
 			{
-				position.position = (6.f * centerPoint - deBoorPrev - deBoorNext) / 4.f;
+				deB1Pos.position = (6.f * B1 - deB0Pos - deB2Pos) / 4.f;
 			});
-		this->registry->on_update<Position>().connect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
 	}
+	else if (idxInC0 % 3 == 1)
+	{
+		auto& B1 = registry.get<Position>(bezC0.points[idxInC0 - 1]).position;
+		auto newB01_2 = B1 + (B1 - pointPos.position);
+
+		auto& deB1Pos = registry.get<Position>(bezC2.deBoorPoints[idxInC0 / 3 + 1]).position;
+		auto& deB0 = bezC2.deBoorPoints[idxInC0 / 3 + 0];
+		auto& deB2 = bezC2.deBoorPoints[idxInC0 / 3 + 2];
+
+		registry.patch<Position>(deB2, [&](Position& deB2Pos) -> void
+			{
+				deB2Pos.position = deB1Pos + 3.f * (pointPos.position - deB1Pos);
+			});
+		registry.patch<Position>(deB0, [&](Position& deB0Pos) -> void
+			{
+				deB0Pos.position = deB1Pos + 3.f * (newB01_2 - deB1Pos);
+			});
+	}
+	else // idxInC0 % 3 == 2
+	{
+		auto& B1 = registry.get<Position>(bezC0.points[idxInC0 + 1]).position;
+		auto newB12_1 = B1 + (B1 - pointPos.position);
+
+		auto& deB1Pos = registry.get<Position>(bezC2.deBoorPoints[idxInC0 / 3 + 2]).position;
+		auto& deB0 = bezC2.deBoorPoints[idxInC0 / 3 + 1];
+		auto& deB2 = bezC2.deBoorPoints[idxInC0 / 3 + 3];
+
+		registry.patch<Position>(deB0, [&](Position& deB0Pos) -> void
+			{
+				deB0Pos.position = deB1Pos + 3.f * (pointPos.position - deB1Pos);
+			});
+		registry.patch<Position>(deB2, [&](Position& deB2Pos) -> void
+			{
+				deB2Pos.position = deB1Pos + 3.f * (newB12_1 - deB1Pos);
+			});
+	}
+	registry.on_update<Position>().connect<&BezierC2System::AdjustDeBoorPointsOnBernsteinChange>(*this);
 }
